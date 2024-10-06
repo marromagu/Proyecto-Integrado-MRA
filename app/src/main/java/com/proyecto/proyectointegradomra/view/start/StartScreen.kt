@@ -2,10 +2,13 @@ package com.proyecto.proyectointegradomra.view.start
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -35,49 +38,65 @@ fun StartScreen() {
         modifier = Modifier
             .fillMaxSize()
             .background(Brush.verticalGradient(listOf(Gris, Negro), startY = 0f, endY = 600f)),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween //Distribuye los elementos de manera uniforme a lo largo del eje principal
     ) {
         LogoImagen()
         Texto()
-        Spacer(modifier = Modifier.weight(1f))
-        SignUp()
-        LogIn()
+        Column(modifier = Modifier.padding(16.dp)) {
+            SignUp()
+            LogIn()
+        }
     }
 }
 
 @Composable
 fun LogIn() {
-    Text(
-        text = "Iniciar Seccion",
-        modifier = Modifier.padding(16.dp),
-        style = TextStyle(
-            textDecoration = TextDecoration.Underline,
-            color = Color.White,
-            fontSize = 16.sp
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        Text(
+            text = "Log in",
+            modifier = Modifier.padding(16.dp),
+            style = TextStyle(
+                textDecoration = TextDecoration.Underline,
+                color = Color.White,
+                fontSize = 16.sp
+            )
         )
-    )
+    }
+
 }
 
 @Composable
 fun SignUp() {
-    Button(
-        onClick = { /*TODO*/ },
+    Box(
         modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth(0.6f),
-        colors = ButtonDefaults.buttonColors(containerColor = Rojo)
+            .fillMaxWidth(),
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "Sign Up Free",
-            color = Color.White,
-            fontSize = 20.sp,
-            modifier = Modifier.padding(8.dp)
-        )
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .padding(horizontal = 32.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Rojo)
+        ) {
+            Text(
+                text = "Sign Up Free",
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
 
 @Composable
 fun Texto() {
+
     Text(
         text = "Bienvenido",
         style = TextStyle(
