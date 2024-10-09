@@ -2,10 +2,10 @@ package com.proyecto.proyectointegradomra.view.start
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,25 +33,25 @@ import com.proyecto.proyectointegradomra.ui.theme.Rojo
 
 @Preview
 @Composable
-fun StartScreen() {
+fun StartScreen(navToSignUp: () -> Unit = {}, navToLogIn: () -> Unit = {}) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Brush.verticalGradient(listOf(Gris, Negro), startY = 0f, endY = 600f)),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween //Distribuye los elementos de manera uniforme a lo largo del eje principal
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         LogoImagen()
-        Texto()
+        Texto(texto = "Welcome")
         Column(modifier = Modifier.padding(16.dp)) {
-            SignUp()
-            LogIn()
+            SignUp(navToSignUp)
+            LogIn(navToLogIn)
         }
     }
 }
 
 @Composable
-fun LogIn() {
+fun LogIn(navToLogIn: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth(),
@@ -59,26 +59,29 @@ fun LogIn() {
     ) {
         Text(
             text = "Log in",
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .clickable { navToLogIn() },
             style = TextStyle(
                 textDecoration = TextDecoration.Underline,
                 color = Color.White,
-                fontSize = 16.sp
-            )
+                fontSize = 16.sp,
+
+                )
         )
     }
 
 }
 
 @Composable
-fun SignUp() {
+fun SignUp(navToSignUp: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { navToSignUp() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
@@ -95,10 +98,10 @@ fun SignUp() {
 }
 
 @Composable
-fun Texto() {
+fun Texto(texto: String) {
 
     Text(
-        text = "Bienvenido",
+        text = texto,
         style = TextStyle(
             color = Color.White,
             fontSize = 40.sp,
