@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "378211372584",
+    "project_id": "proyecto-integrado-mra",
+    "storage_bucket": "proyecto-integrado-mra.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:378211372584:android:a7982f8b45555e9ceb6f1d",
+        "android_client_info": {
+          "package_name": "com.proyecto.proyectointegradomra"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC26PXerGkz0kj6f-3v87Nk7yE-yli_bbw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

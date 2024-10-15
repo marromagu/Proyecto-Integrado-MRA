@@ -1,6 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    //Services
+    alias(libs.plugins.googleServices)
+    //Crashlytics
+    alias(libs.plugins.crashlytics)
 }
 
 android {
@@ -59,7 +63,12 @@ dependencies {
 
     // Iconos
     implementation(libs.androidx.material.icons.extended)
+    //Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.crashlytics)
 
+    
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
