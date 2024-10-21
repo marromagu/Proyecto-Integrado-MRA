@@ -55,20 +55,20 @@ android {
 
 dependencies {
 
-    // Navigation
-    implementation(libs.androidx.navigation.compose)
-
-    // LiveData
+    //LiveData
     implementation(libs.androidx.runtime.livedata)
-
-    // Iconos
+    //Navigate
+    implementation(libs.androidx.navigation.compose)
+    //Para los iconos
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.espresso.core)
     //Firebase
     implementation(platform(libs.firebase.bom))
+    //Auth
     implementation(libs.firebase.auth)
+    //Crashlytics
     implementation(libs.firebase.crashlytics)
 
-    
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

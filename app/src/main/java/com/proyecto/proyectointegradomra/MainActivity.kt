@@ -9,8 +9,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.proyecto.proyectointegradomra.navigation.NavigationManager
 import com.proyecto.proyectointegradomra.ui.theme.ProyectoIntegradoMRATheme
-import com.proyecto.proyectointegradomra.navigation.AppNavigation
+
 
 class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
             navController = rememberNavController()
             ProyectoIntegradoMRATheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    AppNavigation(navController)
+                    NavigationManager(navController)
                 }
             }
         }
