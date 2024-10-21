@@ -8,12 +8,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -23,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -33,7 +40,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.proyecto.proyectointegradomra.R
+import com.proyecto.proyectointegradomra.navigation.Screens
 import com.proyecto.proyectointegradomra.ui.theme.ColorContainer
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeBotones
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
@@ -52,8 +62,7 @@ fun StandardField(
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
-    OutlinedTextField(
-        value = value,
+    OutlinedTextField(value = value,
         onValueChange = onValueChange,
         label = { Text(text = label) },
         modifier = Modifier
@@ -82,8 +91,7 @@ fun StandardField(
                         if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
-                            imageVector = visibilityIcon,
-                            contentDescription = null
+                            imageVector = visibilityIcon, contentDescription = null
                         )
                     }
                 }
@@ -92,24 +100,18 @@ fun StandardField(
                     Icon(imageVector = icon, contentDescription = null)
                 }
             }
-        }
-    )
+        })
 }
 
 @Composable
 fun StandardButton(
-    text: String,
-    icon: ImageVector,
-    onClick: () -> Unit
+    text: String, icon: ImageVector, onClick: () -> Unit
 ) {
     Box(modifier = Modifier.padding(16.dp)) {
-        ExtendedFloatingActionButton(
-            modifier = Modifier
-                .size(300.dp, 60.dp),
+        ExtendedFloatingActionButton(modifier = Modifier.size(300.dp, 60.dp),
             containerColor = ColorDeBotones,
             contentColor = ColorDeLetras,
-            onClick = { onClick() }
-        ) {
+            onClick = { onClick() }) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
@@ -117,10 +119,8 @@ fun StandardButton(
             )
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(
-                text = text,
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                text = text, style = TextStyle(
+                    fontWeight = FontWeight.Bold, fontSize = 16.sp
                 )
             )
         }

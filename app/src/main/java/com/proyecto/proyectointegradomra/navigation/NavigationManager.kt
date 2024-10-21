@@ -13,7 +13,6 @@ import com.proyecto.proyectointegradomra.view.singUp.SingUpView
 import com.proyecto.proyectointegradomra.view.home.HomeView
 import com.proyecto.proyectointegradomra.view.start.StartScreen
 import com.google.firebase.auth.FirebaseAuth
-import com.proyecto.proyectointegradomra.navigation.Screens
 
 @Composable
 fun NavigationManager(navController: NavHostController) {
@@ -58,8 +57,9 @@ fun NavigationManager(navController: NavHostController) {
         }
         composable(route = Screens.HomeScreen.ruta) {
             HomeView(
-                navTo = navController
+               // navTo = navController
             )
+
         }
 
     }
