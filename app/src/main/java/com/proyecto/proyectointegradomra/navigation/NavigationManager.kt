@@ -13,7 +13,8 @@ import com.proyecto.proyectointegradomra.view.singUp.SingUpView
 import com.proyecto.proyectointegradomra.view.home.HomeView
 import com.proyecto.proyectointegradomra.view.start.StartScreen
 import com.google.firebase.auth.FirebaseAuth
-
+import com.proyecto.proyectointegradomra.view.favorites.FavoritesView
+import com.proyecto.proyectointegradomra.view.profile.ProfileView
 @Composable
 fun NavigationManager(navController: NavHostController) {
 
@@ -22,21 +23,21 @@ fun NavigationManager(navController: NavHostController) {
 
     LaunchedEffect(currentUser) {
         if (currentUser != null) {
-            navController.navigate(Screens.HomeScreen.ruta) {
-                popUpTo(Screens.StartScreen.ruta) { inclusive = true }
-                popUpTo(Screens.LogInScreen.ruta) { inclusive = true }
-                popUpTo(Screens.SignUpScreen.ruta) { inclusive = true }
-                /*TODO: No permitir volver a pantallas anteriores*/
-                launchSingleTop = true
+            if (navController.currentDestination?.route != Screens.HomeScreen.ruta) {
+                navController.navigate(Screens.HomeScreen.ruta) {
+                    popUpTo(Screens.StartScreen.ruta) { inclusive = true }
+                    launchSingleTop = true
+                }
             }
         } else {
-            navController.navigate(Screens.StartScreen.ruta) {
-                popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
-                launchSingleTop = true
+            if (navController.currentDestination?.route != Screens.StartScreen.ruta) {
+                navController.navigate(Screens.StartScreen.ruta) {
+                    popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
+                    launchSingleTop = true
+                }
             }
         }
     }
-
 
     NavHost(navController = navController, startDestination = Screens.StartScreen.ruta) {
         composable(route = Screens.StartScreen.ruta) {
@@ -46,21 +47,19 @@ fun NavigationManager(navController: NavHostController) {
             )
         }
         composable(route = Screens.SignUpScreen.ruta) {
-            SingUpView(
-                navToHome = navController
-            )
+            SingUpView(navToHome = navController)
         }
         composable(route = Screens.LogInScreen.ruta) {
-            LogInView(
-                navToHome = navController
-            )
+            LogInView(navToHome = navController)
         }
         composable(route = Screens.HomeScreen.ruta) {
-            HomeView(
-               // navTo = navController
-            )
-
+            HomeView(navTo = navController)
         }
-
+        composable(route = Screens.ProfileScreen.ruta) {
+            ProfileView(navTo = navController)
+        }
+        composable(route = Screens.FavoritesScreen.ruta) {
+            FavoritesView(navTo = navController)
+        }
     }
 }
