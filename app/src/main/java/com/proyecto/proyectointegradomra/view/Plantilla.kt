@@ -26,17 +26,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -62,7 +59,11 @@ import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
 fun PreviewBottomNavigationBar() {
     val navController = rememberNavController()
     Scaffold(bottomBar = { BottomNavigationBar(navController = navController) }) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding).background(ColorDeFondo).fillMaxSize(),) {
+        Column(modifier = Modifier
+            .padding(innerPadding)
+            .background(ColorDeFondo)
+            .fillMaxSize()
+        ) {
             Logo()
 
         }
@@ -75,6 +76,17 @@ fun BottomNavigationBar(navController: NavHostController) {
     val currentRoute = currentRoute(navController)
 
     NavigationBar {
+        NavigationBarItem(
+            icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favoritos") },
+            label = { Text("Favoritos") },
+            selected = currentRoute == Screens.FavoritesScreen.ruta,
+            onClick = {
+                navController.navigate(Screens.FavoritesScreen.ruta) {
+                    popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
             label = { Text("Home") },
@@ -92,17 +104,6 @@ fun BottomNavigationBar(navController: NavHostController) {
             selected = currentRoute == Screens.ProfileScreen.ruta,
             onClick = {
                 navController.navigate(Screens.ProfileScreen.ruta) {
-                    popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
-                    launchSingleTop = true
-                }
-            }
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favoritos") },
-            label = { Text("Favoritos") },
-            selected = currentRoute == Screens.FavoritesScreen.ruta,
-            onClick = {
-                navController.navigate(Screens.FavoritesScreen.ruta) {
                     popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
                     launchSingleTop = true
                 }

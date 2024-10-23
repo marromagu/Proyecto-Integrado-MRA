@@ -15,6 +15,7 @@ import com.proyecto.proyectointegradomra.view.start.StartScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.proyecto.proyectointegradomra.view.favorites.FavoritesView
 import com.proyecto.proyectointegradomra.view.profile.ProfileView
+
 @Composable
 fun NavigationManager(navController: NavHostController) {
 
