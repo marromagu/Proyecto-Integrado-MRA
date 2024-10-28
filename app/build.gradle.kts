@@ -68,6 +68,8 @@ dependencies {
     implementation(libs.firebase.auth)
     //Crashlytics
     implementation(libs.firebase.crashlytics)
+    //FireStore
+    implementation(libs.firebase.firestore)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

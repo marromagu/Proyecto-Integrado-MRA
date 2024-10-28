@@ -9,18 +9,30 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.proyecto.proyectointegradomra.Authentication.AuthController
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
+import com.proyecto.proyectointegradomra.ui.theme.ProyectoIntegradoMRATheme
 import com.proyecto.proyectointegradomra.view.BottomNavigationBar
 import com.proyecto.proyectointegradomra.view.Logo
 import com.proyecto.proyectointegradomra.view.home.HomeController
 
+@Preview(showBackground = true)
+@Composable
+fun ProfileViewPreview() {
+    val navController = rememberNavController()
+
+    ProfileView(navTo = navController)
+
+}
+
 @Composable
 fun ProfileView(
-    homeController: HomeController = viewModel(),
-    authController: AuthController = viewModel(),
+/*    homeController: HomeController = viewModel(),
+    authController: AuthController = viewModel(),*/
     navTo: NavHostController
 ) {
     Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->

@@ -14,8 +14,8 @@ runtimeLivedata = "1.7.4"
 navigationCompose = "2.8.3"
 #Iconos
 materialIconsExtended = "1.7.4"
-#FireBase
-firebaseBom = "33.4.0"
+#FireBase Bom
+firebaseBom = "33.5.1"
 ##Services
 services = "4.4.2"
 ##Crashlytics
@@ -28,12 +28,14 @@ androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtim
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 #Iconos
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
-#Firebase
+#Firebase Bom
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 #Crashlytics
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 #Auth
 firebase-auth = {module = "com.google.firebase:firebase-auth-ktx" }
+#FireStore Database
+firebase-firestore = {module = "com.google.firebase:firebase-firestore"}
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
