@@ -1,16 +1,19 @@
-package com.proyecto.proyectointegradomra.Authentication
+package com.proyecto.proyectointegradomra.authentication
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.proyecto.proyectointegradomra.firestore.FirestoreController
 
 class AuthController : ViewModel() {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firestoreController = FirestoreController()
 
     private val _user = MutableLiveData(firebaseAuth.currentUser)
     val user: MutableLiveData<FirebaseUser?> = _user
 
+    // Método para iniciar sesión
     fun iniciarSesion(
         correo: String,
         contrasena: String,
@@ -24,13 +27,14 @@ class AuthController : ViewModel() {
             } else {
                 onError(task.exception?.message ?: "Error al iniciar sesión")
             }
-
         }
     }
 
+    // Método para registrarse
     fun registrarse(
         correo: String,
         contrasena: String,
+        nombre: String,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -38,13 +42,17 @@ class AuthController : ViewModel() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     _user.value = firebaseAuth.currentUser
+                    firestoreController.agregarPerfilUsuario(
+                        nombre = nombre,
+                        email = correo
+                    )
                     onSuccess()
                 } else {
                     onError(task.exception?.message ?: "Error al registrarse")
                 }
-
             }
     }
+
     fun cerrarSesion() {
         firebaseAuth.signOut()
         _user.value = null

@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.proyecto.proyectointegradomra.Authentication.AuthController
+import com.proyecto.proyectointegradomra.authentication.AuthController
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.view.BottomNavigationBar
 import com.proyecto.proyectointegradomra.view.Logo
