@@ -4,13 +4,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.BorderColor
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -31,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -59,13 +67,34 @@ import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
 fun PreviewBottomNavigationBar() {
     val navController = rememberNavController()
     Scaffold(bottomBar = { BottomNavigationBar(navController = navController) }) { innerPadding ->
-        Column(modifier = Modifier
-            .padding(innerPadding)
-            .background(ColorDeFondo)
-            .fillMaxSize()
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .background(ColorDeFondo)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Logo()
-
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Nombre de usuario")
+                IconButton(onClick = { /* Abrir diálogo o pantalla para editar el nombre */ }) {
+                    Icon(imageVector = Icons.Filled.Edit, contentDescription = "Editar nombre")
+                }
+                FotoPerfil()
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Column(
+                modifier = Modifier.padding(90.dp, 5.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                StandardButton(text = "Cerrar Sesión",
+                    icon = Icons.AutoMirrored.Filled.ExitToApp,
+                    onClick = {
+                    })
+                StandardButton(text = "Borrar Cuenta",
+                    icon = Icons.Filled.DeleteForever,
+                    onClick = {
+                    })
+            }
         }
     }
 }
@@ -76,8 +105,7 @@ fun BottomNavigationBar(navController: NavHostController) {
     val currentRoute = currentRoute(navController)
 
     NavigationBar {
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favoritos") },
+        NavigationBarItem(icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favoritos") },
             label = { Text("Favoritos") },
             selected = currentRoute == Screens.FavoritesScreen.ruta,
             onClick = {
@@ -85,10 +113,8 @@ fun BottomNavigationBar(navController: NavHostController) {
                     popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
                     launchSingleTop = true
                 }
-            }
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
+            })
+        NavigationBarItem(icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
             label = { Text("Home") },
             selected = currentRoute == Screens.HomeScreen.ruta,
             onClick = {
@@ -96,10 +122,8 @@ fun BottomNavigationBar(navController: NavHostController) {
                     popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
                     launchSingleTop = true
                 }
-            }
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.Person, contentDescription = "Profile") },
+            })
+        NavigationBarItem(icon = { Icon(Icons.Filled.Person, contentDescription = "Profile") },
             label = { Text("Perfil") },
             selected = currentRoute == Screens.ProfileScreen.ruta,
             onClick = {
@@ -107,8 +131,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                     popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
                     launchSingleTop = true
                 }
-            }
-        )
+            })
     }
 }
 
@@ -201,6 +224,19 @@ fun Logo() {
             painter = logotipo,
             contentDescription = "logo",
             modifier = Modifier.size(300.dp),
+            contentScale = ContentScale.Fit
+        )
+    }
+}
+
+@Composable
+fun FotoPerfil() {
+    val logotipo = painterResource(id = R.drawable.ic_launcher_foreground)
+    Box(modifier = Modifier) {
+        Image(
+            painter = logotipo,
+            contentDescription = "logo",
+            modifier = Modifier.size(150.dp),
             contentScale = ContentScale.Fit
         )
     }
