@@ -64,11 +64,12 @@ class FirestoreController {
             .addOnFailureListener { exception -> onFailure(exception) }
     }
 
-    fun agregarPerfilUsuario(nombre: String, email: String) {
+    fun agregarPerfilUsuario(nombre: String, email: String, tipo: String) {
         val firestoreController = FirestoreController()
         val userProfile = mapOf(
             "nombre" to nombre,
-            "email" to email
+            "email" to email,
+            "tipo" to tipo
         )
 
         firestoreController.agregarDocumento(

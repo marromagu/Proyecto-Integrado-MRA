@@ -21,6 +21,12 @@ class SingUpController : ViewModel() {
     fun updateRepetirContrasena(it: String) {
         _repetirContrasena.value = it
     }
+    fun updateEsOfertante(it: Boolean) {
+        _esOfertante.value = it
+    }
+
+    private val _esOfertante = MutableLiveData<Boolean>()
+    val esOfertante: LiveData<Boolean> = _esOfertante
 
     private val _repetirContrasena = MutableLiveData<String>()
     val repetirContrasena: LiveData<String> = _repetirContrasena

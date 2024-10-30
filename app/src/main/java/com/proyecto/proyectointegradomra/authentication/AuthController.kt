@@ -35,6 +35,7 @@ class AuthController : ViewModel() {
         correo: String,
         contrasena: String,
         nombre: String,
+        esOfertante: Boolean,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -42,10 +43,20 @@ class AuthController : ViewModel() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     _user.value = firebaseAuth.currentUser
-                    firestoreController.agregarPerfilUsuario(
-                        nombre = nombre,
-                        email = correo
-                    )
+                    if (esOfertante) {
+                        firestoreController.agregarPerfilUsuario(
+                            nombre = nombre,
+                            email = correo,
+                            tipo = "ofertantes"
+                        )
+                    } else {
+                        firestoreController.agregarPerfilUsuario(
+                            nombre = nombre,
+                            email = correo,
+                            tipo = "demandantes"
+                        )
+                    }
+
                     onSuccess()
                 } else {
                     onError(task.exception?.message ?: "Error al registrarse")

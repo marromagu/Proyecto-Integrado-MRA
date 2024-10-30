@@ -43,7 +43,7 @@ fun SingUpView(
     val correo by singUpController.correo.observeAsState("")
     val contrasena by singUpController.contrasena.observeAsState("")
     val repetirContrasena by singUpController.repetirContrasena.observeAsState("")
-    var isChecked by remember { mutableStateOf(false) }
+    val isChecked by singUpController.esOfertante.observeAsState(false)
     var errorMessage by remember { mutableStateOf("") }
 
     LazyColumn(
@@ -91,7 +91,7 @@ fun SingUpView(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(checked = isChecked,
-                    onCheckedChange = { isChecked = it },
+                    onCheckedChange = { singUpController.updateEsOfertante(it) },
                     modifier = Modifier.size(32.dp),
                     enabled = true,
                     colors = CheckboxDefaults.colors(
@@ -126,7 +126,7 @@ fun SingUpView(
                 if ((contrasena != repetirContrasena) || (contrasena.isEmpty())) {
                     errorMessage = "Las contraseñas no coinciden"
                 } else {
-                    authController.registrarse(correo, contrasena, nombre, onSuccess = {
+                    authController.registrarse(correo, contrasena, nombre, isChecked, onSuccess = {
                         navToHome.navigate("HomeView")
                     }, onError = { error -> errorMessage = error })
                 }
