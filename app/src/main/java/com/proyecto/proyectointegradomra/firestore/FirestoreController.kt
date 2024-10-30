@@ -3,6 +3,7 @@ package com.proyecto.proyectointegradomra.firestore
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.proyecto.proyectointegradomra.authentication.AuthController
 
 
 class FirestoreController {
@@ -11,12 +12,13 @@ class FirestoreController {
 
     fun agregarDocumento(
         collectionPath: String,
+        documentId: String?,
         data: Map<String, Any>,
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
         db.collection(collectionPath)
-            .add(data)
+            .document(documentId ?: db.collection(collectionPath).document().id).set(data)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { exception -> onFailure(exception) }
     }
@@ -27,16 +29,13 @@ class FirestoreController {
         onSuccess: (Map<String, Any>?) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        db.collection(collectionPath).document(documentId)
-            .get()
-            .addOnSuccessListener { document ->
+        db.collection(collectionPath).document(documentId).get().addOnSuccessListener { document ->
                 if (document.exists()) {
                     onSuccess(document.data)
                 } else {
                     onSuccess(null)
                 }
-            }
-            .addOnFailureListener { exception -> onFailure(exception) }
+            }.addOnFailureListener { exception -> onFailure(exception) }
     }
 
     fun actualizarDocumento(
@@ -46,8 +45,7 @@ class FirestoreController {
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        db.collection(collectionPath).document(documentId)
-            .update(data)
+        db.collection(collectionPath).document(documentId).update(data)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { exception -> onFailure(exception) }
     }
@@ -58,30 +56,26 @@ class FirestoreController {
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        db.collection(collectionPath).document(documentId)
-            .delete()
+        db.collection(collectionPath).document(documentId).delete()
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { exception -> onFailure(exception) }
     }
 
-    fun agregarPerfilUsuario(nombre: String, email: String, tipo: String) {
+    fun agregarPerfilUsuario(uid: String?, nombre: String, email: String, tipo: AuthController.TipoUsuario) {
         val firestoreController = FirestoreController()
         val userProfile = mapOf(
-            "nombre" to nombre,
-            "email" to email,
-            "tipo" to tipo
+            "nombre" to nombre, "email" to email, "tipo" to tipo.name.lowercase()
         )
 
-        firestoreController.agregarDocumento(
-            collectionPath = "usuarios",
+        firestoreController.agregarDocumento(collectionPath = "usuarios",
+            documentId = uid,
             data = userProfile,
             onSuccess = {
                 println("Perfil de usuario agregado correctamente.")
             },
             onFailure = { exception ->
                 println("Error al agregar perfil de usuario: ${exception.message}")
-            }
-        )
+            })
     }
 
 }

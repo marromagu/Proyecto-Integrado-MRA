@@ -106,7 +106,7 @@ fun SingUpView(
                     interactionSource = remember { MutableInteractionSource() })
                 Text(
                     modifier = Modifier.padding(8.dp),
-                    text = "Registrar como Ofertante.",
+                    text = "Registrarse como Ofertante.",
                     style = TextStyle(
                         color = ColorDeLetras,
                     )
@@ -114,7 +114,6 @@ fun SingUpView(
             }
         }
         item { Spacer(modifier = Modifier.height(24.dp)) }
-        // Item para el mensaje de error (si existe)
         if (errorMessage.isNotEmpty()) {
             item {
                 Text(text = errorMessage, color = Color.Red)

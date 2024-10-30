@@ -15,11 +15,22 @@ class AuthController : ViewModel() {
     private val _user = MutableLiveData(firebaseAuth.currentUser)
     val user: MutableLiveData<FirebaseUser?> = _user
 
+    enum class TipoUsuario {
+        OFERTANTE,
+        DEMANDANTE
+    }
+
+
+    fun obtenerUidUsuario(): String? {
+        return _user.value?.uid
+    }
+
+    private fun agregarPerfilUsuario(ui: String?, nombre: String, email: String, tipo: TipoUsuario) {
+        firestoreController.agregarPerfilUsuario(ui, nombre, email, tipo)
+    }
+
     fun iniciarSesion(
-        email: String,
-        contrasena: String,
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
+        email: String, contrasena: String, onSuccess: () -> Unit, onError: (String) -> Unit
     ) {
         firebaseAuth.signInWithEmailAndPassword(email, contrasena).addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -43,18 +54,11 @@ class AuthController : ViewModel() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     _user.value = firebaseAuth.currentUser
+                    val uid = obtenerUidUsuario()
                     if (esOfertante) {
-                        firestoreController.agregarPerfilUsuario(
-                            nombre = nombre,
-                            email = correo,
-                            tipo = "ofertantes"
-                        )
+                        agregarPerfilUsuario(uid, nombre, correo, TipoUsuario.OFERTANTE)
                     } else {
-                        firestoreController.agregarPerfilUsuario(
-                            nombre = nombre,
-                            email = correo,
-                            tipo = "demandantes"
-                        )
+                        agregarPerfilUsuario(uid, nombre, correo, TipoUsuario.DEMANDANTE)
                     }
 
                     onSuccess()
@@ -71,11 +75,10 @@ class AuthController : ViewModel() {
 
     fun eliminarCuenta() {
         val user = firebaseAuth.currentUser!!
-        user.delete()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d(TAG, "User account deleted.")
-                }
+        user.delete().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d(TAG, "User account deleted.")
             }
+        }
     }
 }
