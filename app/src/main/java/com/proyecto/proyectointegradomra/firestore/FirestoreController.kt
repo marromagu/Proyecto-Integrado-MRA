@@ -61,7 +61,7 @@ class FirestoreController {
             .addOnFailureListener { exception -> onFailure(exception) }
     }
 
-    fun agregarPerfilUsuario(uid: String?, nombre: String, email: String, tipo: AuthController.TipoUsuario) {
+    fun agregarDocumnetoUsuario(uid: String?, nombre: String, email: String, tipo: AuthController.TipoUsuario) {
         val firestoreController = FirestoreController()
         val userProfile = mapOf(
             "nombre" to nombre, "email" to email, "tipo" to tipo.name.lowercase()
@@ -76,6 +76,21 @@ class FirestoreController {
             onFailure = { exception ->
                 println("Error al agregar perfil de usuario: ${exception.message}")
             })
+    }
+    fun obtenerNombreUsuarioPorUid(
+        uid: String,
+        onSuccess: (String?) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        db.collection("usuarios").document(uid).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    onSuccess(document.data?.get("nombre") as? String)
+                } else {
+                    onSuccess(null) // Usuario no encontrado
+                }
+            }
+            .addOnFailureListener { exception -> onFailure(exception) }
     }
 
 }

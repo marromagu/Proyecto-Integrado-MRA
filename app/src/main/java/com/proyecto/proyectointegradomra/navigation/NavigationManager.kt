@@ -42,10 +42,8 @@ fun NavigationManager(navController: NavHostController) {
 
     NavHost(navController = navController, startDestination = Screens.StartScreen.ruta) {
         composable(route = Screens.StartScreen.ruta) {
-            StartScreen(
-                navToSignUp = { navController.navigate(Screens.SignUpScreen.ruta) },
-                navToLogIn = { navController.navigate(Screens.LogInScreen.ruta) }
-            )
+            StartScreen(navToSignUp = { navController.navigate(Screens.SignUpScreen.ruta) },
+                navToLogIn = { navController.navigate(Screens.LogInScreen.ruta) })
         }
         composable(route = Screens.SignUpScreen.ruta) {
             SingUpView(navToHome = navController)

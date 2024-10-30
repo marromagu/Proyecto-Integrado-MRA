@@ -14,19 +14,36 @@ class AuthController : ViewModel() {
 
     private val _user = MutableLiveData(firebaseAuth.currentUser)
     val user: MutableLiveData<FirebaseUser?> = _user
+    private val _nombreUsuario = MutableLiveData<String?>(null)
+    val nombreUsuario: MutableLiveData<String?> = _nombreUsuario
 
     enum class TipoUsuario {
-        OFERTANTE,
-        DEMANDANTE
+        OFERTANTE, DEMANDANTE
     }
 
+
+    fun obtenerNombreUsuario() {
+        val uid = obtenerUidUsuario()
+        firestoreController.obtenerNombreUsuarioPorUid(uid = uid ?: "", onSuccess = { nombre ->
+            _nombreUsuario.value = nombre
+            if (nombre != null) {
+                println("Nombre del usuario: $nombre")
+            } else {
+                println("Usuario no encontrado")
+            }
+        }, onFailure = { exception ->
+            println("Error al obtener el nombre del usuario: ${exception.message}")
+        })
+    }
 
     fun obtenerUidUsuario(): String? {
         return _user.value?.uid
     }
 
-    private fun agregarPerfilUsuario(ui: String?, nombre: String, email: String, tipo: TipoUsuario) {
-        firestoreController.agregarPerfilUsuario(ui, nombre, email, tipo)
+    private fun agregarPerfilUsuario(
+        ui: String?, nombre: String, email: String, tipo: TipoUsuario
+    ) {
+        firestoreController.agregarDocumnetoUsuario(ui, nombre, email, tipo)
     }
 
     fun iniciarSesion(
@@ -75,8 +92,17 @@ class AuthController : ViewModel() {
 
     fun eliminarCuenta() {
         val user = firebaseAuth.currentUser!!
+        val uid = obtenerUidUsuario()
         user.delete().addOnCompleteListener { task ->
             if (task.isSuccessful) {
+                firestoreController.eliminarDocumento(collectionPath = "usuarios",
+                    documentId = uid ?: "",
+                    onSuccess = {
+                        println("Documento eliminado correctamente.")
+                    },
+                    onFailure = { exception ->
+                        println("Error al eliminar documento: ${exception.message}")
+                    })
                 Log.d(TAG, "User account deleted.")
             }
         }
