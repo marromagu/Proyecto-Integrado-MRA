@@ -9,7 +9,6 @@ class FirestoreController {
 
     private val db: FirebaseFirestore = Firebase.firestore
 
-    // Función para agregar un documento en una colección
     fun agregarDocumento(
         collectionPath: String,
         data: Map<String, Any>,
@@ -22,7 +21,6 @@ class FirestoreController {
             .addOnFailureListener { exception -> onFailure(exception) }
     }
 
-    // Función para leer un documento específico
     fun leerDocumento(
         collectionPath: String,
         documentId: String,
@@ -35,13 +33,12 @@ class FirestoreController {
                 if (document.exists()) {
                     onSuccess(document.data)
                 } else {
-                    onSuccess(null) // Documento no encontrado
+                    onSuccess(null)
                 }
             }
             .addOnFailureListener { exception -> onFailure(exception) }
     }
 
-    // Función para actualizar un documento
     fun actualizarDocumento(
         collectionPath: String,
         documentId: String,
@@ -55,7 +52,6 @@ class FirestoreController {
             .addOnFailureListener { exception -> onFailure(exception) }
     }
 
-    // Función para eliminar un documento
     fun eliminarDocumento(
         collectionPath: String,
         documentId: String,

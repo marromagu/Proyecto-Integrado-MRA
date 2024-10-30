@@ -1,29 +1,33 @@
 package com.proyecto.proyectointegradomra.view
 
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.BorderColor
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -61,8 +66,9 @@ import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
 import com.proyecto.proyectointegradomra.ui.theme.ColorFocuseado
 import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
+import com.proyecto.proyectointegradomra.ui.theme.VerdeClaro
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun PreviewBottomNavigationBar() {
     val navController = rememberNavController()
@@ -95,6 +101,91 @@ fun PreviewBottomNavigationBar() {
                     onClick = {
                     })
             }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PreviewStandardField() {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(ColorDeFondo)
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        item { Logo() }
+        item { Spacer(modifier = Modifier.height(12.dp)) }
+        item {
+            StandardField(
+                label = "Nombre de usuario",
+                value = "nombre",
+                icon = Icons.Filled.AccountBox,
+                onValueChange = { }
+            )
+        }
+        item {
+            StandardField(
+                label = "Correo electrónico",
+                value = "correo",
+                icon = Icons.Filled.Email,
+                onValueChange = { },
+                keyboardType = KeyboardType.Email
+            )
+        }
+        item {
+            StandardField(
+                label = "Contraseña",
+                value = "contrasena",
+                onValueChange = { },
+                isPassword = true
+            )
+        }
+        item {
+            StandardField(
+                label = "Repita contraseña",
+                value = "repetirContrasena",
+                onValueChange = { },
+                isPassword = true
+            )
+        }
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = true,
+                    onCheckedChange = { },
+                    modifier = Modifier.size(32.dp),
+                    enabled = true,
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = VerdeClaro,
+                        uncheckedColor = ColorUnfocuseado,
+                        checkmarkColor = ColorDeLetras,
+                        disabledCheckedColor = ColorUnfocuseado,
+                        disabledUncheckedColor = ColorUnfocuseado,
+                        disabledIndeterminateColor = ColorUnfocuseado
+
+                    ),
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+                Text(
+                    modifier = Modifier.padding(8.dp),
+                    text = "Registrar como Ofertante.",
+                    style = TextStyle(
+                        color = ColorDeLetras,
+                    )
+                )
+            }
+        }
+        item { Spacer(modifier = Modifier.height(6.dp)) }
+        item {
+            StandardButton(
+                text = "Registrarse",
+                icon = Icons.Filled.AccountBox,
+                onClick = {}
+            )
         }
     }
 }

@@ -4,11 +4,8 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.auth
-import com.google.firebase.auth.userProfileChangeRequest
 import com.proyecto.proyectointegradomra.firestore.FirestoreController
 
 class AuthController : ViewModel() {
@@ -18,32 +15,13 @@ class AuthController : ViewModel() {
     private val _user = MutableLiveData(firebaseAuth.currentUser)
     val user: MutableLiveData<FirebaseUser?> = _user
 
-    fun obtenerDisplayNameUsuario(): String? {
-        val user = Firebase.auth.currentUser
-        return user?.displayName
-    }
-
-    fun actualizarNombreUsuario(nuevoNombre: String, onComplete: (Boolean) -> Unit) {
-        val user = Firebase.auth.currentUser
-
-        val profileUpdates = userProfileChangeRequest {
-            displayName = nuevoNombre
-        }
-
-        user?.updateProfile(profileUpdates)
-            ?.addOnCompleteListener { task ->
-                onComplete(task.isSuccessful)
-            }
-    }
-
-    // Método para iniciar sesión
     fun iniciarSesion(
-        correo: String,
+        email: String,
         contrasena: String,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        firebaseAuth.signInWithEmailAndPassword(correo, contrasena).addOnCompleteListener { task ->
+        firebaseAuth.signInWithEmailAndPassword(email, contrasena).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 _user.value = firebaseAuth.currentUser
                 onSuccess()
@@ -53,7 +31,6 @@ class AuthController : ViewModel() {
         }
     }
 
-    // Método para registrarse
     fun registrarse(
         correo: String,
         contrasena: String,

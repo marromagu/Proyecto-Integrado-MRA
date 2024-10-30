@@ -16,8 +16,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,7 +32,6 @@ fun ProfileView(
     authController: AuthController = viewModel(),
     navTo: NavHostController,
 ) {
-    val displayName = authController.obtenerDisplayNameUsuario()
         Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -44,7 +41,7 @@ fun ProfileView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = displayName ?: "Nombre de usuario no encontrado")
+                Text(text = "Nombre de usuario no encontrado")
                 Spacer(modifier = Modifier.width(8.dp))
                 IconButton(onClick = { /* Abrir diálogo o pantalla para editar el nombre */ }) {
                     Icon(imageVector = Icons.Filled.Edit, contentDescription = "Editar nombre")
