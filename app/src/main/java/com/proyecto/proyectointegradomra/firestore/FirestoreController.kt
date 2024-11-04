@@ -1,18 +1,17 @@
 package com.proyecto.proyectointegradomra.firestore
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.proyecto.proyectointegradomra.Data.TipoUsuario
 import com.proyecto.proyectointegradomra.Data.Usuario
-import com.proyecto.proyectointegradomra.authentication.AuthController
 
 
 class FirestoreController {
 
     private val db: FirebaseFirestore = Firebase.firestore
 
-    fun agregarDocumento(
+    private fun agregarDocumento(
         collectionPath: String,
         documentId: String?,
         data: Map<String, Any>,
@@ -56,19 +55,33 @@ class FirestoreController {
     fun obtenerUsuarioPorUid(
         uid: String, onSuccess: (Usuario) -> Unit, onFailure: (Exception) -> Unit
     ) {
-        db.collection("usuarios").document(uid).get().addOnSuccessListener { document ->
-            if (document.exists()) {
-                val usuario = document.toObject(Usuario::class.java)
-                if (usuario != null) {
-                    onSuccess(usuario)
+        db.collection("usuarios").document(uid).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    try {
+                        val usuario = document.toObject(Usuario::class.java)
+                        if (usuario != null) {
+                            onSuccess(usuario)
+                        } else {
+                            onFailure(Exception("Error al convertir documento a Usuario"))
+                        }
+                    } catch (e: Exception) {
+                        Log.e(
+                            "FirestoreController",
+                            "Error al mapear el documento a Usuario: ${e.message}"
+                        )
+                        onFailure(Exception("Error al mapear el documento a Usuario"))
+                    }
                 } else {
-                    onFailure(Exception("Error al convertir documento a Usuario"))
+                    onFailure(Exception("Usuario no encontrado en Firestore"))
                 }
-            } else {
-                onFailure(Exception("Usuario no encontrado"))
             }
-        }.addOnFailureListener { exception -> onFailure(exception) }
+            .addOnFailureListener { exception ->
+                Log.e("FirestoreController", "Error al obtener documento: ${exception.message}")
+                onFailure(exception)
+            }
     }
+
 
     fun actualizarNombreUsuario(
         uid: String,
@@ -76,16 +89,14 @@ class FirestoreController {
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        // Acceder al documento del usuario en Firestore
         val userRef = db.collection("usuarios").document(uid)
 
-        // Actualizar el nombre del usuario
         userRef.update("nombre", newName)
             .addOnSuccessListener {
-                onSuccess() // Llamar a onSuccess si la actualización fue exitosa
+                onSuccess()
             }
             .addOnFailureListener { exception ->
-                onFailure(exception) // Llamar a onFailure si hubo un error
+                onFailure(exception)
             }
     }
 

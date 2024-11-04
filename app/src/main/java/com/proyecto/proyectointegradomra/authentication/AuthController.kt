@@ -16,7 +16,8 @@ class AuthController : ViewModel() {
     private val firestoreController = FirestoreController()
 
     private val _user = MutableLiveData<FirebaseUser?>(firebaseAuth.currentUser)
-    val user: LiveData<FirebaseUser?> = _user
+    //val user: LiveData<FirebaseUser?> = _user
+
     private val _usuario = MutableLiveData<Usuario?>()
     val usuario: LiveData<Usuario?> = _usuario
 
@@ -29,6 +30,7 @@ class AuthController : ViewModel() {
                 cargarUsuario()
                 onSuccess()
             } else {
+                // Maneja el error de inicio de sesión en la Ventana de Inicio de Sesión
                 onError(task.exception?.message ?: "Error al iniciar sesión")
             }
         }
@@ -36,12 +38,19 @@ class AuthController : ViewModel() {
 
     fun cargarUsuario() {
         val uid = obtenerUidUsuario() ?: return
-        firestoreController.obtenerUsuarioPorUid(uid, onSuccess = { usuario ->
-            _usuario.value = usuario
-        }, onFailure = { exception ->
-            Log.e(TAG, "Error al cargar usuario: ${exception.message}")
-        })
+        firestoreController.obtenerUsuarioPorUid(uid,
+            onSuccess = { usuario ->
+                _usuario.value = usuario
+            },
+            onFailure = { exception ->
+                Log.e(
+                    "AuthController",
+                    "Error al cargar usuario desde Firestore: ${exception.message}"
+                )
+            }
+        )
     }
+
 
     private fun obtenerUidUsuario(): String? {
         return firebaseAuth.currentUser?.uid
@@ -61,25 +70,21 @@ class AuthController : ViewModel() {
                     _user.value = firebaseAuth.currentUser
                     val uid = obtenerUidUsuario()
                     if (uid != null) {
-                        // Crear el objeto Usuario según el tipo
                         val tipoUsuario =
                             if (esOfertante) TipoUsuario.OFERTANTE else TipoUsuario.DEMANDANTE
                         val nuevoUsuario =
                             Usuario(uid = uid, nombre = nombre, correo = correo, tipo = tipoUsuario)
 
-                        // Agregar el perfil del usuario a Firestore
                         firestoreController.agregarDocumentoUsuario(nuevoUsuario)
 
 
                     } else {
-                        Log.e(
-                            TAG,
-                            "AuthController:Registrarse -> Error: UID de usuario es nulo después del registro"
-                        )
+                        // Maneja el error de crear usuario en la Ventana de Registrarse
                         onError("Error al crear el perfil de usuario.")
                     }
                     onSuccess()
                 } else {
+                    // Maneja el error de crear usuario en la Ventana de Registrarse
                     onError(task.exception?.message ?: "Error al registrarse")
                 }
             }
@@ -96,14 +101,11 @@ class AuthController : ViewModel() {
         if (uid != null) {
             user.delete().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    firestoreController.eliminarDocumento(collectionPath = "usuarios",
-                        documentId = uid ?: "",
-                        onSuccess = {
-                            println("Documento eliminado correctamente.")
-                        },
-                        onFailure = { exception ->
-                            println("Error al eliminar documento: ${exception.message}")
-                        })
+                    firestoreController.eliminarDocumento(
+                        collectionPath = "usuarios",
+                        documentId = uid,
+                        onSuccess = {},
+                        onFailure = { exception -> println("Error al eliminar documento: ${exception.message}") })
                     Log.d(TAG, "AuthController:EliminarCuetna -> Usuario eliminado!!!.")
                 }
             }
@@ -114,24 +116,18 @@ class AuthController : ViewModel() {
     }
 
     fun actualizarNombreUsuario(newName: String) {
-        val uid = obtenerUidUsuario() ?: return // Obtener el UID del usuario actual
-        val usuarioActual = _usuario.value // Obtener el objeto Usuario actual
+        val uid = obtenerUidUsuario() ?: return
+        val usuarioActual = _usuario.value
 
-        // Verificar si el objeto Usuario existe
         if (usuarioActual != null) {
-            // Actualizar el nombre en el objeto Usuario
             usuarioActual.nombre = newName
-            _usuario.value = usuarioActual // Notificar a los observadores del cambio
+            _usuario.value = usuarioActual
 
-            // Actualizar el nombre en Firestore
-            firestoreController.actualizarNombreUsuario(uid, newName,
-                onSuccess = {
-                    println("Nombre actualizado correctamente en Firestore.")
-                },
-                onFailure = { exception ->
-                    println("Error al actualizar el nombre en Firestore: ${exception.message}")
-                }
-            )
+            firestoreController.actualizarNombreUsuario(uid, newName, onSuccess = {
+                println("Nombre actualizado correctamente en Firestore.")
+            }, onFailure = { exception ->
+                println("Error al actualizar el nombre en Firestore: ${exception.message}")
+            })
         } else {
             println("No se encontró el usuario para actualizar el nombre.")
         }

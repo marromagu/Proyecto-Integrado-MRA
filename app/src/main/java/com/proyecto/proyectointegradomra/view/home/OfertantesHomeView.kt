@@ -1,11 +1,10 @@
-package com.proyecto.proyectointegradomra.view.favorites
+package com.proyecto.proyectointegradomra.view.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +16,8 @@ import com.proyecto.proyectointegradomra.view.BottomNavigationBar
 import com.proyecto.proyectointegradomra.view.Logo
 
 @Composable
-fun FavoritesView(
+fun OfertanteHomeView(
+    authController: AuthController = viewModel(),
     navTo: NavHostController
 ) {
     Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->
@@ -29,7 +29,7 @@ fun FavoritesView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Logo()
-            Text(text = "Favoritos")
+
         }
     }
 }

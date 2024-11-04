@@ -16,8 +16,7 @@ import com.proyecto.proyectointegradomra.view.BottomNavigationBar
 import com.proyecto.proyectointegradomra.view.Logo
 
 @Composable
-fun HomeView(
-    homeController: HomeController = viewModel(),
+fun DemandanteHomeView(
     authController: AuthController = viewModel(),
     navTo: NavHostController
 ) {
