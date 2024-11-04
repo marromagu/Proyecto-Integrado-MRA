@@ -9,12 +9,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.proyecto.proyectointegradomra.view.login.LogInView
-import com.proyecto.proyectointegradomra.view.singUp.SingUpView
 import com.proyecto.proyectointegradomra.view.home.HomeView
 import com.proyecto.proyectointegradomra.view.start.StartScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.proyecto.proyectointegradomra.view.favorites.FavoritesView
 import com.proyecto.proyectointegradomra.view.profile.ProfileView
+import com.proyecto.proyectointegradomra.view.signUp.SingUpView
 
 @Composable
 fun NavigationManager(navController: NavHostController) {
@@ -23,17 +23,17 @@ fun NavigationManager(navController: NavHostController) {
     val currentUser by remember { derivedStateOf { auth.currentUser } }
 
     LaunchedEffect(currentUser) {
-        if (currentUser != null) {
-            if (navController.currentDestination?.route != Screens.HomeScreen.ruta) {
-                navController.navigate(Screens.HomeScreen.ruta) {
-                    popUpTo(Screens.StartScreen.ruta) { inclusive = true }
+        when (currentUser) {
+            null -> {
+                navController.navigate(Screens.StartScreen.ruta) {
+                    popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
                     launchSingleTop = true
                 }
             }
-        } else {
-            if (navController.currentDestination?.route != Screens.StartScreen.ruta) {
-                navController.navigate(Screens.StartScreen.ruta) {
-                    popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
+
+            else -> {
+                navController.navigate(Screens.HomeScreen.ruta) {
+                    popUpTo(Screens.StartScreen.ruta) { inclusive = true }
                     launchSingleTop = true
                 }
             }
@@ -42,14 +42,16 @@ fun NavigationManager(navController: NavHostController) {
 
     NavHost(navController = navController, startDestination = Screens.StartScreen.ruta) {
         composable(route = Screens.StartScreen.ruta) {
-            StartScreen(navToSignUp = { navController.navigate(Screens.SignUpScreen.ruta) },
-                navToLogIn = { navController.navigate(Screens.LogInScreen.ruta) })
+            StartScreen(
+                navToSignUp = { navController.navigate(Screens.SignUpScreen.ruta) },
+                navToLogIn = { navController.navigate(Screens.LogInScreen.ruta) }
+            )
         }
         composable(route = Screens.SignUpScreen.ruta) {
-            SingUpView(navToHome = navController)
+            SingUpView(navToHome = { navController.navigate(Screens.HomeScreen.ruta) })
         }
         composable(route = Screens.LogInScreen.ruta) {
-            LogInView(navToHome = navController)
+            LogInView(navToHome = { navController.navigate(Screens.HomeScreen.ruta) })
         }
         composable(route = Screens.HomeScreen.ruta) {
             HomeView(navTo = navController)
@@ -62,3 +64,4 @@ fun NavigationManager(navController: NavHostController) {
         }
     }
 }
+

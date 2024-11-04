@@ -1,4 +1,4 @@
-package com.proyecto.proyectointegradomra.view.singUp
+package com.proyecto.proyectointegradomra.view.signUp
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,7 +23,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.authentication.AuthController
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
@@ -35,9 +34,9 @@ import com.proyecto.proyectointegradomra.view.Logo
 
 @Composable
 fun SingUpView(
-    singUpController: SingUpController = viewModel(),
+    singUpController: SignUpController = viewModel(),
     authController: AuthController = viewModel(),
-    navToHome: NavHostController
+    navToHome: () -> Unit
 ) {
     val nombre by singUpController.nombre.observeAsState("")
     val correo by singUpController.correo.observeAsState("")
@@ -126,7 +125,7 @@ fun SingUpView(
                     errorMessage = "Las contraseñas no coinciden"
                 } else {
                     authController.registrarse(correo, contrasena, nombre, isChecked, onSuccess = {
-                        navToHome.navigate("HomeView")
+                        navToHome
                     }, onError = { error -> errorMessage = error })
                 }
             })

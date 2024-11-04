@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.authentication.AuthController
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.view.StandardField
@@ -33,7 +32,7 @@ import com.proyecto.proyectointegradomra.view.Logo
 fun LogInView(
     logInController: LogInController = viewModel(),
     authController: AuthController = viewModel(),
-    navToHome: NavHostController
+    navToHome: () -> Unit
 ) {
     val correo by logInController.nombre.observeAsState("")
     val contrasena by logInController.contrasena.observeAsState("")
@@ -78,7 +77,7 @@ fun LogInView(
                     errorMessage = "Por favor, complete todos los campos"
                 } else {
                     authController.iniciarSesion(correo, contrasena, onSuccess = {
-                        navToHome.navigate("HomeView")
+                        navToHome
                     }, onError = { error -> errorMessage = error })
                 }
             }

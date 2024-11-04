@@ -11,14 +11,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -35,10 +41,14 @@ fun ProfileView(
     authController: AuthController = viewModel(),
     navTo: NavHostController,
 ) {
-    val nombreUsuario by authController.nombreUsuario.observeAsState()
+    val nombreUsuario by authController.usuario.observeAsState()
+    var showDialog by remember { mutableStateOf(false) }
+    var newName by remember { mutableStateOf("") }
+
     LaunchedEffect(Unit) {
-        authController.obtenerNombreUsuario()
+        authController.cargarUsuario()
     }
+
     Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -48,13 +58,49 @@ fun ProfileView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = nombreUsuario ?: "Nombre de usuario no encontrado")
+                Text(text = nombreUsuario?.nombre ?: "Nombre no disponible") // Manejo de caso nulo
                 Spacer(modifier = Modifier.width(8.dp))
-                IconButton(onClick = { /* Abrir diálogo o pantalla para editar el nombre */ }) {
+                IconButton(onClick = { showDialog = true }) {
                     Icon(imageVector = Icons.Filled.Edit, contentDescription = "Editar nombre")
                 }
                 FotoPerfil()
             }
+
+            // Dialogo para editar el nombre
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDialog = false },
+                    title = { Text("Editar nombre") },
+                    text = {
+                        OutlinedTextField(
+                            value = newName,
+                            onValueChange = { newName = it },
+                            label = { Text("Nuevo nombre") }
+                        )
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                if (newName.isNotBlank()) {
+                                    authController.actualizarNombreUsuario(newName) // Llama a la función para actualizar el nombre
+                                    newName = "" // Resetea el campo
+                                    showDialog = false
+                                }
+                            }
+                        ) {
+                            Text("Guardar")
+                        }
+                    },
+                    dismissButton = {
+                        Button(
+                            onClick = { showDialog = false }
+                        ) {
+                            Text("Cancelar")
+                        }
+                    }
+                )
+            }
+
             Spacer(modifier = Modifier.weight(1f))
             Column(
                 modifier = Modifier.padding(90.dp, 5.dp),

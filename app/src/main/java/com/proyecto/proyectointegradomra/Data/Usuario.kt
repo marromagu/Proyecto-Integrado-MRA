@@ -1,7 +1,13 @@
 package com.proyecto.proyectointegradomra.Data
 
 data class Usuario(
-    val nombre: String = "",
+    val uid: String = "",
+    var nombre: String = "",
     val correo: String = "",
-    val tipo: String = ""  // "Ofertante" o "Demandante"
+    val tipo: TipoUsuario = TipoUsuario.OTRO  // "Ofertante" o "Demandante"
 )
+enum class TipoUsuario {
+    OFERTANTE,
+    DEMANDANTE,
+    OTRO
+}
