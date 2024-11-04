@@ -18,6 +18,7 @@ import com.proyecto.proyectointegradomra.view.Logo
 
 @Composable
 fun FavoritesView(
+    authController: AuthController = viewModel(),
     navTo: NavHostController
 ) {
     Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->

@@ -16,7 +16,7 @@ class AuthController : ViewModel() {
     private val firestoreController = FirestoreController()
 
     private val _user = MutableLiveData<FirebaseUser?>(firebaseAuth.currentUser)
-    //val user: LiveData<FirebaseUser?> = _user
+    val user: LiveData<FirebaseUser?> = _user
 
     private val _usuario = MutableLiveData<Usuario?>()
     val usuario: LiveData<Usuario?> = _usuario
@@ -96,10 +96,9 @@ class AuthController : ViewModel() {
     }
 
     fun eliminarCuenta() {
-        val user = firebaseAuth.currentUser!!
-        val uid = obtenerUidUsuario()
+        val uid = usuario.value?.uid ?: ""
         if (uid != null) {
-            user.delete().addOnCompleteListener { task ->
+            user.value?.delete()?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     firestoreController.eliminarDocumento(
                         collectionPath = "usuarios",

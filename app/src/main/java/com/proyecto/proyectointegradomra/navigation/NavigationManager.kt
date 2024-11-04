@@ -29,37 +29,44 @@ fun NavigationManager(
     val currentUser by remember { derivedStateOf { auth.currentUser } }
     val usuario by authController.usuario.observeAsState()
 
+    // Cargar usuario si el usuario actual no es nulo
     if (currentUser != null) {
         LaunchedEffect(currentUser) {
             authController.cargarUsuario()
         }
     }
 
+    // Observa el usuario y navega dependiendo de su tipo
     LaunchedEffect(usuario) {
-        when {
-            usuario == null -> {
-                navController.navigate(Screens.StartScreen.ruta) {
-                    popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
-                    launchSingleTop = true
+        usuario?.let {
+            when (it.tipo) {
+                TipoUsuario.OFERTANTE -> {
+                    navController.navigate(Screens.OfertantesHomeScreen.ruta) {
+                        popUpTo(Screens.StartScreen.ruta) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+
+                TipoUsuario.DEMANDANTE -> {
+                    navController.navigate(Screens.DemandantesHomeScreen.ruta) {
+                        popUpTo(Screens.StartScreen.ruta) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+
+                else -> {
+                    // Si no es un tipo de usuario válido, redirige al StartScreen
+                    navController.navigate(Screens.StartScreen.ruta) {
+                        popUpTo(Screens.StartScreen.ruta) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             }
-
-            usuario?.tipo == TipoUsuario.OFERTANTE -> {
-                navController.navigate(Screens.OfertantesHomeScreen.ruta) {
-                    popUpTo(Screens.StartScreen.ruta) { inclusive = true }
-                    launchSingleTop = true
-                }
-            }
-
-            usuario?.tipo == TipoUsuario.DEMANDANTE -> {
-                navController.navigate(Screens.DemandantesHomeScreen.ruta) {
-                    popUpTo(Screens.StartScreen.ruta) { inclusive = true }
-                    launchSingleTop = true
-                }
-            }
-
-            else -> {
-                // navController.navigate(Screens.ErrorScreen.ruta)
+        } ?: run {
+            // Si el usuario es nulo, redirige al StartScreen
+            navController.navigate(Screens.StartScreen.ruta) {
+                popUpTo(Screens.StartScreen.ruta) { inclusive = true }
+                launchSingleTop = true
             }
         }
     }
@@ -71,6 +78,7 @@ fun NavigationManager(
         }
         composable(route = Screens.SignUpScreen.ruta) {
             SingUpView(navToHome = {
+                // Mueve la lógica aquí
                 when (usuario?.tipo) {
                     TipoUsuario.DEMANDANTE -> navController.navigate(Screens.DemandantesHomeScreen.ruta)
                     TipoUsuario.OFERTANTE -> navController.navigate(Screens.OfertantesHomeScreen.ruta)
@@ -81,6 +89,7 @@ fun NavigationManager(
         }
         composable(route = Screens.LogInScreen.ruta) {
             LogInView(navToHome = {
+                // Mueve la lógica aquí
                 when (usuario?.tipo) {
                     TipoUsuario.DEMANDANTE -> navController.navigate(Screens.DemandantesHomeScreen.ruta)
                     TipoUsuario.OFERTANTE -> navController.navigate(Screens.OfertantesHomeScreen.ruta)

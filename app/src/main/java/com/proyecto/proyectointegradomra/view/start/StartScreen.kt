@@ -8,13 +8,12 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.view.Logo
 import com.proyecto.proyectointegradomra.view.StandardButton
 
 
-@Preview()
+
 @Composable
 fun StartScreen(
     navToSignUp: () -> Unit = {},

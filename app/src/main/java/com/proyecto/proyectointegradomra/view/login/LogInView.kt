@@ -77,7 +77,7 @@ fun LogInView(
                     errorMessage = "Por favor, complete todos los campos"
                 } else {
                     authController.iniciarSesion(correo, contrasena, onSuccess = {
-                        navToHome
+                        navToHome()
                     }, onError = { error -> errorMessage = error })
                 }
             }

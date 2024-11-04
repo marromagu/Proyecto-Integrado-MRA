@@ -125,7 +125,7 @@ fun SingUpView(
                     errorMessage = "Las contraseñas no coinciden"
                 } else {
                     authController.registrarse(correo, contrasena, nombre, isChecked, onSuccess = {
-                        navToHome
+                        navToHome()
                     }, onError = { error -> errorMessage = error })
                 }
             })
