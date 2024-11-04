@@ -51,7 +51,6 @@ class AuthController : ViewModel() {
         )
     }
 
-
     private fun obtenerUidUsuario(): String? {
         return firebaseAuth.currentUser?.uid
     }
@@ -97,22 +96,29 @@ class AuthController : ViewModel() {
 
     fun eliminarCuenta() {
         val uid = usuario.value?.uid ?: ""
-        if (uid != null) {
+        if (uid.isNotEmpty()) {
             user.value?.delete()?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     firestoreController.eliminarDocumento(
                         collectionPath = "usuarios",
                         documentId = uid,
-                        onSuccess = {},
-                        onFailure = { exception -> println("Error al eliminar documento: ${exception.message}") })
-                    Log.d(TAG, "AuthController:EliminarCuetna -> Usuario eliminado!!!.")
+                        onSuccess = {
+                            Log.d(TAG, "Usuario eliminado de Firestore.")
+                        },
+                        onFailure = { exception ->
+                            Log.e(TAG, "Error al eliminar documento: ${exception.message}")
+                        }
+                    )
+                    Log.d(TAG, "AuthController:EliminarCuenta -> Usuario eliminado!!!.")
+                } else {
+                    Log.e(TAG, "Error al eliminar cuenta del usuario: ${task.exception?.message}")
                 }
             }
         } else {
-            Log.d(TAG, "AuthController:EliminarCuetna -> ERROR: Usuario no autenticado.")
+            Log.d(TAG, "AuthController:EliminarCuenta -> ERROR: Usuario no autenticado.")
         }
-
     }
+
 
     fun actualizarNombreUsuario(newName: String) {
         val uid = obtenerUidUsuario() ?: return

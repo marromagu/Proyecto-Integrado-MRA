@@ -106,6 +106,12 @@ fun ProfileView(
                 modifier = Modifier.padding(90.dp, 5.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+                Text(text = "Nombre: ${nombreUsuario?.nombre ?: "Nombre no disponible"}") // Manejo de caso nulo
+                Text(text = "UID: ${nombreUsuario?.uid ?: "UID no disponible"}") // Manejo de caso nulo
+                Text(text = "Correo: ${nombreUsuario?.correo ?: "Correo no disponible"}") // Manejo de caso nulo
+                Text(text = "Tipo: ${nombreUsuario?.tipo?.name ?: "Tipo no disponible"}") // Manejo de caso nulo
+                Spacer(modifier = Modifier.weight(1f))
                 StandardButton(
                     text = "Cerrar Sesión",
                     icon = Icons.AutoMirrored.Filled.ExitToApp,

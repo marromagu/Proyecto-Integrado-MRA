@@ -30,10 +30,18 @@ class FirestoreController {
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        db.collection(collectionPath).document(documentId).delete()
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { exception -> onFailure(exception) }
+        val documentRef =
+            FirebaseFirestore.getInstance().collection(collectionPath).document(documentId)
+
+        documentRef.delete()
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
     }
+
 
     fun agregarDocumentoUsuario(usuario: Usuario) {
         val firestoreController = FirestoreController()
@@ -53,31 +61,26 @@ class FirestoreController {
     }
 
     fun obtenerUsuarioPorUid(
-        uid: String, onSuccess: (Usuario) -> Unit, onFailure: (Exception) -> Unit
+        uid: String,
+        onSuccess: (Usuario) -> Unit,
+        onFailure: (Exception) -> Unit
     ) {
-        db.collection("usuarios").document(uid).get()
+        val documentRef = FirebaseFirestore.getInstance().collection("usuarios").document(uid)
+
+        documentRef.get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    try {
-                        val usuario = document.toObject(Usuario::class.java)
-                        if (usuario != null) {
-                            onSuccess(usuario)
-                        } else {
-                            onFailure(Exception("Error al convertir documento a Usuario"))
-                        }
-                    } catch (e: Exception) {
-                        Log.e(
-                            "FirestoreController",
-                            "Error al mapear el documento a Usuario: ${e.message}"
-                        )
-                        onFailure(Exception("Error al mapear el documento a Usuario"))
+                    val usuario = document.toObject(Usuario::class.java)
+                    if (usuario != null) {
+                        onSuccess(usuario)
+                    } else {
+                        onFailure(Exception("No se pudo convertir el documento a Usuario"))
                     }
                 } else {
-                    onFailure(Exception("Usuario no encontrado en Firestore"))
+                    onFailure(Exception("El documento no existe"))
                 }
             }
             .addOnFailureListener { exception ->
-                Log.e("FirestoreController", "Error al obtener documento: ${exception.message}")
                 onFailure(exception)
             }
     }
