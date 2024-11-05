@@ -1,25 +1,27 @@
 [versions]
 agp = "8.6.1"
 kotlin = "1.9.0"
-coreKtx = "1.13.1"
+coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.6"
+lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
-composeBom = "2024.10.00"
+composeBom = "2024.10.01"
 #LiveData
-runtimeLivedata = "1.7.4"
+runtimeLivedata = "1.7.5"
 #Navigation
 navigationCompose = "2.8.3"
 #Iconos
-materialIconsExtended = "1.7.4"
+materialIconsExtended = "1.7.5"
 #FireBase Bom
 firebaseBom = "33.5.1"
 ##Services
 services = "4.4.2"
 ##Crashlytics
 crashlytics = "3.0.2"
+#Coroutines
+kotlinx-coroutines = "1.7.3"
 
 [libraries]
 #LiveData
@@ -36,6 +38,9 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-auth = {module = "com.google.firebase:firebase-auth-ktx" }
 #FireStore Database
 firebase-firestore = {module = "com.google.firebase:firebase-firestore"}
+#Coroutines
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

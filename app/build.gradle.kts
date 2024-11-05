@@ -28,8 +28,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -59,7 +58,7 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     //Navigate
     implementation(libs.androidx.navigation.compose)
-    //Para los iconos
+    //Para los icons
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.espresso.core)
     //Firebase
@@ -70,6 +69,9 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     //FireStore
     implementation(libs.firebase.firestore)
+    //Coroutines
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
