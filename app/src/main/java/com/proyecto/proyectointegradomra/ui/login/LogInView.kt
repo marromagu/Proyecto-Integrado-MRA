@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.proyecto.proyectointegradomra.firebase.services.AuthService
+import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.StandardField
 import com.proyecto.proyectointegradomra.ui.common.StandardButton
@@ -31,11 +31,11 @@ import com.proyecto.proyectointegradomra.ui.common.Logo
 @Composable
 fun LogInView(
     logInController: LogInViewModel = viewModel(),
-    authController: AuthService = viewModel(),
+    dataRepository: DataRepository,
     navToHome: () -> Unit
 ) {
-    val correo by logInController.nombre.observeAsState("")
-    val contrasena by logInController.contrasena.observeAsState("")
+    val email by logInController.name.observeAsState("")
+    val password by logInController.password.observeAsState("")
 
     var errorMessage by remember { mutableStateOf("") }
     Column(
@@ -51,14 +51,14 @@ fun LogInView(
 
         StandardField(
             label = "Correo Electrónico",
-            value = correo,
+            value = email,
             icon = Icons.Filled.Email,
-            onValueChange = { logInController.updateNombre(it) }
+            onValueChange = { logInController.updateName(it) }
         )
         StandardField(
             label = "Contraseña",
-            value = contrasena,
-            onValueChange = { logInController.updateContrasena(it) },
+            value = password,
+            onValueChange = { logInController.updatePassword(it) },
             isPassword = true
         )
 
@@ -73,12 +73,14 @@ fun LogInView(
             text = "Iniciar Sesión",
             icon = Icons.Filled.AccountCircle,
             onClick = {
-                if (correo.isEmpty() || contrasena.isEmpty()) {
+                if (email.isEmpty() || password.isEmpty()) {
                     errorMessage = "Por favor, complete todos los campos"
                 } else {
-                   /* authController.iniciarSesion(correo, contrasena, onSuccess = {
+                    dataRepository.iniciarSesion(email, password, onSuccess = {
                         navToHome()
-                    }, onError = { error -> errorMessage = error })*/
+                    }, onError = {
+                        errorMessage = "Error al iniciar sesión"
+                    })
                 }
             }
         )

@@ -5,18 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class LogInViewModel : ViewModel() {
-    fun updateNombre(it: String) {
-        _nombre.value = it
+    fun updateName(it: String) {
+        _name.value = it
     }
 
-    fun updateContrasena(it: String) {
-        _contrasena.value = it
+    fun updatePassword(it: String) {
+        _password.value = it
     }
 
-    private val _nombre = MutableLiveData<String>()
-    val nombre: LiveData<String> = _nombre
+    private val _name = MutableLiveData<String>()
+    val name: LiveData<String> = _name
 
-    private val _contrasena = MutableLiveData<String>()
-    val contrasena: LiveData<String> = _contrasena
+    private val _password = MutableLiveData<String>()
+    val password: LiveData<String> = _password
 
 }

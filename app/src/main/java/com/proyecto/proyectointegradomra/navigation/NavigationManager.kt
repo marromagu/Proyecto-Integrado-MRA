@@ -30,7 +30,7 @@ fun NavigationManager(navController: NavHostController, dataRepository: DataRepo
     // Navegación en función del tipo de usuario
     LaunchedEffect(usuario) {
         usuario?.let {
-            when (it.tipo) {
+            when (it.type) {
                 TipoUsuario.OFERTANTE -> {
                     navController.navigate(Screens.OfertantesHomeScreen.ruta) {
                         popUpTo(Screens.StartScreen.ruta) { inclusive = true }
@@ -40,13 +40,6 @@ fun NavigationManager(navController: NavHostController, dataRepository: DataRepo
 
                 TipoUsuario.DEMANDANTE -> {
                     navController.navigate(Screens.DemandantesHomeScreen.ruta) {
-                        popUpTo(Screens.StartScreen.ruta) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-
-                else -> {
-                    navController.navigate(Screens.StartScreen.ruta) {
                         popUpTo(Screens.StartScreen.ruta) { inclusive = true }
                         launchSingleTop = true
                     }
@@ -67,35 +60,33 @@ fun NavigationManager(navController: NavHostController, dataRepository: DataRepo
         }
         composable(route = Screens.SignUpScreen.ruta) {
             SingUpView(navToHome = {
-                when (usuario?.tipo) {
+                when (usuario?.type) {
                     TipoUsuario.DEMANDANTE -> navController.navigate(Screens.DemandantesHomeScreen.ruta)
                     TipoUsuario.OFERTANTE -> navController.navigate(Screens.OfertantesHomeScreen.ruta)
                     null -> navController.navigate(Screens.StartScreen.ruta)
-                    TipoUsuario.OTRO -> TODO()
                 }
-            })
+            }, dataRepository = dataRepository)
         }
         composable(route = Screens.LogInScreen.ruta) {
             LogInView(navToHome = {
-                when (usuario?.tipo) {
+                when (usuario?.type) {
                     TipoUsuario.DEMANDANTE -> navController.navigate(Screens.DemandantesHomeScreen.ruta)
                     TipoUsuario.OFERTANTE -> navController.navigate(Screens.OfertantesHomeScreen.ruta)
                     null -> navController.navigate(Screens.StartScreen.ruta)
-                    TipoUsuario.OTRO -> TODO()
                 }
-            })
+            }, dataRepository = dataRepository)
         }
         composable(route = Screens.OfertantesHomeScreen.ruta) {
-            OfertanteHomeView(navTo = navController)
+            OfertanteHomeView(navTo = navController, dataRepository = dataRepository)
         }
         composable(route = Screens.DemandantesHomeScreen.ruta) {
-            DemandanteHomeView(navTo = navController)
+            DemandanteHomeView(navTo = navController, dataRepository = dataRepository)
         }
         composable(route = Screens.ProfileScreen.ruta) {
-            ProfileView(navTo = navController)
+            ProfileView(navTo = navController, dataRepository = dataRepository)
         }
         composable(route = Screens.FavoritesScreen.ruta) {
-            FavoritesView(navTo = navController)
+            FavoritesView(navTo = navController, dataRepository = dataRepository)
         }
     }
 }

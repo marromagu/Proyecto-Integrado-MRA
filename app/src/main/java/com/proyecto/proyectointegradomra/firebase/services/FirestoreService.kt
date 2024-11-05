@@ -22,18 +22,21 @@ class FirestoreService {
      * @param documentId ID del documento (operador de llamada segura).
      * @param data Datos a almacenar en el documento.
      */
-    private fun agregarDocumentoFirestore(collectionPath: String, documentId: String?, data: Map<String, Any>) {
+    private fun agregarDocumentoFirestore(
+        collectionPath: String,
+        documentId: String?,
+        data: Map<String, Any>
+    ) {
         // Obtiene referencia a la colección y documento, luego almacena los datos.
         miCloudFirestore
             .collection(collectionPath)
             .document(documentId ?: miCloudFirestore.collection(collectionPath).document().id)
             .set(data)
             .addOnSuccessListener {
-                // Se puede agregar un log o manejar la confirmación de éxito aquí.
+                Log.i("FirestoreController", "Documento agregado con ID: $documentId")
             }
             .addOnFailureListener { exception ->
                 // Manejo de error en caso de fallo al agregar el documento.
-                // Se recomienda loggear el error para una mejor depuración.
                 Log.e("FirestoreController", "Error al agregar documento: $exception")
             }
     }
@@ -47,19 +50,19 @@ class FirestoreService {
     fun eliminarDocumentoFirestore(collectionPath: String, documentId: String) {
         // Verifica que el documentId no sea nulo o vacío antes de proceder con la eliminación.
         if (documentId.isBlank()) {
-            // Log.e("FirestoreController", "ID de documento inválido para eliminar.")
-            return // O maneja el error de otra forma.
+            Log.e("FirestoreController", "ID de documento inválido para eliminar.")
+            return
         }
 
         val documentRef = miCloudFirestore.collection(collectionPath).document(documentId)
 
         documentRef.delete()
             .addOnSuccessListener {
-                // Se puede agregar un log o manejar la confirmación de éxito aquí.
+                Log.i("FirestoreController", "Documento eliminado con ID: $documentId")
             }
             .addOnFailureListener { exception ->
                 // Manejo de error en caso de fallo al eliminar el documento.
-                 Log.e("FirestoreController", "Error al eliminar documento: $exception")
+                Log.e("FirestoreController", "Error al eliminar documento: $exception")
             }
     }
 
@@ -70,11 +73,15 @@ class FirestoreService {
      */
     fun agregarDocumentoUsuarioFirestore(miUsuario: Usuario) {
         val userMapOf = mapOf(
-            "nombre" to miUsuario.nombre,
+            "name" to miUsuario.name,
             "email" to miUsuario.email,
-            "tipo" to miUsuario.tipo.name
+            "type" to miUsuario.type.name
         )
-        this.agregarDocumentoFirestore(collectionPath = "usuarios", documentId = miUsuario.uid, data = userMapOf)
+        this.agregarDocumentoFirestore(
+            collectionPath = "usuarios",
+            documentId = miUsuario.uid,
+            data = userMapOf
+        )
     }
 
     /**
@@ -92,12 +99,12 @@ class FirestoreService {
             if (document.exists()) {
                 document.toObject(Usuario::class.java)
             } else {
-                // Log.i("FirestoreController", "No se encontró el documento con UID: $uid")
+                Log.i("FirestoreController", "No se encontró el documento con UID: $uid")
                 null
             }
         } catch (exception: Exception) {
             // Manejo de excepciones, loggear el error para la depuración.
-             Log.e("FirestoreController", "Error al obtener usuario por UID: $exception")
+            Log.e("FirestoreController", "Error al obtener usuario por UID: $exception")
             null
         }
     }
@@ -110,19 +117,20 @@ class FirestoreService {
      */
     fun actualizarNombreUsuarioFirestore(uid: String, newName: String) {
         if (uid.isBlank()) {
-             Log.e("FirestoreController", "UID inválido para la actualización del nombre.")
-            return // O maneja el error de otra forma.
+            Log.e("FirestoreController", "UID inválido para la actualización del nombre.")
+            return
         }
 
         val userRef = miCloudFirestore.collection("usuarios").document(uid)
 
         userRef.update("nombre", newName)
             .addOnSuccessListener {
-                // Se puede agregar un log o manejar la confirmación de éxito aquí.
+                Log.i("FirestoreController", "Nombre de usuario actualizado con éxito.")
             }
             .addOnFailureListener { exception ->
                 // Manejo de error en caso de fallo al actualizar el nombre.
-                 Log.e("FirestoreController", "Error al actualizar nombre de usuario: $exception")
+                Log.e("FirestoreController", "Error al actualizar nombre de usuario: $exception")
             }
     }
 }
+

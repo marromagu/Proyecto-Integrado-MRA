@@ -23,7 +23,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.proyecto.proyectointegradomra.firebase.services.AuthService
+import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
 import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
@@ -35,14 +35,14 @@ import com.proyecto.proyectointegradomra.ui.common.Logo
 @Composable
 fun SingUpView(
     singUpController: SignUpViewModel = viewModel(),
-    authController: AuthService = viewModel(),
+    dataRepository: DataRepository,
     navToHome: () -> Unit
 ) {
-    val nombre by singUpController.nombre.observeAsState("")
-    val correo by singUpController.correo.observeAsState("")
-    val contrasena by singUpController.contrasena.observeAsState("")
-    val repetirContrasena by singUpController.repetirContrasena.observeAsState("")
-    val isChecked by singUpController.esOfertante.observeAsState(false)
+    val name by singUpController.name.observeAsState("")
+    val email by singUpController.email.observeAsState("")
+    val password by singUpController.password.observeAsState("")
+    val repeatPassword by singUpController.repeatPassword.observeAsState("")
+    val esOfertante by singUpController.esOfertante.observeAsState(false)
     var errorMessage by remember { mutableStateOf("") }
 
     LazyColumn(
@@ -56,32 +56,32 @@ fun SingUpView(
         item { Spacer(modifier = Modifier.height(24.dp)) }
         item {
             StandardField(label = "Nombre de usuario",
-                value = nombre,
+                value = name,
                 icon = Icons.Filled.AccountBox,
-                onValueChange = { singUpController.updateNombre(it) })
+                onValueChange = { singUpController.updateName(it) })
         }
         item {
             StandardField(
                 label = "Correo electrónico",
-                value = correo,
+                value = email,
                 icon = Icons.Filled.Email,
-                onValueChange = { singUpController.updateCorreo(it) },
+                onValueChange = { singUpController.updateEmail(it) },
                 keyboardType = KeyboardType.Email
             )
         }
         item {
             StandardField(
                 label = "Contraseña",
-                value = contrasena,
-                onValueChange = { singUpController.updateContrasena(it) },
+                value = password,
+                onValueChange = { singUpController.updatePassword(it) },
                 isPassword = true
             )
         }
         item {
             StandardField(
                 label = "Repita contraseña",
-                value = repetirContrasena,
-                onValueChange = { singUpController.updateRepetirContrasena(it) },
+                value = repeatPassword,
+                onValueChange = { singUpController.updateRepeatPassword(it) },
                 isPassword = true
             )
         }
@@ -89,7 +89,7 @@ fun SingUpView(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Checkbox(checked = isChecked,
+                Checkbox(checked = esOfertante,
                     onCheckedChange = { singUpController.updateEsOfertante(it) },
                     modifier = Modifier.size(32.dp),
                     enabled = true,
@@ -121,12 +121,14 @@ fun SingUpView(
         }
         item {
             StandardButton(text = "Registrarse", icon = Icons.Filled.AccountBox, onClick = {
-                if ((contrasena != repetirContrasena) || (contrasena.isEmpty())) {
+                if ((password != repeatPassword) || (password.isEmpty())) {
                     errorMessage = "Las contraseñas no coinciden"
                 } else {
-//                    authController.registrarse(correo, contrasena, nombre, isChecked, onSuccess = {
-//                        navToHome()
-//                    }, onError = { error -> errorMessage = error })
+                    dataRepository.registrarse(email, password, name, esOfertante, onSuccess = {
+                        navToHome()
+                    }, onError = {
+                        errorMessage = "Error al registrarse"
+                    })
                 }
             })
         }

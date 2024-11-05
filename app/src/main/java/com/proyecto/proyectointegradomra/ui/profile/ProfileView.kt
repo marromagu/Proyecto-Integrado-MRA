@@ -28,9 +28,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.proyecto.proyectointegradomra.firebase.services.AuthService
+import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.BottomNavigationBar
 import com.proyecto.proyectointegradomra.ui.common.FotoPerfil
@@ -38,15 +37,15 @@ import com.proyecto.proyectointegradomra.ui.common.StandardButton
 
 @Composable
 fun ProfileView(
-    authController: AuthService = viewModel(),
+    dataRepository: DataRepository,
     navTo: NavHostController,
 ) {
-    val miUsuario by authController.usuario.observeAsState()
+    val miUsuario by dataRepository.usuario.observeAsState()
     var showDialog by remember { mutableStateOf(false) }
     var newName by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        authController.cargarUsuario()
+        dataRepository.cargarUsuario()
     }
 
     Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->
@@ -58,7 +57,7 @@ fun ProfileView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = miUsuario?.nombre ?: "Nombre no disponible") // Manejo de caso nulo
+                Text(text = miUsuario?.name ?: "Nombre no disponible")
                 Spacer(modifier = Modifier.width(8.dp))
                 IconButton(onClick = { showDialog = true }) {
                     Icon(imageVector = Icons.Filled.Edit, contentDescription = "Editar nombre")
@@ -82,8 +81,8 @@ fun ProfileView(
                         Button(
                             onClick = {
                                 if (newName.isNotBlank()) {
-                                    authController.actualizarNombreUsuario(newName) // Llama a la función para actualizar el nombre
-                                    newName = "" // Resetea el campo
+                                    dataRepository.actualizarNombreUsuario(newName)
+                                    newName = ""
                                     showDialog = false
                                 }
                             }
@@ -107,24 +106,25 @@ fun ProfileView(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Text(text = "Nombre: ${miUsuario?.nombre ?: "Nombre no disponible"}") // Manejo de caso nulo
+                Text(text = "Nombre: ${miUsuario?.name ?: "Nombre no disponible"}") // Manejo de caso nulo
                 Text(text = "UID: ${miUsuario?.uid ?: "UID no disponible"}") // Manejo de caso nulo
                 Text(text = "Correo: ${miUsuario?.email ?: "Correo no disponible"}") // Manejo de caso nulo
-                Text(text = "Tipo: ${miUsuario?.tipo?.name ?: "Tipo no disponible"}") // Manejo de caso nulo
+                Text(text = "Tipo: ${miUsuario?.type?.name ?: "Tipo no disponible"}") // Manejo de caso nulo
+
                 Spacer(modifier = Modifier.weight(1f))
                 StandardButton(
                     text = "Cerrar Sesión",
                     icon = Icons.AutoMirrored.Filled.ExitToApp,
                     onClick = {
-                        authController.cerrarSesion()
-                        navTo.navigate("StartScreen")
+                        dataRepository.cerrarSesion()
+                        navTo.navigate("StartView")
                     })
                 StandardButton(
                     text = "Borrar Cuenta",
                     icon = Icons.Filled.DeleteForever,
                     onClick = {
-                        authController.eliminarCuenta()
-                        navTo.navigate("StartScreen")
+                        dataRepository.eliminarCuenta()
+                        navTo.navigate("StartView")
                     })
             }
         }

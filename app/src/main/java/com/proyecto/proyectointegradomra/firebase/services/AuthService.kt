@@ -1,5 +1,6 @@
 package com.proyecto.proyectointegradomra.firebase.services
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
  * Esto permite un manejo eficiente y persistente de datos de autenticación, evitando recreaciones innecesarias. *
  */
 class AuthService : ViewModel() {
-    
+
     // Instancia singleton de autenticación de Firebase
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
@@ -43,7 +44,7 @@ class AuthService : ViewModel() {
                     _userAuthCurrent.value = firebaseAuth.currentUser
                     cargarUsuario() // Cargar datos del usuario desde Firestore
                 } else {
-                    // Manejo de errores de autenticación (recomendable informar al usuario)
+                    // Manejo de errores de autenticación
                     _userAuthCurrent.value = null
                 }
             }
@@ -62,7 +63,7 @@ class AuthService : ViewModel() {
                     val tipoUsuario =
                         if (esOfertante) TipoUsuario.OFERTANTE else TipoUsuario.DEMANDANTE
                     val nuevoUsuario =
-                        Usuario(uid = uid, nombre = name, email = email, tipo = tipoUsuario)
+                        Usuario(uid = uid, name = name, email = email, type = tipoUsuario)
                     firestoreController.agregarDocumentoUsuarioFirestore(nuevoUsuario)
                 } else {
                     // Manejo de errores en el registro
@@ -92,8 +93,9 @@ class AuthService : ViewModel() {
                 firestoreController.eliminarDocumentoFirestore("usuarios", uid)
                 _userAuthCurrent.value = null
                 _usuario.value = null
+            } else {
+                Log.e("AuthService", "Error al eliminar la cuenta: ${task.exception}")
             }
-            // Error handling en caso de falla en la eliminación
         }
     }
 
@@ -105,7 +107,7 @@ class AuthService : ViewModel() {
         val uid = obtenerUidUsuario() ?: return
         val usuarioActual = _usuario.value ?: return
 
-        usuarioActual.nombre = newName // Actualizar el valor en la instancia actual
+        usuarioActual.name = newName // Actualizar el valor en la instancia actual
         _usuario.value = usuarioActual // Reflejar el cambio en la LiveData
 
         firestoreController.actualizarNombreUsuarioFirestore(uid, newName)
