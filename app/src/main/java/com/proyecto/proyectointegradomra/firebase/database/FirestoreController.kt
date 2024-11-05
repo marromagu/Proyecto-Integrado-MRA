@@ -11,7 +11,7 @@ import kotlinx.coroutines.tasks.await
  */
 class FirestoreController {
 
-    // Instancia de FirebaseFirestore para interactuar con Firestore.
+    // Instancia singleton de FirebaseFirestore para interactuar con Firestore.
     private val miCloudFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     /**
@@ -74,7 +74,6 @@ class FirestoreController {
             "email" to miUsuario.email,
             "tipo" to miUsuario.tipo.name
         )
-
         this.agregarDocumentoFirestore(collectionPath = "usuarios", documentId = miUsuario.uid, data = userMapOf)
     }
 

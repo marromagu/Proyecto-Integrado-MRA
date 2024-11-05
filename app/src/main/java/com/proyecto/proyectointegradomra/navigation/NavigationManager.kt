@@ -22,9 +22,7 @@ import com.proyecto.proyectointegradomra.view.profile.ProfileView
 import com.proyecto.proyectointegradomra.view.signUp.SingUpView
 
 @Composable
-fun NavigationManager(
-    navController: NavHostController, authController: AuthController = viewModel()
-) {
+fun NavigationManager(navController: NavHostController, authController: AuthController = viewModel()) {
     val auth = remember { FirebaseAuth.getInstance() }
     val currentUser by remember { derivedStateOf { auth.currentUser } }
     val usuario by authController.usuario.observeAsState()
