@@ -1,4 +1,4 @@
-package com.proyecto.proyectointegradomra.view
+package com.proyecto.proyectointegradomra.ui.common
 
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.foundation.Image

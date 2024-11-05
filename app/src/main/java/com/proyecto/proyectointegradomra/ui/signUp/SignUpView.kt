@@ -1,4 +1,4 @@
-package com.proyecto.proyectointegradomra.view.signUp
+package com.proyecto.proyectointegradomra.ui.signUp
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,19 +23,19 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.proyecto.proyectointegradomra.firebase.database.AuthController
+import com.proyecto.proyectointegradomra.firebase.services.AuthService
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
 import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
 import com.proyecto.proyectointegradomra.ui.theme.VerdeClaro
-import com.proyecto.proyectointegradomra.view.StandardField
-import com.proyecto.proyectointegradomra.view.StandardButton
-import com.proyecto.proyectointegradomra.view.Logo
+import com.proyecto.proyectointegradomra.ui.common.StandardField
+import com.proyecto.proyectointegradomra.ui.common.StandardButton
+import com.proyecto.proyectointegradomra.ui.common.Logo
 
 @Composable
 fun SingUpView(
-    singUpController: SignUpController = viewModel(),
-    authController: AuthController = viewModel(),
+    singUpController: SignUpViewModel = viewModel(),
+    authController: AuthService = viewModel(),
     navToHome: () -> Unit
 ) {
     val nombre by singUpController.nombre.observeAsState("")
@@ -124,9 +124,9 @@ fun SingUpView(
                 if ((contrasena != repetirContrasena) || (contrasena.isEmpty())) {
                     errorMessage = "Las contraseñas no coinciden"
                 } else {
-                    authController.registrarse(correo, contrasena, nombre, isChecked, onSuccess = {
-                        navToHome()
-                    }, onError = { error -> errorMessage = error })
+//                    authController.registrarse(correo, contrasena, nombre, isChecked, onSuccess = {
+//                        navToHome()
+//                    }, onError = { error -> errorMessage = error })
                 }
             })
         }

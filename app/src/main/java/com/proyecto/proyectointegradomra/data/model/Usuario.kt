@@ -1,4 +1,4 @@
-package com.proyecto.proyectointegradomra.data
+package com.proyecto.proyectointegradomra.data.model
 
 data class Usuario(
     var uid: String = "",
@@ -6,8 +6,3 @@ data class Usuario(
     var email: String = "",
     val tipo: TipoUsuario = TipoUsuario.OTRO  // "Ofertante" o "Demandante"
 )
-enum class TipoUsuario {
-    OFERTANTE,
-    DEMANDANTE,
-    OTRO
-}

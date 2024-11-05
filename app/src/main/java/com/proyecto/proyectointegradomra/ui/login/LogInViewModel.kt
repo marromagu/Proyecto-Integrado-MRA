@@ -1,10 +1,10 @@
-package com.proyecto.proyectointegradomra.view.login
+package com.proyecto.proyectointegradomra.ui.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class LogInController : ViewModel() {
+class LogInViewModel : ViewModel() {
     fun updateNombre(it: String) {
         _nombre.value = it
     }

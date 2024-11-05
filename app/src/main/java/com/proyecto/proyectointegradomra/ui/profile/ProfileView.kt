@@ -1,4 +1,4 @@
-package com.proyecto.proyectointegradomra.view.profile
+package com.proyecto.proyectointegradomra.ui.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -30,15 +30,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.proyecto.proyectointegradomra.firebase.database.AuthController
+import com.proyecto.proyectointegradomra.firebase.services.AuthService
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
-import com.proyecto.proyectointegradomra.view.BottomNavigationBar
-import com.proyecto.proyectointegradomra.view.FotoPerfil
-import com.proyecto.proyectointegradomra.view.StandardButton
+import com.proyecto.proyectointegradomra.ui.common.BottomNavigationBar
+import com.proyecto.proyectointegradomra.ui.common.FotoPerfil
+import com.proyecto.proyectointegradomra.ui.common.StandardButton
 
 @Composable
 fun ProfileView(
-    authController: AuthController = viewModel(),
+    authController: AuthService = viewModel(),
     navTo: NavHostController,
 ) {
     val miUsuario by authController.usuario.observeAsState()

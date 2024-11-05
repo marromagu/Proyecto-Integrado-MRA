@@ -1,4 +1,4 @@
-package com.proyecto.proyectointegradomra.firebase.database
+package com.proyecto.proyectointegradomra.firebase.services
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.proyecto.proyectointegradomra.data.TipoUsuario
-import com.proyecto.proyectointegradomra.data.Usuario
+import com.proyecto.proyectointegradomra.data.model.TipoUsuario
+import com.proyecto.proyectointegradomra.data.model.Usuario
 import kotlinx.coroutines.launch
 
 /**
@@ -16,13 +16,13 @@ import kotlinx.coroutines.launch
  * garantizando que se mantenga una única instancia de AuthController mientras el propietario exista.
  * Esto permite un manejo eficiente y persistente de datos de autenticación, evitando recreaciones innecesarias. *
  */
-class AuthController : ViewModel() {
+class AuthService : ViewModel() {
     
     // Instancia singleton de autenticación de Firebase
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
     // Controlador Firestore para gestionar la base de datos
-    private val firestoreController = FirestoreController()
+    private val firestoreController = FirestoreService()
 
     // LiveData para el usuario autenticado actualmente
     private val _userAuthCurrent = MutableLiveData<FirebaseUser?>(firebaseAuth.currentUser)

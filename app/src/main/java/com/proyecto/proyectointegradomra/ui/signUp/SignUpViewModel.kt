@@ -1,10 +1,10 @@
-package com.proyecto.proyectointegradomra.view.signUp
+package com.proyecto.proyectointegradomra.ui.signUp
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class SignUpController : ViewModel() {
+class SignUpViewModel : ViewModel() {
 
     fun updateNombre(it: String) {
         _nombre.value = it

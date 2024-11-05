@@ -1,4 +1,4 @@
-package com.proyecto.proyectointegradomra.view.login
+package com.proyecto.proyectointegradomra.ui.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -21,17 +21,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.proyecto.proyectointegradomra.firebase.database.AuthController
+import com.proyecto.proyectointegradomra.firebase.services.AuthService
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
-import com.proyecto.proyectointegradomra.view.StandardField
-import com.proyecto.proyectointegradomra.view.StandardButton
-import com.proyecto.proyectointegradomra.view.Logo
+import com.proyecto.proyectointegradomra.ui.common.StandardField
+import com.proyecto.proyectointegradomra.ui.common.StandardButton
+import com.proyecto.proyectointegradomra.ui.common.Logo
 
 
 @Composable
 fun LogInView(
-    logInController: LogInController = viewModel(),
-    authController: AuthController = viewModel(),
+    logInController: LogInViewModel = viewModel(),
+    authController: AuthService = viewModel(),
     navToHome: () -> Unit
 ) {
     val correo by logInController.nombre.observeAsState("")
@@ -76,9 +76,9 @@ fun LogInView(
                 if (correo.isEmpty() || contrasena.isEmpty()) {
                     errorMessage = "Por favor, complete todos los campos"
                 } else {
-                    authController.iniciarSesion(correo, contrasena, onSuccess = {
+                   /* authController.iniciarSesion(correo, contrasena, onSuccess = {
                         navToHome()
-                    }, onError = { error -> errorMessage = error })
+                    }, onError = { error -> errorMessage = error })*/
                 }
             }
         )

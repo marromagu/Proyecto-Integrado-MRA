@@ -1,4 +1,4 @@
-package com.proyecto.proyectointegradomra.view.start
+package com.proyecto.proyectointegradomra.ui.start
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
-import com.proyecto.proyectointegradomra.view.Logo
-import com.proyecto.proyectointegradomra.view.StandardButton
+import com.proyecto.proyectointegradomra.ui.common.Logo
+import com.proyecto.proyectointegradomra.ui.common.StandardButton
 
 
 

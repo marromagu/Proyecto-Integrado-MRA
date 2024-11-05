@@ -1,15 +1,15 @@
-package com.proyecto.proyectointegradomra.firebase.database
+package com.proyecto.proyectointegradomra.firebase.services
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
-import com.proyecto.proyectointegradomra.data.Usuario
+import com.proyecto.proyectointegradomra.data.model.Usuario
 import kotlinx.coroutines.tasks.await
 
 /**
  * Controlador para manejar las operaciones relacionadas con Firestore.
  * Proporciona métodos para agregar, eliminar y obtener documentos de la colección de usuarios.
  */
-class FirestoreController {
+class FirestoreService {
 
     // Instancia singleton de FirebaseFirestore para interactuar con Firestore.
     private val miCloudFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()

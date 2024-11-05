@@ -1,4 +1,4 @@
-package com.proyecto.proyectointegradomra.data
+package com.proyecto.proyectointegradomra.data.model
 
 data class Demandante(
     val usuario: Usuario = Usuario(),

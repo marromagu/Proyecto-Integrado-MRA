@@ -2,39 +2,32 @@ package com.proyecto.proyectointegradomra.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.proyecto.proyectointegradomra.view.login.LogInView
-import com.proyecto.proyectointegradomra.view.home.OfertanteHomeView
-import com.proyecto.proyectointegradomra.view.home.DemandanteHomeView
-import com.proyecto.proyectointegradomra.view.start.StartScreen
-import com.google.firebase.auth.FirebaseAuth
-import com.proyecto.proyectointegradomra.data.TipoUsuario
-import com.proyecto.proyectointegradomra.firebase.database.AuthController
-import com.proyecto.proyectointegradomra.view.favorites.FavoritesView
-import com.proyecto.proyectointegradomra.view.profile.ProfileView
-import com.proyecto.proyectointegradomra.view.signUp.SingUpView
+import com.proyecto.proyectointegradomra.ui.login.LogInView
+import com.proyecto.proyectointegradomra.ui.home.OfertanteHomeView
+import com.proyecto.proyectointegradomra.ui.home.DemandanteHomeView
+import com.proyecto.proyectointegradomra.ui.start.StartScreen
+import com.proyecto.proyectointegradomra.data.model.TipoUsuario
+import com.proyecto.proyectointegradomra.repository.DataRepository
+import com.proyecto.proyectointegradomra.ui.favorites.FavoritesView
+import com.proyecto.proyectointegradomra.ui.profile.ProfileView
+import com.proyecto.proyectointegradomra.ui.signUp.SingUpView
 
 @Composable
-fun NavigationManager(navController: NavHostController, authController: AuthController = viewModel()) {
-    val auth = remember { FirebaseAuth.getInstance() }
-    val currentUser by remember { derivedStateOf { auth.currentUser } }
-    val usuario by authController.usuario.observeAsState()
+fun NavigationManager(navController: NavHostController, dataRepository: DataRepository) {
+    // Observa el usuario actual y lanza el efecto una vez cuando se cargue
+    val usuario by dataRepository.obtenerUsuarioActual().observeAsState(null)
 
-    // Cargar usuario si el usuario actual no es nulo
-    if (currentUser != null) {
-        LaunchedEffect(currentUser) {
-            authController.cargarUsuario()
-        }
+    // Llama a cargar el usuario una vez al iniciar la composición
+    LaunchedEffect(Unit) {
+        dataRepository.cargarUsuario()
     }
 
-    // Observa el usuario y navega dependiendo de su tipo
+    // Navegación en función del tipo de usuario
     LaunchedEffect(usuario) {
         usuario?.let {
             when (it.tipo) {
@@ -53,7 +46,6 @@ fun NavigationManager(navController: NavHostController, authController: AuthCont
                 }
 
                 else -> {
-                    // Si no es un tipo de usuario válido, redirige al StartScreen
                     navController.navigate(Screens.StartScreen.ruta) {
                         popUpTo(Screens.StartScreen.ruta) { inclusive = true }
                         launchSingleTop = true
@@ -61,7 +53,6 @@ fun NavigationManager(navController: NavHostController, authController: AuthCont
                 }
             }
         } ?: run {
-            // Si el usuario es nulo, redirige al StartScreen
             navController.navigate(Screens.StartScreen.ruta) {
                 popUpTo(Screens.StartScreen.ruta) { inclusive = true }
                 launchSingleTop = true
@@ -76,7 +67,6 @@ fun NavigationManager(navController: NavHostController, authController: AuthCont
         }
         composable(route = Screens.SignUpScreen.ruta) {
             SingUpView(navToHome = {
-                // Mueve la lógica aquí
                 when (usuario?.tipo) {
                     TipoUsuario.DEMANDANTE -> navController.navigate(Screens.DemandantesHomeScreen.ruta)
                     TipoUsuario.OFERTANTE -> navController.navigate(Screens.OfertantesHomeScreen.ruta)
@@ -87,7 +77,6 @@ fun NavigationManager(navController: NavHostController, authController: AuthCont
         }
         composable(route = Screens.LogInScreen.ruta) {
             LogInView(navToHome = {
-                // Mueve la lógica aquí
                 when (usuario?.tipo) {
                     TipoUsuario.DEMANDANTE -> navController.navigate(Screens.DemandantesHomeScreen.ruta)
                     TipoUsuario.OFERTANTE -> navController.navigate(Screens.OfertantesHomeScreen.ruta)
@@ -110,3 +99,4 @@ fun NavigationManager(navController: NavHostController, authController: AuthCont
         }
     }
 }
+
