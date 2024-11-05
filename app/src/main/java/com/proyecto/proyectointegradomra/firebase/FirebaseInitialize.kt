@@ -1,4 +1,4 @@
-package com.proyecto.proyectointegradomra.authentication
+package com.proyecto.proyectointegradomra.firebase
 
 import android.app.Application
 import com.google.firebase.FirebaseApp

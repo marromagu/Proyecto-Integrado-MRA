@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.proyecto.proyectointegradomra.authentication.AuthController
+import com.proyecto.proyectointegradomra.firebase.database.AuthController
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.view.BottomNavigationBar
 import com.proyecto.proyectointegradomra.view.FotoPerfil
@@ -41,7 +41,7 @@ fun ProfileView(
     authController: AuthController = viewModel(),
     navTo: NavHostController,
 ) {
-    val nombreUsuario by authController.usuario.observeAsState()
+    val miUsuario by authController.usuario.observeAsState()
     var showDialog by remember { mutableStateOf(false) }
     var newName by remember { mutableStateOf("") }
 
@@ -58,7 +58,7 @@ fun ProfileView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = nombreUsuario?.nombre ?: "Nombre no disponible") // Manejo de caso nulo
+                Text(text = miUsuario?.nombre ?: "Nombre no disponible") // Manejo de caso nulo
                 Spacer(modifier = Modifier.width(8.dp))
                 IconButton(onClick = { showDialog = true }) {
                     Icon(imageVector = Icons.Filled.Edit, contentDescription = "Editar nombre")
@@ -107,10 +107,10 @@ fun ProfileView(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Text(text = "Nombre: ${nombreUsuario?.nombre ?: "Nombre no disponible"}") // Manejo de caso nulo
-                Text(text = "UID: ${nombreUsuario?.uid ?: "UID no disponible"}") // Manejo de caso nulo
-                Text(text = "Correo: ${nombreUsuario?.correo ?: "Correo no disponible"}") // Manejo de caso nulo
-                Text(text = "Tipo: ${nombreUsuario?.tipo?.name ?: "Tipo no disponible"}") // Manejo de caso nulo
+                Text(text = "Nombre: ${miUsuario?.nombre ?: "Nombre no disponible"}") // Manejo de caso nulo
+                Text(text = "UID: ${miUsuario?.uid ?: "UID no disponible"}") // Manejo de caso nulo
+                Text(text = "Correo: ${miUsuario?.email ?: "Correo no disponible"}") // Manejo de caso nulo
+                Text(text = "Tipo: ${miUsuario?.tipo?.name ?: "Tipo no disponible"}") // Manejo de caso nulo
                 Spacer(modifier = Modifier.weight(1f))
                 StandardButton(
                     text = "Cerrar Sesión",

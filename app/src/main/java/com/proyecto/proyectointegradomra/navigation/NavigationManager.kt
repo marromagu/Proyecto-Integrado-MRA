@@ -15,8 +15,8 @@ import com.proyecto.proyectointegradomra.view.home.OfertanteHomeView
 import com.proyecto.proyectointegradomra.view.home.DemandanteHomeView
 import com.proyecto.proyectointegradomra.view.start.StartScreen
 import com.google.firebase.auth.FirebaseAuth
-import com.proyecto.proyectointegradomra.Data.TipoUsuario
-import com.proyecto.proyectointegradomra.authentication.AuthController
+import com.proyecto.proyectointegradomra.data.TipoUsuario
+import com.proyecto.proyectointegradomra.firebase.database.AuthController
 import com.proyecto.proyectointegradomra.view.favorites.FavoritesView
 import com.proyecto.proyectointegradomra.view.profile.ProfileView
 import com.proyecto.proyectointegradomra.view.signUp.SingUpView

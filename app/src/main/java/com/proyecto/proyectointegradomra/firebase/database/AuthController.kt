@@ -1,4 +1,4 @@
-package com.proyecto.proyectointegradomra.authentication
+package com.proyecto.proyectointegradomra.firebase.database
 
 import android.content.ContentValues.TAG
 import android.util.Log
@@ -7,16 +7,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.proyecto.proyectointegradomra.Data.TipoUsuario
-import com.proyecto.proyectointegradomra.Data.Usuario
-import com.proyecto.proyectointegradomra.firestore.FirestoreController
+import com.proyecto.proyectointegradomra.data.TipoUsuario
+import com.proyecto.proyectointegradomra.data.Usuario
 
 class AuthController : ViewModel() {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firestoreController = FirestoreController()
 
-    private val _user = MutableLiveData<FirebaseUser?>(firebaseAuth.currentUser)
-    val user: LiveData<FirebaseUser?> = _user
+    private val _userAuthcurrent = MutableLiveData<FirebaseUser?>(firebaseAuth.currentUser)
+    private val userAuthcurrent: LiveData<FirebaseUser?> = _userAuthcurrent
 
     private val _usuario = MutableLiveData<Usuario?>()
     val usuario: LiveData<Usuario?> = _usuario
@@ -26,7 +25,7 @@ class AuthController : ViewModel() {
     ) {
         firebaseAuth.signInWithEmailAndPassword(email, contrasena).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                _user.value = firebaseAuth.currentUser
+                _userAuthcurrent.value = firebaseAuth.currentUser
                 cargarUsuario()
                 onSuccess()
             } else {
@@ -38,9 +37,12 @@ class AuthController : ViewModel() {
 
     fun cargarUsuario() {
         val uid = obtenerUidUsuario() ?: return
-        firestoreController.obtenerUsuarioPorUid(uid,
+        firestoreController.obtenerUsuarioPorUidFirestore(uid,
             onSuccess = { usuario ->
+                usuario.uid = uid
                 _usuario.value = usuario
+
+                Log.d("AuthController_cargarUsuario", "Usuario cargado desde Firestore: $_usuario")
             },
             onFailure = { exception ->
                 Log.e(
@@ -66,15 +68,15 @@ class AuthController : ViewModel() {
         firebaseAuth.createUserWithEmailAndPassword(correo, contrasena)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    _user.value = firebaseAuth.currentUser
+                    _userAuthcurrent.value = firebaseAuth.currentUser
                     val uid = obtenerUidUsuario()
                     if (uid != null) {
                         val tipoUsuario =
                             if (esOfertante) TipoUsuario.OFERTANTE else TipoUsuario.DEMANDANTE
                         val nuevoUsuario =
-                            Usuario(uid = uid, nombre = nombre, correo = correo, tipo = tipoUsuario)
+                            Usuario(uid = uid, nombre = nombre, email = correo, tipo = tipoUsuario)
 
-                        firestoreController.agregarDocumentoUsuario(nuevoUsuario)
+                        firestoreController.agregarDocumentoUsuarioFirestore(nuevoUsuario)
 
 
                     } else {
@@ -91,15 +93,15 @@ class AuthController : ViewModel() {
 
     fun cerrarSesion() {
         firebaseAuth.signOut()
-        _user.value = null
+        _userAuthcurrent.value = null
     }
 
     fun eliminarCuenta() {
         val uid = usuario.value?.uid ?: ""
         if (uid.isNotEmpty()) {
-            user.value?.delete()?.addOnCompleteListener { task ->
+            userAuthcurrent.value?.delete()?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    firestoreController.eliminarDocumento(
+                    firestoreController.eliminarDocumentoFirestore(
                         collectionPath = "usuarios",
                         documentId = uid,
                         onSuccess = {
@@ -128,7 +130,7 @@ class AuthController : ViewModel() {
             usuarioActual.nombre = newName
             _usuario.value = usuarioActual
 
-            firestoreController.actualizarNombreUsuario(uid, newName, onSuccess = {
+            firestoreController.actualizarNombreUsuarioFirestore(uid, newName, onSuccess = {
                 println("Nombre actualizado correctamente en Firestore.")
             }, onFailure = { exception ->
                 println("Error al actualizar el nombre en Firestore: ${exception.message}")

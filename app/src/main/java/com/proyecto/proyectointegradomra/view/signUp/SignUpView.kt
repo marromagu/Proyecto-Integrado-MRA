@@ -23,7 +23,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.proyecto.proyectointegradomra.authentication.AuthController
+import com.proyecto.proyectointegradomra.firebase.database.AuthController
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
 import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
