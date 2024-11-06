@@ -36,7 +36,7 @@ import com.proyecto.proyectointegradomra.ui.common.Logo
 fun SingUpView(
     singUpController: SignUpViewModel = viewModel(),
     dataRepository: DataRepository,
-    navToHome: () -> Unit
+    navToLogIn: () -> Unit
 ) {
     val name by singUpController.name.observeAsState("")
     val email by singUpController.email.observeAsState("")
@@ -125,7 +125,7 @@ fun SingUpView(
                     errorMessage = "Las contraseñas no coinciden"
                 } else {
                     dataRepository.registrarse(email, password, name, esOfertante, onSuccess = {
-                        navToHome()
+                        navToLogIn()
                     }, onError = {
                         errorMessage = "Error al registrarse"
                     })

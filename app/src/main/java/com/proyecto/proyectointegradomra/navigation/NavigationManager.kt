@@ -12,8 +12,8 @@ import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.start.StartView
 import com.proyecto.proyectointegradomra.ui.signUp.SingUpView
 import com.proyecto.proyectointegradomra.ui.login.LogInView
-import com.proyecto.proyectointegradomra.ui.home.DemandanteHomeView
-import com.proyecto.proyectointegradomra.ui.home.OfertanteHomeView
+import com.proyecto.proyectointegradomra.ui.home.DemandantesHomeView
+import com.proyecto.proyectointegradomra.ui.home.OfertantesHomeView
 import com.proyecto.proyectointegradomra.ui.profile.ProfileView
 import com.proyecto.proyectointegradomra.ui.favorites.FavoritesView
 
@@ -68,14 +68,7 @@ fun NavigationManager(
         }
         composable(route = Screens.SignUpScreen.ruta) {
             SingUpView(
-                navToHome = {
-                    // Navega al inicio adecuado según el tipo de usuario registrado
-                    when (usuario?.type) {
-                        TipoUsuario.DEMANDANTE -> navController.navigate(Screens.DemandantesHomeScreen.ruta)
-                        TipoUsuario.OFERTANTE -> navController.navigate(Screens.OfertantesHomeScreen.ruta)
-                        else -> navController.navigate(Screens.StartScreen.ruta)
-                    }
-                },
+                navToLogIn = { navController.navigate(Screens.LogInScreen.ruta) },
                 dataRepository = dataRepository
             )
         }
@@ -94,11 +87,11 @@ fun NavigationManager(
         }
         composable(route = Screens.OfertantesHomeScreen.ruta) {
             // Pantalla principal para usuarios ofertantes
-            OfertanteHomeView(navTo = navController, dataRepository = dataRepository)
+            OfertantesHomeView(navTo = navController, dataRepository = dataRepository)
         }
         composable(route = Screens.DemandantesHomeScreen.ruta) {
             // Pantalla principal para usuarios demandantes
-            DemandanteHomeView(navTo = navController, dataRepository = dataRepository)
+            DemandantesHomeView(navTo = navController, dataRepository = dataRepository)
         }
         composable(route = Screens.ProfileScreen.ruta) {
             // Pantalla de perfil del usuario

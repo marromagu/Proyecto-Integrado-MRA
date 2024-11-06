@@ -15,7 +15,7 @@ import com.proyecto.proyectointegradomra.ui.common.BottomNavigationBar
 import com.proyecto.proyectointegradomra.ui.common.Logo
 
 @Composable
-fun OfertanteHomeView(
+fun OfertantesHomeView(
     dataRepository: DataRepository,
     navTo: NavHostController
 ) {
