@@ -140,6 +140,28 @@ fun StandardField(
 }
 
 @Composable
+fun StandardFieldText(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        readOnly = true,
+        enabled = false,
+        label = { Text(text = label) },
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        colors = TextFieldDefaults.colors(
+            disabledContainerColor = ColorContainer
+        )
+    )
+}
+
+@Composable
 fun StandardButton(
     text: String, icon: ImageVector, onClick: () -> Unit
 ) {

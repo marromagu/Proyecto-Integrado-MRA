@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.DeleteForever
@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.repository.DataRepository
@@ -34,6 +35,7 @@ import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.BottomNavigationBar
 import com.proyecto.proyectointegradomra.ui.common.FotoPerfil
 import com.proyecto.proyectointegradomra.ui.common.StandardButton
+import com.proyecto.proyectointegradomra.ui.common.StandardFieldText
 
 @Composable
 fun ProfileView(
@@ -42,6 +44,9 @@ fun ProfileView(
 ) {
     val miUsuario by dataRepository.usuario.observeAsState()
     var showDialog by remember { mutableStateOf(false) }
+    var showAlert by remember { mutableStateOf(false) }
+    var alertMessage by remember { mutableStateOf("") }
+    var actionConfirmed by remember { mutableStateOf({}) }
     var newName by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
@@ -56,77 +61,154 @@ fun ProfileView(
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = miUsuario?.name ?: "Nombre no disponible")
-                Spacer(modifier = Modifier.width(8.dp))
-                IconButton(onClick = { showDialog = true }) {
-                    Icon(imageVector = Icons.Filled.Edit, contentDescription = "Editar nombre")
-                }
+            Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 FotoPerfil()
+                StandardFieldText(
+                    value = miUsuario?.name ?: "Email no disponible",
+                    label = "Nombre",
+                    onValueChange = {},
+                    modifier = Modifier.weight(1f) // Restringe el ancho
+                )
+                IconButton(onClick = { showDialog = true }) {
+                    Icon(
+                        imageVector = Icons.Filled.Edit,
+                        contentDescription = "Editar nombre",
+                        tint = Color.DarkGray
+                    )
+                }
             }
 
-            // Dialogo para editar el nombre
-            if (showDialog) {
+            // Diálogo para editar el nombre
+            Extracted(
+                showDialog = showDialog,
+                showDialogChanger = { showDialog = it },
+                newName = newName,
+                newNameChanger = { newName = it },
+                dataRepository = dataRepository
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                StandardFieldText(
+                    label = "UID",
+                    value = miUsuario?.uid ?: "Error",
+                    onValueChange = {},
+                    modifier = Modifier
+                )
+                StandardFieldText(
+                    label = "Email",
+                    value = miUsuario?.email ?: "Email no disponible",
+                    onValueChange = {},
+                    modifier = Modifier
+                )
+                StandardFieldText(
+                    label = "Tipo",
+                    value = miUsuario?.type.toString(),
+                    onValueChange = {},
+                    modifier = Modifier
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                // Botón de Cerrar Sesión con alerta
+                StandardButton(
+                    text = "Cerrar Sesión",
+                    icon = Icons.AutoMirrored.Filled.ExitToApp,
+                    onClick = {
+                        alertMessage = "¿Estás seguro de que deseas cerrar sesión?"
+                        actionConfirmed = {
+                            dataRepository.cerrarSesion()
+                            navTo.navigate("StartView")
+                        }
+                        showAlert = true
+                    }
+                )
+
+                // Botón de Borrar Cuenta con alerta
+                StandardButton(
+                    text = "Borrar Cuenta",
+                    icon = Icons.Filled.DeleteForever,
+                    onClick = {
+                        alertMessage = "¿Estás seguro de que deseas borrar tu cuenta?"
+                        actionConfirmed = {
+                            dataRepository.eliminarCuenta()
+                            navTo.navigate("StartView")
+                        }
+                        showAlert = true
+                    }
+                )
+            }
+
+            // Diálogo de alerta para confirmar acciones
+            if (showAlert) {
                 AlertDialog(
-                    onDismissRequest = { showDialog = false },
-                    title = { Text("Editar nombre") },
-                    text = {
-                        OutlinedTextField(
-                            value = newName,
-                            onValueChange = { newName = it },
-                            label = { Text("Nuevo nombre") }
-                        )
-                    },
+                    onDismissRequest = { showAlert = false },
+                    title = { Text("Confirmación") },
+                    text = { Text(alertMessage) },
                     confirmButton = {
-                        Button(
-                            onClick = {
-                                if (newName.isNotBlank()) {
-                                    dataRepository.actualizarNombreUsuario(newName)
-                                    newName = ""
-                                    showDialog = false
-                                }
-                            }
-                        ) {
-                            Text("Guardar")
+                        Button(onClick = {
+                            actionConfirmed()
+                            showAlert = false
+                        }) {
+                            Text("Confirmar")
                         }
                     },
                     dismissButton = {
-                        Button(
-                            onClick = { showDialog = false }
-                        ) {
+                        Button(onClick = { showAlert = false }) {
                             Text("Cancelar")
                         }
                     }
                 )
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-            Column(
-                modifier = Modifier.padding(90.dp, 5.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                Text(text = "Nombre: ${miUsuario?.name ?: "Nombre no disponible"}") // Manejo de caso nulo
-                Text(text = "UID: ${miUsuario?.uid ?: "UID no disponible"}") // Manejo de caso nulo
-                Text(text = "Correo: ${miUsuario?.email ?: "Correo no disponible"}") // Manejo de caso nulo
-                Text(text = "Tipo: ${miUsuario?.type?.name ?: "Tipo no disponible"}") // Manejo de caso nulo
-
-                Spacer(modifier = Modifier.weight(1f))
-                StandardButton(
-                    text = "Cerrar Sesión",
-                    icon = Icons.AutoMirrored.Filled.ExitToApp,
-                    onClick = {
-                        dataRepository.cerrarSesion()
-                        navTo.navigate("StartView")
-                    })
-                StandardButton(
-                    text = "Borrar Cuenta",
-                    icon = Icons.Filled.DeleteForever,
-                    onClick = {
-                        dataRepository.eliminarCuenta()
-                        navTo.navigate("StartView")
-                    })
-            }
         }
+    }
+}
+
+
+@Composable
+private fun Extracted(
+    showDialog: Boolean,
+    showDialogChanger: (Boolean) -> Unit,
+    newName: String,
+    newNameChanger: (String) -> Unit,
+    dataRepository: DataRepository
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialogChanger(false) },
+            title = { Text("Editar nombre") },
+            text = {
+                OutlinedTextField(
+                    value = newName,
+                    onValueChange = { newNameChanger(it) },
+                    label = { Text("Nuevo nombre") }
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (newName.isNotBlank()) {
+                            dataRepository.actualizarNombreUsuario(newName)
+                            newNameChanger("")
+                            showDialogChanger(false)
+                        }
+                    }
+                ) {
+                    Text("Guardar")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showDialogChanger(false) }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }
