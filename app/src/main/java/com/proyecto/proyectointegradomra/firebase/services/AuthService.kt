@@ -37,15 +37,17 @@ class AuthService : ViewModel() {
      * Función para iniciar sesión en Firebase usando email y contraseña.
      * Actualiza el estado de autenticación y carga los datos del usuario.
      */
-    fun iniciarSesion(email: String, password: String) {
+    fun iniciarSesion(email: String, password: String, onSuccess: () -> Unit, onError: () -> Unit) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     _userAuthCurrent.value = firebaseAuth.currentUser
                     cargarUsuario() // Cargar datos del usuario desde Firestore
+                    onSuccess()
                 } else {
                     // Manejo de errores de autenticación
                     _userAuthCurrent.value = null
+                    onError()
                 }
             }
     }
@@ -54,7 +56,14 @@ class AuthService : ViewModel() {
      * Función para registrar un nuevo usuario en Firebase y guardarlo en Firestore.
      * Crea una entrada de usuario en la base de datos Firestore.
      */
-    fun registrarse(email: String, password: String, name: String, esOfertante: Boolean) {
+    fun registrarse(
+        email: String,
+        password: String,
+        name: String,
+        esOfertante: Boolean,
+        onSuccess: () -> Unit,
+        onError: () -> Unit
+    ) {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -65,9 +74,11 @@ class AuthService : ViewModel() {
                     val nuevoUsuario =
                         Usuario(uid = uid, name = name, email = email, type = tipoUsuario)
                     firestoreController.agregarDocumentoUsuarioFirestore(nuevoUsuario)
+                    onSuccess()
                 } else {
                     // Manejo de errores en el registro
                     _userAuthCurrent.value = null
+                    onError()
                 }
             }
     }

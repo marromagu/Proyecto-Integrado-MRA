@@ -15,7 +15,7 @@ import com.proyecto.proyectointegradomra.ui.common.StandardButton
 
 
 @Composable
-fun StartScreen(
+fun StartView(
     navToSignUp: () -> Unit = {},
     navToLogIn: () -> Unit = {}
 ) {

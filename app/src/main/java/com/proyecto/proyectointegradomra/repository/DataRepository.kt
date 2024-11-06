@@ -17,8 +17,10 @@ class DataRepository(
     fun eliminarCuenta() = authController.eliminarCuenta()
 
     // Función para iniciar sesión
-    fun iniciarSesion(email: String, password: String, onSuccess: () -> Unit, onError: () -> Unit) =
-        authController.iniciarSesion(email, password)
+    fun iniciarSesion(email: String, password: String, onSuccess: () -> Unit, onError: () -> Unit) {
+
+        authController.iniciarSesion(email, password, onSuccess, onError)
+    }
 
     // Función para registrarse
     fun registrarse(
@@ -26,10 +28,9 @@ class DataRepository(
         password: String,
         name: String,
         esOfertante: Boolean,
-        onSuccess: Any?,
-        onError: Any?
+        onSuccess: () -> Unit, onError: () -> Unit
     ) {
-        authController.registrarse(email, password, name, esOfertante)
+        authController.registrarse(email, password, name, esOfertante, onSuccess, onError)
     }
 
     // Función para obtener el usuario actual
