@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,6 +20,7 @@ fun OfertantesHomeView(
     dataRepository: DataRepository,
     navTo: NavHostController
 ) {
+    val usuario = dataRepository.obtenerUsuarioActual().value
     Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -28,7 +30,8 @@ fun OfertantesHomeView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Logo()
-
+            //Operador Elvis
+            Text(text = "OfertantesHomeView ${usuario?.name}")
         }
     }
 }

@@ -123,7 +123,7 @@ class FirestoreService {
 
         val userRef = miCloudFirestore.collection("usuarios").document(uid)
 
-        userRef.update("nombre", newName)
+        userRef.update("name", newName)
             .addOnSuccessListener {
                 Log.i("FirestoreController", "Nombre de usuario actualizado con éxito.")
             }

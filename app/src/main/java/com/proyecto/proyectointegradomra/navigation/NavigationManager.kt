@@ -12,15 +12,13 @@ import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.start.StartView
 import com.proyecto.proyectointegradomra.ui.signUp.SingUpView
 import com.proyecto.proyectointegradomra.ui.login.LogInView
-import com.proyecto.proyectointegradomra.ui.home.DemandantesHomeView
-import com.proyecto.proyectointegradomra.ui.home.OfertantesHomeView
 import com.proyecto.proyectointegradomra.ui.profile.ProfileView
 import com.proyecto.proyectointegradomra.ui.favorites.FavoritesView
+import com.proyecto.proyectointegradomra.ui.home.HomeView
 
 @Composable
 fun NavigationManager(
-    navController: NavHostController,
-    dataRepository: DataRepository
+    navController: NavHostController, dataRepository: DataRepository
 ) {
     // Observa los cambios en el usuario actual para reaccionar dinámicamente ante la autenticación
     val usuario by dataRepository.obtenerUsuarioActual().observeAsState(null)
@@ -33,21 +31,10 @@ fun NavigationManager(
     // Control de navegación en función del tipo de usuario autenticado
     LaunchedEffect(usuario) {
         usuario?.let {
-            when (it.type) {
-                TipoUsuario.OFERTANTE -> {
-                    navController.navigate(Screens.OfertantesHomeScreen.ruta) {
-                        // Limpia la pila de navegación para evitar volver a la pantalla de inicio
-                        popUpTo(Screens.StartScreen.ruta) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-
-                TipoUsuario.DEMANDANTE -> {
-                    navController.navigate(Screens.DemandantesHomeScreen.ruta) {
-                        popUpTo(Screens.StartScreen.ruta) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
+            navController.navigate(Screens.HomeScreen.ruta) {
+                // Limpia la pila de navegación para evitar volver a la pantalla de inicio
+                popUpTo(Screens.StartScreen.ruta) { inclusive = true }
+                launchSingleTop = true
             }
         } ?: run {
             // Redirige a la pantalla de inicio si el usuario es nulo (no autenticado)
@@ -61,37 +48,26 @@ fun NavigationManager(
     // Configuración del NavHost con las rutas disponibles en la aplicación
     NavHost(navController = navController, startDestination = Screens.StartScreen.ruta) {
         composable(route = Screens.StartScreen.ruta) {
-            StartView(
-                navToSignUp = { navController.navigate(Screens.SignUpScreen.ruta) },
-                navToLogIn = { navController.navigate(Screens.LogInScreen.ruta) }
-            )
+            StartView(navToSignUp = { navController.navigate(Screens.SignUpScreen.ruta) },
+                navToLogIn = { navController.navigate(Screens.LogInScreen.ruta) })
         }
         composable(route = Screens.SignUpScreen.ruta) {
+            // Pantalla de registro de usuario
             SingUpView(
-                navToLogIn = { navController.navigate(Screens.LogInScreen.ruta) },
+                navToLogIn = { navController.navigate(Screens.HomeScreen.ruta) },
                 dataRepository = dataRepository
             )
         }
         composable(route = Screens.LogInScreen.ruta) {
+            // Pantalla de inicio de sesión
             LogInView(
-                navToHome = {
-                    // Navega al inicio adecuado según el tipo de usuario autenticado
-                    when (usuario?.type) {
-                        TipoUsuario.DEMANDANTE -> navController.navigate(Screens.DemandantesHomeScreen.ruta)
-                        TipoUsuario.OFERTANTE -> navController.navigate(Screens.OfertantesHomeScreen.ruta)
-                        else -> navController.navigate(Screens.StartScreen.ruta)
-                    }
-                },
+                navToHome = { navController.navigate(Screens.HomeScreen.ruta) },
                 dataRepository = dataRepository
             )
         }
-        composable(route = Screens.OfertantesHomeScreen.ruta) {
-            // Pantalla principal para usuarios ofertantes
-            OfertantesHomeView(navTo = navController, dataRepository = dataRepository)
-        }
-        composable(route = Screens.DemandantesHomeScreen.ruta) {
-            // Pantalla principal para usuarios demandantes
-            DemandantesHomeView(navTo = navController, dataRepository = dataRepository)
+        composable(route = Screens.HomeScreen.ruta) {
+            // Pantalla principal para usuarios
+            HomeView(navTo = navController, dataRepository = dataRepository)
         }
         composable(route = Screens.ProfileScreen.ruta) {
             // Pantalla de perfil del usuario

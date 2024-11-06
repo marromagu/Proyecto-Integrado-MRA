@@ -1,5 +1,6 @@
 package com.proyecto.proyectointegradomra.ui.home
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,12 +17,11 @@ import com.proyecto.proyectointegradomra.ui.common.BottomNavigationBar
 import com.proyecto.proyectointegradomra.ui.common.Logo
 
 @Composable
-fun DemandantesHomeView(
+fun HomeView(
     dataRepository: DataRepository,
     navTo: NavHostController
 ) {
-    // Operadores de afirmación no nula (!!) opcional, si no hay que usar el Operador Elvis en usuario?.name
-    val usuario = dataRepository.obtenerUsuarioActual().value!!
+    val usuario = dataRepository.obtenerUsuarioActual().value
     Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -31,7 +31,8 @@ fun DemandantesHomeView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Logo()
-            Text(text = "DemandantesHomeView ${usuario.name}")
+            //Operador Elvis
+            Text(text = "OfertantesHomeView ${usuario?.name}")
         }
     }
 }
