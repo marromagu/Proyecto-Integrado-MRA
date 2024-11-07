@@ -24,7 +24,8 @@ class MainActivity : ComponentActivity() {
 
             // Instancia de DataRepository
             val authService = AuthService()
-            val dataRepository = DataRepository(authService)
+            val firestoreService = FirestoreService()
+            val dataRepository = DataRepository(authService, firestoreService)
 
             ProyectoIntegradoMRATheme {
                 Surface(modifier = Modifier.fillMaxSize()) {

@@ -14,6 +14,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -21,10 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.Usuario
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.BottomNavigationBar
@@ -36,29 +37,17 @@ fun HomeView(
     dataRepository: DataRepository,
     navTo: NavHostController
 ) {
+    var i by remember { mutableIntStateOf(0) }
     val miUsuario by dataRepository.usuario.observeAsState()
-    Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .background(ColorDeFondo)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Logo()
-            StandardButton(
-                text = "",
-                icon = Icons.Filled.Add,
-                onClick = {})
-        }
-    }
-}
+    val miPublicacion = Publicaciones()
 
-@Preview
-@Composable
-fun HomeViewPreview() {
-    var n by remember { mutableIntStateOf ( 0 ) }
-    Scaffold(bottomBar = { BottomNavigationBar(navController = rememberNavController()) }) { innerPadding ->
+    LaunchedEffect(Unit) {
+        dataRepository.cargarUsuario()
+        dataRepository.cargarPublicacionesPorUidUsuario(miUsuario?.uid.toString())
+        i = dataRepository.usuario.value?.ad?.size ?: 0
+    }
+
+    Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->
         Box(
             modifier = Modifier
                 .padding(innerPadding)
@@ -68,7 +57,7 @@ fun HomeViewPreview() {
             Column(modifier = Modifier.align(Alignment.TopCenter)) {
                 Logo()
                 LazyColumn(modifier = Modifier.padding(16.dp)) {
-                    items(n) { item -> ClickableElevatedCardSample(item) }
+                    items(i) { index -> ClickableElevatedCardSample(index, miUsuario) }
                 }
             }
             Box(
@@ -79,7 +68,16 @@ fun HomeViewPreview() {
                 StandardButton(
                     text = "",
                     icon = Icons.Filled.Add,
-                    onClick = { n++ }
+                    onClick = {
+                        i++
+                        miPublicacion.userId = "${miUsuario?.uid}"
+                        miPublicacion.title = "Publicacion $i"
+                        miPublicacion.description = "Description $i"
+                        miPublicacion.plazas = i
+                        miUsuario?.ad?.add(miPublicacion);
+                        dataRepository.agregarDocumentoPublicacionesFirestore(miPublicacion)
+                       // dataRepository.agregarPublicacionAUsuario("${miUsuario?.uid}")
+                    }
                 )
             }
         }
@@ -87,7 +85,7 @@ fun HomeViewPreview() {
 }
 
 @Composable
-fun ClickableElevatedCardSample(int: Int) {
+fun ClickableElevatedCardSample(int: Int, miUsuario: Usuario?) {
     ElevatedCard(
         onClick = { /* Do something */ },
         modifier = Modifier
@@ -95,7 +93,14 @@ fun ClickableElevatedCardSample(int: Int) {
             .padding(16.dp)
     ) {
         Box(Modifier.fillMaxSize()) {
-            Text(text = "Hola $int", modifier = Modifier.align(Alignment.Center))
+            Text(
+                text = "$int Hola, ${miUsuario?.name}, bienvenido",
+                modifier = Modifier.align(Alignment.TopStart)
+            )
+            Text(
+                text = miUsuario?.ad?.get(int)?.title.toString(),
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
     }
 }

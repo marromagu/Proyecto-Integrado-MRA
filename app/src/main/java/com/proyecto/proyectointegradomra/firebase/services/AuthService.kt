@@ -27,7 +27,7 @@ class AuthService : ViewModel() {
 
     // LiveData para el usuario autenticado actualmente
     private val _userAuthCurrent = MutableLiveData<FirebaseUser?>(firebaseAuth.currentUser)
-    val userAuthCurrent: LiveData<FirebaseUser?> = _userAuthCurrent
+    private val userAuthCurrent: LiveData<FirebaseUser?> = _userAuthCurrent
 
     // LiveData para los datos del usuario (información adicional a FirebaseUser)
     private val _usuario = MutableLiveData<Usuario?>()
