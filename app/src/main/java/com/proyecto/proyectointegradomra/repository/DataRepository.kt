@@ -38,7 +38,7 @@ class DataRepository(
     // Función para obtener el usuario actual
     fun obtenerUsuarioActual() = autService.usuario
 
-    // Función para cargar el usuario desde Firestore
+    // Función para cargar el usuario desde Firestore para obtener sus datos
     fun cargarUsuario() = autService.cargarUsuario()
 
     // Función para actualizar el nombre de usuario

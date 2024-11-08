@@ -37,7 +37,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TimePicker
@@ -142,10 +141,10 @@ fun TimePickerField(modifier: Modifier) {
 }
 
 @Composable
-fun Contador() {
+fun Contador(plazas: Int, onValueChange: (Int) -> Unit) {
     Row {
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = { onValueChange(plazas - 1) },
             modifier = Modifier.padding(8.dp)
         ) {
             Icon(
@@ -156,8 +155,8 @@ fun Contador() {
             )
         }
         OutlinedTextField(
-            value = "1",
-            onValueChange = { /*TODO*/ },
+            value = plazas.toString(),
+            onValueChange = { onValueChange(it.toIntOrNull() ?: 0) },
             colors = myTextFieldColors(),
             modifier = Modifier
                 .padding(8.dp)
@@ -167,10 +166,11 @@ fun Contador() {
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
-            )
+            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = { onValueChange(plazas + 1) },
             modifier = Modifier.padding(8.dp)
         ) {
             Icon(
@@ -224,17 +224,6 @@ fun DatePickerField(modifier: Modifier) {
             DatePicker(state = datePickerState)
         }
     }
-}
-
-@Composable
-fun TextArea(label: String, value: String, onValueChange: () -> Unit) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = { onValueChange() },
-        modifier = Modifier.height(120.dp),
-        label = { Text(label) },
-        colors = myTextFieldColors(),
-    )
 }
 
 @Composable
@@ -335,6 +324,17 @@ fun BottomNavigationBar(navController: NavHostController) {
 
 fun currentRoute(navController: NavHostController): String? {
     return navController.currentBackStackEntry?.destination?.route
+}
+
+@Composable
+fun TextArea(label: String, value: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = Modifier.height(120.dp),
+        label = { Text(label) },
+        colors = myTextFieldColors(),
+    )
 }
 
 @Composable

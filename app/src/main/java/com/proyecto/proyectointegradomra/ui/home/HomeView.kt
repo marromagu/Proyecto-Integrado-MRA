@@ -38,7 +38,6 @@ fun HomeView(
 ) {
     var i by remember { mutableIntStateOf(0) }
     val miUsuario by dataRepository.usuario.observeAsState()
-    val miPublicacion = Publicaciones()
 
     LaunchedEffect(Unit) {
         dataRepository.cargarUsuario()

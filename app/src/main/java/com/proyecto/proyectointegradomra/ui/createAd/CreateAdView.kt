@@ -7,9 +7,11 @@ import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.common.Contador
@@ -22,7 +24,18 @@ import com.proyecto.proyectointegradomra.ui.common.TimePickerField
 import com.proyecto.proyectointegradomra.ui.theme.*
 
 @Composable
-fun CreateAdView(navTo: NavHostController, dataRepository: DataRepository) {
+fun CreateAdView(
+    createAdController: CreateAdViewModel = viewModel(),
+    navTo: NavHostController,
+    dataRepository: DataRepository
+) {
+
+    val title by createAdController.title.observeAsState("")
+    val description by createAdController.description.observeAsState("")
+    val fecha by createAdController.fecha.observeAsState("")
+    val hora by createAdController.hora.observeAsState("")
+    val plazas by createAdController.plazas.observeAsState(0)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -37,14 +50,18 @@ fun CreateAdView(navTo: NavHostController, dataRepository: DataRepository) {
         // Titulo
         Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
             StandardField(label = "Titulo",
-                value = "Titulo de la publicacion",
+                value = title,
                 icon = Icons.Filled.AccountBalance,
-                onValueChange = { })
+                onValueChange = {
+                    createAdController.updateTitle(it)
+                })
         }
 
         Spacer(modifier = Modifier.weight(0.25f))
         // Texto
-        TextArea(label = "Titulo", value = "Titulo de la publicacion", onValueChange = { })
+        TextArea(label = "Description", value = description, onValueChange = {
+            createAdController.updateDescription(it)
+        })
 
         Spacer(modifier = Modifier.weight(0.25f))
         // Fecha y hora
@@ -63,7 +80,9 @@ fun CreateAdView(navTo: NavHostController, dataRepository: DataRepository) {
 
         Spacer(modifier = Modifier.weight(0.25f))
         // Numero de personas
-        Contador()
+        Contador(plazas, onValueChange = {
+            createAdController.updatePlazas(it)
+        })
 
         Spacer(modifier = Modifier.weight(1f))
         // Botones
@@ -73,7 +92,7 @@ fun CreateAdView(navTo: NavHostController, dataRepository: DataRepository) {
                     text = "Crear",
                     icon = Icons.Filled.CheckCircle,
                     onClick = {
-                        //dataRepository.crearPublicacion()
+                        // dataRepository.agregarDocumentoPublicacionesFirestore()
                     },
                 )
             }
