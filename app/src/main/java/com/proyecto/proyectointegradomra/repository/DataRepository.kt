@@ -1,11 +1,10 @@
 package com.proyecto.proyectointegradomra.repository
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.proyecto.proyectointegradomra.data.model.Publicaciones
 import com.proyecto.proyectointegradomra.firebase.services.AuthService
 import com.proyecto.proyectointegradomra.firebase.services.FirestoreService
-import kotlinx.coroutines.launch
+
 
 class DataRepository(
     private val autService: AuthService,
@@ -44,6 +43,8 @@ class DataRepository(
 
     // Función para actualizar el nombre de usuario
     fun actualizarNombreUsuario(newName: String) = autService.actualizarNombreUsuario(newName)
+
+    /*-------------------------------------------------------------------------------------------*/
 
     // Función para agregar una publicación a Firestore
     fun agregarPublicacionAUsuario(uid: String, miPublicacionList: List<Publicaciones>) {

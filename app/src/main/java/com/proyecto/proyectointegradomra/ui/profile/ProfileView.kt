@@ -11,13 +11,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,6 +29,8 @@ import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.BottomNavigationBar
+import com.proyecto.proyectointegradomra.ui.common.DialogoAlerta
+import com.proyecto.proyectointegradomra.ui.common.DialogoEditarNombre
 import com.proyecto.proyectointegradomra.ui.common.FotoPerfil
 import com.proyecto.proyectointegradomra.ui.common.StandardButton
 import com.proyecto.proyectointegradomra.ui.common.StandardFieldText
@@ -79,7 +77,7 @@ fun ProfileView(
             }
 
             // Diálogo para editar el nombre
-            Extracted(
+            DialogoEditarNombre(
                 showDialog = showDialog,
                 showDialogChanger = { showDialog = it },
                 newName = newName,
@@ -88,6 +86,8 @@ fun ProfileView(
             )
 
             Spacer(modifier = Modifier.weight(1f))
+
+            // Column para los datos del usuario
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -145,70 +145,7 @@ fun ProfileView(
             }
 
             // Diálogo de alerta para confirmar acciones
-            if (showAlert) {
-                AlertDialog(
-                    onDismissRequest = { showAlert = false },
-                    title = { Text("Confirmación") },
-                    text = { Text(alertMessage) },
-                    confirmButton = {
-                        Button(onClick = {
-                            actionConfirmed()
-                            showAlert = false
-                        }) {
-                            Text("Confirmar")
-                        }
-                    },
-                    dismissButton = {
-                        Button(onClick = { showAlert = false }) {
-                            Text("Cancelar")
-                        }
-                    }
-                )
-            }
+            DialogoAlerta(showAlert, alertMessage, actionConfirmed)
         }
-    }
-}
-
-
-@Composable
-private fun Extracted(
-    showDialog: Boolean,
-    showDialogChanger: (Boolean) -> Unit,
-    newName: String,
-    newNameChanger: (String) -> Unit,
-    dataRepository: DataRepository
-) {
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialogChanger(false) },
-            title = { Text("Editar nombre") },
-            text = {
-                OutlinedTextField(
-                    value = newName,
-                    onValueChange = { newNameChanger(it) },
-                    label = { Text("Nuevo nombre") }
-                )
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        if (newName.isNotBlank()) {
-                            dataRepository.actualizarNombreUsuario(newName)
-                            newNameChanger("")
-                            showDialogChanger(false)
-                        }
-                    }
-                ) {
-                    Text("Guardar")
-                }
-            },
-            dismissButton = {
-                Button(
-                    onClick = { showDialogChanger(false) }
-                ) {
-                    Text("Cancelar")
-                }
-            }
-        )
     }
 }

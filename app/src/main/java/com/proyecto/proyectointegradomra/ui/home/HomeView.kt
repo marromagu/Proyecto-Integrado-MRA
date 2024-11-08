@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.data.model.Publicaciones
-import com.proyecto.proyectointegradomra.data.model.Usuario
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.BottomNavigationBar
@@ -57,7 +56,13 @@ fun HomeView(
             Column(modifier = Modifier.align(Alignment.TopCenter)) {
                 Logo()
                 LazyColumn(modifier = Modifier.padding(16.dp)) {
-                    items(i) { index -> ClickableElevatedCardSample(index, miUsuario) }
+                    items(i) { index ->
+                        miUsuario?.ad?.let {
+                            ClickableElevatedCardSample(
+                                it[index]
+                            )
+                        }
+                    }
                 }
             }
             Box(
@@ -69,14 +74,7 @@ fun HomeView(
                     text = "",
                     icon = Icons.Filled.Add,
                     onClick = {
-                        i++
-                        miPublicacion.userId = "${miUsuario?.uid}"
-                        miPublicacion.title = "Publicacion $i"
-                        miPublicacion.description = "Description $i"
-                        miPublicacion.plazas = i
-                        miUsuario?.ad?.add(miPublicacion);
-                        dataRepository.agregarDocumentoPublicacionesFirestore(miPublicacion)
-                       // dataRepository.agregarPublicacionAUsuario("${miUsuario?.uid}")
+                        navTo.navigate("CreateAdView")
                     }
                 )
             }
@@ -85,21 +83,25 @@ fun HomeView(
 }
 
 @Composable
-fun ClickableElevatedCardSample(int: Int, miUsuario: Usuario?) {
+private fun ClickableElevatedCardSample(miUsuarioAd: Publicaciones) {
     ElevatedCard(
-        onClick = { /* Do something */ },
+        onClick = { },
         modifier = Modifier
             .size(width = 300.dp, height = 200.dp)
             .padding(16.dp)
     ) {
         Box(Modifier.fillMaxSize()) {
             Text(
-                text = "$int Hola, ${miUsuario?.name}, bienvenido",
-                modifier = Modifier.align(Alignment.TopStart)
+                text = miUsuarioAd.title,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(8.dp)
             )
             Text(
-                text = miUsuario?.ad?.get(int)?.title.toString(),
-                modifier = Modifier.align(Alignment.Center)
+                text = miUsuarioAd.description,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(8.dp)
             )
         }
     }

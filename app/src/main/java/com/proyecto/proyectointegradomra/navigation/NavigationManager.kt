@@ -7,8 +7,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.proyecto.proyectointegradomra.data.model.TipoUsuario
 import com.proyecto.proyectointegradomra.repository.DataRepository
+import com.proyecto.proyectointegradomra.ui.createAd.CreateAdView
 import com.proyecto.proyectointegradomra.ui.start.StartView
 import com.proyecto.proyectointegradomra.ui.signUp.SingUpView
 import com.proyecto.proyectointegradomra.ui.login.LogInView
@@ -76,6 +76,10 @@ fun NavigationManager(
         composable(route = Screens.FavoritesScreen.ruta) {
             // Pantalla de favoritos del usuario
             FavoritesView(navTo = navController, dataRepository = dataRepository)
+        }
+        composable(route = Screens.CreateAdScreen.ruta) {
+            // Pantalla para crear una nueva publicación
+            CreateAdView(navTo = navController, dataRepository = dataRepository)
         }
     }
 }

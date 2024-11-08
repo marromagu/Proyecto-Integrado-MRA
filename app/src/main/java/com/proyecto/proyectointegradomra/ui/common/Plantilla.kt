@@ -1,19 +1,34 @@
 package com.proyecto.proyectointegradomra.ui.common
 
+import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowCircleDown
+import androidx.compose.material.icons.filled.ArrowCircleUp
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,7 +36,13 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,16 +57,245 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.R
 import com.proyecto.proyectointegradomra.navigation.Screens
+import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorContainer
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeBotones
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
 import com.proyecto.proyectointegradomra.ui.theme.ColorFocuseado
 import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
+import java.util.Locale
+
+@Composable
+fun myTextFieldColors(): TextFieldColors {
+    return TextFieldDefaults.colors(
+        focusedContainerColor = ColorContainer,
+        unfocusedContainerColor = ColorContainer,
+        focusedIndicatorColor = ColorFocuseado,
+        unfocusedIndicatorColor = ColorUnfocuseado,
+        focusedTextColor = ColorDeLetras,
+        unfocusedTextColor = ColorUnfocuseado,
+        focusedLabelColor = ColorFocuseado,
+        unfocusedLabelColor = ColorUnfocuseado,
+        focusedTrailingIconColor = ColorFocuseado,
+        unfocusedTrailingIconColor = ColorUnfocuseado,
+        focusedLeadingIconColor = ColorFocuseado,
+        unfocusedLeadingIconColor = ColorUnfocuseado,
+        cursorColor = ColorFocuseado,
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimePickerField(modifier: Modifier) {
+    var selectedTime by remember { mutableStateOf("") }
+    var showTimePicker by remember { mutableStateOf(false) }
+    val timeFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
+
+    OutlinedTextField(
+        value = selectedTime,
+        onValueChange = {},
+        readOnly = true,
+        label = { Text("Hora") },
+        leadingIcon = {
+            IconButton(onClick = { showTimePicker = true }) {
+                Icon(Icons.Filled.Schedule, contentDescription = "Seleccionar Hora")
+            }
+        },
+        colors = myTextFieldColors(),
+        modifier = modifier
+    )
+
+    if (showTimePicker) {
+        val timePickerState = rememberTimePickerState()
+        AlertDialog(onDismissRequest = { showTimePicker = false },
+            title = { Text("Selecciona la hora") },
+            text = {
+                Column {
+                    TimePicker(state = timePickerState)
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val cal = Calendar.getInstance().apply {
+                        set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+                        set(Calendar.MINUTE, timePickerState.minute)
+                    }
+                    selectedTime = timeFormatter.format(cal.time)
+                    showTimePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text("Cancelar")
+                }
+            })
+    }
+}
+
+@Composable
+fun Contador() {
+    Row {
+        IconButton(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Icon(
+                Icons.Filled.ArrowCircleDown,
+                contentDescription = "-",
+                tint = ColorDeLetras,
+                modifier = Modifier.size(32.dp)
+            )
+        }
+        OutlinedTextField(
+            value = "1",
+            onValueChange = { /*TODO*/ },
+            colors = myTextFieldColors(),
+            modifier = Modifier
+                .padding(8.dp)
+                .height(60.dp)
+                .width(100.dp),
+            textStyle = TextStyle(
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        )
+        IconButton(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Icon(
+                Icons.Filled.ArrowCircleUp,
+                contentDescription = "+",
+                tint = ColorDeLetras,
+                modifier = Modifier.size(32.dp)
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerField(modifier: Modifier) {
+    var selectedDate by remember { mutableStateOf("") }
+    var showDatePicker by remember { mutableStateOf(false) }
+    val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+    OutlinedTextField(
+        value = selectedDate,
+        onValueChange = {},
+        readOnly = true,
+        label = { Text("Fecha") },
+        leadingIcon = {
+            IconButton(onClick = { showDatePicker = true }) {
+                Icon(Icons.Filled.CalendarToday, contentDescription = "Seleccionar Fecha")
+            }
+        },
+        colors = myTextFieldColors(),
+        modifier = modifier
+
+    )
+
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState()
+        DatePickerDialog(onDismissRequest = { showDatePicker = false }, confirmButton = {
+            TextButton(onClick = {
+                selectedDate = datePickerState.selectedDateMillis?.let {
+                    dateFormatter.format(java.util.Date(it))
+                } ?: ""
+                showDatePicker = false
+            }) {
+                Text("OK")
+            }
+        }, dismissButton = {
+            TextButton(onClick = { showDatePicker = false }) {
+                Text("Cancelar")
+            }
+        }) {
+            DatePicker(state = datePickerState)
+        }
+    }
+}
+
+@Composable
+fun TextArea(label: String, value: String, onValueChange: () -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = { onValueChange() },
+        modifier = Modifier.height(120.dp),
+        label = { Text(label) },
+        colors = myTextFieldColors(),
+    )
+}
+
+@Composable
+fun DialogoAlerta(
+    showAlert: Boolean, alertMessage: String, actionConfirmed: () -> Unit
+) {
+    var showAlert1 = showAlert
+    if (showAlert1) {
+        AlertDialog(onDismissRequest = { showAlert1 = false },
+            title = { Text("Confirmación") },
+            text = { Text(alertMessage) },
+            confirmButton = {
+                Button(onClick = {
+                    actionConfirmed()
+                    showAlert1 = false
+                }) {
+                    Text("Confirmar")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showAlert1 = false }) {
+                    Text("Cancelar")
+                }
+            })
+    }
+}
+
+@Composable
+fun DialogoEditarNombre(
+    showDialog: Boolean,
+    showDialogChanger: (Boolean) -> Unit,
+    newName: String,
+    newNameChanger: (String) -> Unit,
+    dataRepository: DataRepository
+) {
+    if (showDialog) {
+        AlertDialog(onDismissRequest = { showDialogChanger(false) },
+            title = { Text("Editar nombre") },
+            text = {
+                OutlinedTextField(value = newName,
+                    onValueChange = { newNameChanger(it) },
+                    label = { Text("Nuevo nombre") })
+            },
+            confirmButton = {
+                Button(onClick = {
+                    if (newName.isNotBlank()) {
+                        dataRepository.actualizarNombreUsuario(newName)
+                        newNameChanger("")
+                        showDialogChanger(false)
+                    }
+                }) {
+                    Text("Guardar")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialogChanger(false) }) {
+                    Text("Cancelar")
+                }
+            })
+    }
+}
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
@@ -141,10 +391,7 @@ fun StandardField(
 
 @Composable
 fun StandardFieldText(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier
+    label: String, value: String, onValueChange: (String) -> Unit, modifier: Modifier
 ) {
     OutlinedTextField(
         value = value,
@@ -200,6 +447,19 @@ fun Logo() {
 
 @Composable
 fun FotoPerfil() {
+    val fotoPerfil = painterResource(id = R.drawable.ic_launcher_foreground)
+    Box(modifier = Modifier) {
+        Image(
+            painter = fotoPerfil,
+            contentDescription = "",
+            modifier = Modifier.size(150.dp),
+            contentScale = ContentScale.Fit
+        )
+    }
+}
+
+@Composable
+fun CrearPublicacionIMG() {
     val fotoPerfil = painterResource(id = R.drawable.ic_launcher_foreground)
     Box(modifier = Modifier) {
         Image(
