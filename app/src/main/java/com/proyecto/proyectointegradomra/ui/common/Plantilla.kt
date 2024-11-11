@@ -3,10 +3,13 @@ package com.proyecto.proyectointegradomra.ui.common
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,6 +43,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -47,7 +51,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -57,14 +63,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.R
 import com.proyecto.proyectointegradomra.navigation.Screens
 import com.proyecto.proyectointegradomra.repository.DataRepository
+import com.proyecto.proyectointegradomra.ui.theme.AzulOscuro
+import com.proyecto.proyectointegradomra.ui.theme.ColorAzulProfundo
 import com.proyecto.proyectointegradomra.ui.theme.ColorContainer
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeBotones
+import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
 import com.proyecto.proyectointegradomra.ui.theme.ColorFocuseado
 import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
@@ -85,16 +95,43 @@ fun myTextFieldColors(): TextFieldColors {
         unfocusedTrailingIconColor = ColorUnfocuseado,
         focusedLeadingIconColor = ColorFocuseado,
         unfocusedLeadingIconColor = ColorUnfocuseado,
-        cursorColor = ColorFocuseado,
+        unfocusedPlaceholderColor = ColorUnfocuseado,
+        focusedPlaceholderColor = ColorFocuseado,
+
+        cursorColor = ColorFocuseado
     )
 }
 
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    Column(
+        modifier = Modifier
+            .background(ColorDeFondo)
+            .padding(16.dp)
+            .fillMaxSize()
+    ) {
+        Logo()
+        Row(modifier = Modifier.fillMaxWidth()) {
+            DatePickerField(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp)
+            )
+            TimePickerField(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp)
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimePickerField(modifier: Modifier) {
     var selectedTime by remember { mutableStateOf("") }
-    var showTimePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(true) }
     val timeFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
     OutlinedTextField(
@@ -117,23 +154,38 @@ fun TimePickerField(modifier: Modifier) {
             title = { Text("Selecciona la hora") },
             text = {
                 Column {
-                    TimePicker(state = timePickerState)
+                    TimePicker(
+                        state = timePickerState, colors = TimePickerDefaults.colors(
+                            periodSelectorSelectedContainerColor = ColorContainer,
+                            timeSelectorSelectedContainerColor = ColorContainer,
+                            selectorColor = ColorDeBotones,
+
+                            )
+                    )
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
-                    val cal = Calendar.getInstance().apply {
-                        set(Calendar.HOUR_OF_DAY, timePickerState.hour)
-                        set(Calendar.MINUTE, timePickerState.minute)
-                    }
-                    selectedTime = timeFormatter.format(cal.time)
-                    showTimePicker = false
-                }) {
+                TextButton(
+                    onClick = {
+                        val cal = Calendar.getInstance().apply {
+                            set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+                            set(Calendar.MINUTE, timePickerState.minute)
+                        }
+                        selectedTime = timeFormatter.format(cal.time)
+                        showTimePicker = false
+                    }, colors = ButtonDefaults.textButtonColors(
+                        contentColor = ColorDeBotones
+                    )
+                ) {
                     Text("OK")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showTimePicker = false }) {
+                TextButton(
+                    onClick = { showTimePicker = false }, colors = ButtonDefaults.textButtonColors(
+                        contentColor = ColorDeBotones
+                    )
+                ) {
                     Text("Cancelar")
                 }
             })
@@ -201,7 +253,7 @@ fun DatePickerField(modifier: Modifier) {
             }
         },
         colors = myTextFieldColors(),
-        modifier = modifier
+        modifier = modifier.clickable { showDatePicker = true }
 
     )
 

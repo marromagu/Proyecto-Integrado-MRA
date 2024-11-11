@@ -30,9 +30,9 @@ class DataRepository(
         password: String,
         name: String,
         esOfertante: Boolean,
-        onSuccess: () -> Unit, onError: () -> Unit
+        onSuccess: () -> Unit, onError: (Exception) -> Unit
     ) {
-        autService.registrarse(email, password, name, esOfertante, onSuccess, onError)
+        autService.registrarse(email, password, name, esOfertante, onSuccess, onError = onError)
     }
 
     // Función para obtener el usuario actual
@@ -50,6 +50,7 @@ class DataRepository(
     fun agregarDocumentoPublicacionesFirestore(miPublicacion: Publicaciones) {
         firestoreService.agregarDocumentoPublicacionesFirestore(miPublicacion)
     }
+
     suspend fun obtenerPublicacionesPorUsuario(userId: String): List<Publicaciones> {
         return firestoreService.obtenerPublicacionesPorUsuario(userId)
     }

@@ -126,8 +126,8 @@ fun SingUpView(
                 } else {
                     dataRepository.registrarse(email, password, name, esOfertante, onSuccess = {
                         navToLogIn()
-                    }, onError = {
-                        errorMessage = "Error al registrarse"
+                    }, onError = {exception ->
+                        errorMessage = exception.message ?: "Error desconocido"
                     })
                 }
             })

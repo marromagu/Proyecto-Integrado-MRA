@@ -91,6 +91,11 @@ fun CreateAdView(
         // Botones
         Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.weight(1f)) {
+                StandardButton(text = "Cancelar", icon = Icons.Filled.Cancel, onClick = {
+                    navTo.navigate("HomeView")
+                })
+            }
+            Box(modifier = Modifier.weight(1f)) {
                 StandardButton(
                     text = "Crear",
                     icon = Icons.Filled.CheckCircle,
@@ -104,11 +109,6 @@ fun CreateAdView(
                         navTo.navigate("HomeView")
                     },
                 )
-            }
-            Box(modifier = Modifier.weight(1f)) {
-                StandardButton(text = "Cancelar", icon = Icons.Filled.Cancel, onClick = {
-                    navTo.navigate("HomeView")
-                })
             }
         }
     }

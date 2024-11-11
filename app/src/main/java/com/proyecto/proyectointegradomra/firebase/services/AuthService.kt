@@ -62,7 +62,7 @@ class AuthService : ViewModel() {
         name: String,
         esOfertante: Boolean,
         onSuccess: () -> Unit,
-        onError: () -> Unit
+        onError: (Exception) -> Unit
     ) {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -78,7 +78,8 @@ class AuthService : ViewModel() {
                 } else {
                     // Manejo de errores en el registro
                     _userAuthCurrent.value = null
-                    onError()
+                    val exception = task.exception
+                    onError(exception!!)
                 }
             }
     }
