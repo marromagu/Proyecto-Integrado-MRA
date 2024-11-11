@@ -46,19 +46,11 @@ class DataRepository(
 
     /*-------------------------------------------------------------------------------------------*/
 
-    // Función para agregar una publicación a Firestore
-    fun agregarPublicacionAUsuario(uid: String, miPublicacionList: List<Publicaciones>) {
-        firestoreService.agregarPublicacionAUsuario(uid, miPublicacionList)
-    }
-
     // Función para agregar un documento a Firestore
     fun agregarDocumentoPublicacionesFirestore(miPublicacion: Publicaciones) {
         firestoreService.agregarDocumentoPublicacionesFirestore(miPublicacion)
     }
-
-    // Función para cargar publicaciones por UID de usuario
-    suspend fun cargarPublicacionesPorUidUsuario(uidUsuario: String): List<Publicaciones> {
-        return firestoreService.cargarPublicacionesPorUidUsuario(uidUsuario)
+    suspend fun obtenerPublicacionesPorUsuario(userId: String): List<Publicaciones> {
+        return firestoreService.obtenerPublicacionesPorUsuario(userId)
     }
-
 }

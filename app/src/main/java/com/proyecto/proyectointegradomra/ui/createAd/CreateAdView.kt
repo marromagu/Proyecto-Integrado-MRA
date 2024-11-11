@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.proyecto.proyectointegradomra.data.model.Publicaciones
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.common.Contador
 import com.proyecto.proyectointegradomra.ui.common.CrearPublicacionIMG
@@ -35,6 +36,8 @@ fun CreateAdView(
     val fecha by createAdController.fecha.observeAsState("")
     val hora by createAdController.hora.observeAsState("")
     val plazas by createAdController.plazas.observeAsState(0)
+
+    val miAd = Publicaciones()
 
     Column(
         modifier = Modifier
@@ -92,12 +95,20 @@ fun CreateAdView(
                     text = "Crear",
                     icon = Icons.Filled.CheckCircle,
                     onClick = {
-                        // dataRepository.agregarDocumentoPublicacionesFirestore()
+                        miAd.title = title
+                        miAd.description = description
+                        // miAd.date = fecha
+                        miAd.userId = dataRepository.usuario.value?.uid ?: ""
+                        miAd.plazas = plazas
+                        dataRepository.agregarDocumentoPublicacionesFirestore(miAd)
+                        navTo.navigate("HomeView")
                     },
                 )
             }
             Box(modifier = Modifier.weight(1f)) {
-                StandardButton(text = "Cancelar", icon = Icons.Filled.Cancel, onClick = { })
+                StandardButton(text = "Cancelar", icon = Icons.Filled.Cancel, onClick = {
+                    navTo.navigate("HomeView")
+                })
             }
         }
     }

@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,13 +37,13 @@ fun HomeView(
     dataRepository: DataRepository,
     navTo: NavHostController
 ) {
-    var i by remember { mutableIntStateOf(0) }
+    var publicaciones by remember { mutableStateOf<List<Publicaciones>>(emptyList()) }
     val miUsuario by dataRepository.usuario.observeAsState()
 
-    LaunchedEffect(Unit) {
-        dataRepository.cargarUsuario()
-        dataRepository.cargarPublicacionesPorUidUsuario(miUsuario?.uid.toString())
-        i = dataRepository.usuario.value?.ad?.size ?: 0
+    LaunchedEffect(miUsuario) {
+        miUsuario?.uid?.let { userId ->
+            publicaciones = dataRepository.obtenerPublicacionesPorUsuario(userId)
+        }
     }
 
     Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->
@@ -55,12 +56,10 @@ fun HomeView(
             Column(modifier = Modifier.align(Alignment.TopCenter)) {
                 Logo()
                 LazyColumn(modifier = Modifier.padding(16.dp)) {
-                    items(i) { index ->
-                        miUsuario?.ad?.let {
-                            ClickableElevatedCardSample(
-                                it[index]
-                            )
-                        }
+                    items(publicaciones.size) { index ->
+                        ClickableElevatedCardSample(
+                            publicaciones[index]
+                        )
                     }
                 }
             }

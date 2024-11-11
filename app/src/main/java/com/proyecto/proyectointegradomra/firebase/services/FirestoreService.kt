@@ -2,6 +2,7 @@ package com.proyecto.proyectointegradomra.firebase.services
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import com.proyecto.proyectointegradomra.data.model.Publicaciones
 import com.proyecto.proyectointegradomra.data.model.Usuario
 import kotlinx.coroutines.tasks.await
@@ -154,54 +155,15 @@ class FirestoreService {
         )
     }
 
-    /**
-     * Obtiene una lista de publicaciones por UID de usuario desde Firestore.
-     *
-     * @param uidUsuario UID del usuario para el que se buscan las publicaciones.
-     */
-    suspend fun cargarPublicacionesPorUidUsuario(uidUsuario: String): List<Publicaciones> {
-        val publicacionesList = mutableListOf<Publicaciones>()
-        try {
-            val documents = miCloudFirestore.collection("publicaciones")
-                .whereEqualTo("userId", uidUsuario)
+    suspend fun obtenerPublicacionesPorUsuario(userId: String): List<Publicaciones> {
+        return try {
+            val querySnapshot = miCloudFirestore.collection("publicaciones")
+                .whereEqualTo("userId", userId)
                 .get()
-                .await() // Espera la respuesta de forma asíncrona
-            for (document in documents) {
-                val publicacion = document.toObject(Publicaciones::class.java)
-                publicacion.uid = document.id
-                publicacionesList.add(publicacion)
-                Log.d("FirestoreService", "${document.id} => ${document.data}")
-            }
-        } catch (exception: Exception) {
-            Log.w("FirestoreService", "Error getting documents: ", exception)
+                .await()
+            querySnapshot.documents.mapNotNull { it.toObject<Publicaciones>() }
+        } catch (e: Exception) {
+            emptyList()
         }
-        Log.i(
-            "FirestoreService",
-            "*cargarPublicacionesPorUidUsuario* Lista de publicaciones: $publicacionesList"
-        )
-        return publicacionesList
-    }
-
-    /**
-     * Agrega una lista de publicaciones a un usuario en Firestore.
-     *
-     * @param uid UID del usuario al que se agregarán las publicaciones.
-     * @param miPublicacionList Lista de publicaciones a agregar.
-     */
-    fun agregarPublicacionAUsuario(uid: String, miPublicacionList: List<Publicaciones>) {
-        val userRef = miCloudFirestore.collection("usuarios").document(uid)
-        Log.i(
-            "FirestoreService",
-            "*agregarPublicacionAUsuario* Lista de publicaciones: $miPublicacionList"
-        )
-
-        userRef.update("ad", miPublicacionList)
-            .addOnSuccessListener {
-                Log.i("FirestoreService", "Lista de publicaciones actualizada con éxito.")
-            }
-            .addOnFailureListener { exception ->
-                // Manejo de error en caso de fallo al actualizar.
-                Log.e("FirestoreService", "Error al actualizar lista de publicaciones: $exception")
-            }
     }
 }

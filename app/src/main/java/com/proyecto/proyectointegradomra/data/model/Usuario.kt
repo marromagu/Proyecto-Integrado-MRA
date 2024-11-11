@@ -5,5 +5,4 @@ data class Usuario(
     var name: String = "",
     var email: String = "",
     val type: TipoUsuario = TipoUsuario.DEMANDANTE,  // "Ofertante" o "Demandante"
-    var ad: MutableList<Publicaciones> = mutableListOf()
 )
