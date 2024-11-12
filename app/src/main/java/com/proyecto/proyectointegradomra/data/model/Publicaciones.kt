@@ -6,6 +6,6 @@ data class Publicaciones(
     var userId: String = "",
     var title: String = "",
     var description: String = "",
-    val date: Long = System.currentTimeMillis(),
+    var date: Long = System.currentTimeMillis(),
     var plazas: Int = 0
 )

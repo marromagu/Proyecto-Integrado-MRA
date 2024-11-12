@@ -23,6 +23,8 @@ import com.proyecto.proyectointegradomra.ui.common.StandardField
 import com.proyecto.proyectointegradomra.ui.common.TextArea
 import com.proyecto.proyectointegradomra.ui.common.TimePickerField
 import com.proyecto.proyectointegradomra.ui.theme.*
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun CreateAdView(
@@ -72,12 +74,14 @@ fun CreateAdView(
             DatePickerField(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(8.dp)
+                    .padding(8.dp),
+                onDateSelected = { f -> createAdController.updateFecha(f) }
             )
             TimePickerField(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(8.dp)
+                    .padding(8.dp),
+                onDateSelected = { h -> createAdController.updateHora(h) }
             )
         }
 
@@ -102,9 +106,9 @@ fun CreateAdView(
                     onClick = {
                         miAd.title = title
                         miAd.description = description
-                        // miAd.date = fecha
                         miAd.userId = dataRepository.usuario.value?.uid ?: ""
                         miAd.plazas = plazas
+                        miAd.date = combinarFechaYHora(fecha, hora)
                         dataRepository.agregarDocumentoPublicacionesFirestore(miAd)
                         navTo.navigate("HomeView")
                     },
@@ -112,4 +116,10 @@ fun CreateAdView(
             }
         }
     }
+}
+
+fun combinarFechaYHora(fecha: String, hora: String): Long {
+    val formatoFecha = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
+    val fechaCompleta = "$fecha $hora"
+    return formatoFecha.parse(fechaCompleta)?.time ?: System.currentTimeMillis()
 }

@@ -54,4 +54,6 @@ class DataRepository(
     suspend fun obtenerPublicacionesPorUsuario(userId: String): List<Publicaciones> {
         return firestoreService.obtenerPublicacionesPorUsuario(userId)
     }
+
+
 }

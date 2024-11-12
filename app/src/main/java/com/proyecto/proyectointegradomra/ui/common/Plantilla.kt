@@ -102,36 +102,14 @@ fun myTextFieldColors(): TextFieldColors {
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Column(
-        modifier = Modifier
-            .background(ColorDeFondo)
-            .padding(16.dp)
-            .fillMaxSize()
-    ) {
-        Logo()
-        Row(modifier = Modifier.fillMaxWidth()) {
-            DatePickerField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp)
-            )
-            TimePickerField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp)
-            )
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimePickerField(modifier: Modifier) {
+fun TimePickerField(
+    modifier: Modifier = Modifier,
+    onDateSelected: (String) -> Unit
+) {
     var selectedTime by remember { mutableStateOf("") }
-    var showTimePicker by remember { mutableStateOf(true) }
+    var showTimePicker by remember { mutableStateOf(false) }
     val timeFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
     OutlinedTextField(
@@ -158,9 +136,8 @@ fun TimePickerField(modifier: Modifier) {
                         state = timePickerState, colors = TimePickerDefaults.colors(
                             periodSelectorSelectedContainerColor = ColorContainer,
                             timeSelectorSelectedContainerColor = ColorContainer,
-                            selectorColor = ColorDeBotones,
-
-                            )
+                            selectorColor = ColorDeBotones
+                        )
                     )
                 }
             },
@@ -172,6 +149,7 @@ fun TimePickerField(modifier: Modifier) {
                             set(Calendar.MINUTE, timePickerState.minute)
                         }
                         selectedTime = timeFormatter.format(cal.time)
+                        onDateSelected(selectedTime)
                         showTimePicker = false
                     }, colors = ButtonDefaults.textButtonColors(
                         contentColor = ColorDeBotones
@@ -237,7 +215,10 @@ fun Contador(plazas: Int, onValueChange: (Int) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerField(modifier: Modifier) {
+fun DatePickerField(
+    modifier: Modifier = Modifier,
+    onDateSelected: (String) -> Unit // Parámetro para devolver la fecha
+) {
     var selectedDate by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -254,25 +235,33 @@ fun DatePickerField(modifier: Modifier) {
         },
         colors = myTextFieldColors(),
         modifier = modifier.clickable { showDatePicker = true }
-
     )
 
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState()
-        DatePickerDialog(onDismissRequest = { showDatePicker = false }, confirmButton = {
-            TextButton(onClick = {
-                selectedDate = datePickerState.selectedDateMillis?.let {
-                    dateFormatter.format(java.util.Date(it))
-                } ?: ""
-                showDatePicker = false
-            }) {
-                Text("OK")
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    val selectedMillis = datePickerState.selectedDateMillis
+                    selectedDate = selectedMillis?.let {
+                        dateFormatter.format(java.util.Date(it))
+                    } ?: ""
+
+                    // Llama a onDateSelected con la fecha seleccionada
+                    onDateSelected(selectedDate)
+
+                    showDatePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Cancelar")
+                }
             }
-        }, dismissButton = {
-            TextButton(onClick = { showDatePicker = false }) {
-                Text("Cancelar")
-            }
-        }) {
+        ) {
             DatePicker(state = datePickerState)
         }
     }

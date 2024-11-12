@@ -166,4 +166,17 @@ class FirestoreService {
             emptyList()
         }
     }
+
+    suspend fun obtenerPublicaciones(userId: String): List<Publicaciones> {
+        return try {
+
+            val querySnapshot = miCloudFirestore.collection("publicaciones")
+                .whereEqualTo("userId", userId)
+                .get()
+                .await()
+            querySnapshot.documents.mapNotNull { it.toObject<Publicaciones>() }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 }
