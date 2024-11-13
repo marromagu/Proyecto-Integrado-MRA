@@ -97,7 +97,6 @@ fun myTextFieldColors(): TextFieldColors {
         unfocusedLeadingIconColor = ColorUnfocuseado,
         unfocusedPlaceholderColor = ColorUnfocuseado,
         focusedPlaceholderColor = ColorFocuseado,
-
         cursorColor = ColorFocuseado
     )
 }
@@ -170,11 +169,23 @@ fun TimePickerField(
     }
 }
 
+@Preview
+@Composable
+fun PreviewTimePickerField() {
+    Contador(0, {})
+}
+
 @Composable
 fun Contador(plazas: Int, onValueChange: (Int) -> Unit) {
     Row {
         IconButton(
-            onClick = { onValueChange(plazas - 1) },
+            onClick = {
+                if (plazas <= 0) {
+                    onValueChange(0)
+                } else {
+                    onValueChange(plazas - 1)
+                }
+            },
             modifier = Modifier.padding(8.dp)
         ) {
             Icon(
@@ -186,6 +197,7 @@ fun Contador(plazas: Int, onValueChange: (Int) -> Unit) {
         }
         OutlinedTextField(
             value = plazas.toString(),
+            label = { Text("Plazas") },
             onValueChange = { onValueChange(it.toIntOrNull() ?: 0) },
             colors = myTextFieldColors(),
             modifier = Modifier
@@ -372,7 +384,9 @@ fun TextArea(label: String, value: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = Modifier.height(120.dp),
+        modifier = Modifier
+            .height(150.dp)
+            .fillMaxWidth(),
         label = { Text(label) },
         colors = myTextFieldColors(),
     )

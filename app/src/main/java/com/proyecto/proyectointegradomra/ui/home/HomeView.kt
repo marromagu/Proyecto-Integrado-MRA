@@ -8,8 +8,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,13 +46,9 @@ import java.util.Locale
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 
 @Composable
-fun HomeView(
-    dataRepository: DataRepository,
-    navTo: NavHostController
-) {
+fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
     var publicaciones by remember { mutableStateOf<List<Publicaciones>>(emptyList()) }
     val miUsuario by dataRepository.usuario.observeAsState()
 
@@ -65,7 +59,6 @@ fun HomeView(
     }
 
     val listState = rememberLazyListState() // Estado de desplazamiento del LazyColumn
-    val coroutineScope = rememberCoroutineScope()
 
     // Variable para controlar la visibilidad del FAB basada en el desplazamiento
     val showFab by remember {
@@ -84,8 +77,7 @@ fun HomeView(
             Column(modifier = Modifier.align(Alignment.TopCenter)) {
                 Logo()
                 LazyColumn(
-                    modifier = Modifier.padding(4.dp),
-                    state = listState
+                    modifier = Modifier.padding(4.dp), state = listState
                 ) {
                     items(publicaciones.size) { index ->
                         ClickableElevatedCardSample(
@@ -99,19 +91,15 @@ fun HomeView(
             AnimatedVisibility(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(16.dp),
-                visible = showFab,
+                    .padding(16.dp), visible = showFab,
 //                enter = slideInVertically(initialOffsetY = { it }),
 //                exit = slideOutVertically(targetOffsetY = { it })
-                enter = fadeIn() + scaleIn(),
-                exit = fadeOut() + scaleOut()
+                enter = fadeIn() + scaleIn(), exit = fadeOut() + scaleOut()
 
-                ) {
-                FloatingActionButton(
-                    onClick = {
-                        navTo.navigate("CreateAdView")
-                    }
-                ) {
+            ) {
+                FloatingActionButton(onClick = {
+                    navTo.navigate("CreateAdView")
+                }) {
                     Icon(Icons.Filled.Add, contentDescription = "Agregar publicación")
                 }
             }
@@ -153,8 +141,7 @@ private fun ClickableElevatedCardSample(miUsuarioAd: Publicaciones) {
         Box(Modifier.fillMaxSize()) {
             Column {
                 Text(
-                    text = miUsuarioAd.title,
-                    modifier = Modifier.padding(8.dp)
+                    text = miUsuarioAd.title, modifier = Modifier.padding(8.dp)
                 )
 
                 // Muestra la descripción solo si la tarjeta está expandida
@@ -171,13 +158,11 @@ private fun ClickableElevatedCardSample(miUsuarioAd: Publicaciones) {
                     val fechaCompleta = formatoFecha.format(Date(miUsuarioAd.date))
 
                     Text(
-                        text = fechaCompleta,
-                        modifier = Modifier.padding(8.dp)
+                        text = fechaCompleta, modifier = Modifier.padding(8.dp)
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = "Plazas: ${miUsuarioAd.plazas}",
-                        modifier = Modifier.padding(8.dp)
+                        text = "Plazas: ${miUsuarioAd.plazas}", modifier = Modifier.padding(8.dp)
                     )
                 }
             }

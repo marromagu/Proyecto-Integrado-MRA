@@ -79,7 +79,7 @@ fun NavigationManager(
         }
         composable(route = Screens.CreateAdScreen.ruta) {
             // Pantalla para crear una nueva publicación
-            CreateAdView(navTo = navController, dataRepository = dataRepository)
+//            CreateAdView(navTo = navController, dataRepository = dataRepository)
         }
     }
 }

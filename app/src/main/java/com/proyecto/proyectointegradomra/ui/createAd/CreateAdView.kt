@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -26,11 +27,12 @@ import com.proyecto.proyectointegradomra.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+@Preview
 @Composable
 fun CreateAdView(
     createAdController: CreateAdViewModel = viewModel(),
-    navTo: NavHostController,
-    dataRepository: DataRepository
+//    navTo: NavHostController,
+//    dataRepository: DataRepository
 ) {
 
     val title by createAdController.title.observeAsState("")
@@ -64,7 +66,7 @@ fun CreateAdView(
 
         Spacer(modifier = Modifier.weight(0.25f))
         // Texto
-        TextArea(label = "Description", value = description, onValueChange = {
+        TextArea(label = "Descripción", value = description, onValueChange = {
             createAdController.updateDescription(it)
         })
 
@@ -96,7 +98,7 @@ fun CreateAdView(
         Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.weight(1f)) {
                 StandardButton(text = "Cancelar", icon = Icons.Filled.Cancel, onClick = {
-                    navTo.navigate("HomeView")
+//                    navTo.navigate("HomeView")
                 })
             }
             Box(modifier = Modifier.weight(1f)) {
@@ -106,11 +108,11 @@ fun CreateAdView(
                     onClick = {
                         miAd.title = title
                         miAd.description = description
-                        miAd.userId = dataRepository.usuario.value?.uid ?: ""
+//                        miAd.userId = dataRepository.usuario.value?.uid ?: ""
                         miAd.plazas = plazas
                         miAd.date = combinarFechaYHora(fecha, hora)
-                        dataRepository.agregarDocumentoPublicacionesFirestore(miAd)
-                        navTo.navigate("HomeView")
+//                        dataRepository.agregarDocumentoPublicacionesFirestore(miAd)
+//                        navTo.navigate("HomeView")
                     },
                 )
             }
