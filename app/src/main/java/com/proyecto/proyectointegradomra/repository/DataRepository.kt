@@ -2,6 +2,7 @@ package com.proyecto.proyectointegradomra.repository
 
 import androidx.lifecycle.ViewModel
 import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.firebase.services.AuthService
 import com.proyecto.proyectointegradomra.firebase.services.FirestoreService
 
@@ -55,5 +56,7 @@ class DataRepository(
         return firestoreService.obtenerPublicacionesPorUsuario(userId)
     }
 
-
+    suspend fun obtenerPublicaciones(tipo: TipoPublicaciones): List<Publicaciones> {
+        return firestoreService.obtenerPublicaciones(tipo)
+    }
 }

@@ -145,7 +145,11 @@ fun ProfileView(
             }
 
             // Diálogo de alerta para confirmar acciones
-            DialogoAlerta(showAlert, alertMessage, actionConfirmed)
+            DialogoAlerta(
+                showAlert,
+                alertMessage,
+                actionConfirmed,
+                onDismiss = { showAlert = false })
         }
     }
 }

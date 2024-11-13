@@ -10,11 +10,12 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
+import com.proyecto.proyectointegradomra.data.model.TipoUsuarios
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.common.Contador
 import com.proyecto.proyectointegradomra.ui.common.CrearPublicacionIMG
@@ -27,12 +28,11 @@ import com.proyecto.proyectointegradomra.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-@Preview
 @Composable
 fun CreateAdView(
     createAdController: CreateAdViewModel = viewModel(),
-//    navTo: NavHostController,
-//    dataRepository: DataRepository
+    navTo: NavHostController,
+    dataRepository: DataRepository
 ) {
 
     val title by createAdController.title.observeAsState("")
@@ -42,6 +42,7 @@ fun CreateAdView(
     val plazas by createAdController.plazas.observeAsState(0)
 
     val miAd = Publicaciones()
+    val miUsuario = dataRepository.usuario.value
 
     Column(
         modifier = Modifier
@@ -55,7 +56,7 @@ fun CreateAdView(
 
         Spacer(modifier = Modifier.weight(0.12f))
         // Titulo
-        Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
             StandardField(label = "Titulo",
                 value = title,
                 icon = Icons.Filled.AccountBalance,
@@ -75,19 +76,18 @@ fun CreateAdView(
         Row(modifier = Modifier.fillMaxWidth()) {
             DatePickerField(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp),
+                    .weight(1f),
                 onDateSelected = { f -> createAdController.updateFecha(f) }
             )
+            Spacer(modifier = Modifier.width(16.dp))
             TimePickerField(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp),
+                    .weight(1f),
                 onDateSelected = { h -> createAdController.updateHora(h) }
             )
         }
 
-        Spacer(modifier = Modifier.weight(0.25f))
+        Spacer(modifier = Modifier.weight(0.5f))
         // Numero de personas
         Contador(plazas, onValueChange = {
             createAdController.updatePlazas(it)
@@ -98,7 +98,7 @@ fun CreateAdView(
         Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.weight(1f)) {
                 StandardButton(text = "Cancelar", icon = Icons.Filled.Cancel, onClick = {
-//                    navTo.navigate("HomeView")
+                    navTo.navigate("HomeView")
                 })
             }
             Box(modifier = Modifier.weight(1f)) {
@@ -106,13 +106,18 @@ fun CreateAdView(
                     text = "Crear",
                     icon = Icons.Filled.CheckCircle,
                     onClick = {
+                        miAd.userId = miUsuario?.uid ?: ""
+                        if (miUsuario?.type == TipoUsuarios.CONSUMIDOR) {
+                            miAd.tipo = TipoPublicaciones.BUSQUEDA
+                        } else {
+                            miAd.tipo = TipoPublicaciones.ACTIVIDAD
+                        }
                         miAd.title = title
                         miAd.description = description
-//                        miAd.userId = dataRepository.usuario.value?.uid ?: ""
                         miAd.plazas = plazas
                         miAd.date = combinarFechaYHora(fecha, hora)
-//                        dataRepository.agregarDocumentoPublicacionesFirestore(miAd)
-//                        navTo.navigate("HomeView")
+                        dataRepository.agregarDocumentoPublicacionesFirestore(miAd)
+                        navTo.navigate("HomeView")
                     },
                 )
             }

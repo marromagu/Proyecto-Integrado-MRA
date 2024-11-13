@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.data.model.Usuario
 import kotlinx.coroutines.tasks.await
 
@@ -146,7 +147,9 @@ class FirestoreService {
             "title" to miPublicacion.title,
             "description" to miPublicacion.description,
             "date" to miPublicacion.date,
-            "plazas" to miPublicacion.plazas
+            "plazas" to miPublicacion.plazas,
+            "tipo" to miPublicacion.tipo,
+            "participantes" to miPublicacion.participantes
         )
         this.agregarDocumentoFirestore(
             collectionPath = "publicaciones",
@@ -167,11 +170,11 @@ class FirestoreService {
         }
     }
 
-    suspend fun obtenerPublicaciones(userId: String): List<Publicaciones> {
+    suspend fun obtenerPublicaciones(tipo: TipoPublicaciones): List<Publicaciones> {
         return try {
 
             val querySnapshot = miCloudFirestore.collection("publicaciones")
-                .whereEqualTo("userId", userId)
+                .whereEqualTo("tipo", tipo)
                 .get()
                 .await()
             querySnapshot.documents.mapNotNull { it.toObject<Publicaciones>() }

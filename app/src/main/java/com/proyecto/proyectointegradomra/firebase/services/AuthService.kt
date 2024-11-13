@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.proyecto.proyectointegradomra.data.model.TipoUsuario
+import com.proyecto.proyectointegradomra.data.model.TipoUsuarios
 import com.proyecto.proyectointegradomra.data.model.Usuario
 import kotlinx.coroutines.launch
 
@@ -69,10 +69,10 @@ class AuthService : ViewModel() {
                 if (task.isSuccessful) {
                     _userAuthCurrent.value = firebaseAuth.currentUser
                     val uid = obtenerUidUsuario() ?: return@addOnCompleteListener
-                    val tipoUsuario =
-                        if (esOfertante) TipoUsuario.OFERTANTE else TipoUsuario.DEMANDANTE
+                    val tipoUsuarios =
+                        if (esOfertante) TipoUsuarios.OFERTANTE else TipoUsuarios.CONSUMIDOR
                     val nuevoUsuario =
-                        Usuario(uid = uid, name = name, email = email, type = tipoUsuario)
+                        Usuario(uid = uid, name = name, email = email, type = tipoUsuarios)
                     firestoreController.agregarDocumentoUsuarioFirestore(nuevoUsuario)
                     onSuccess()
                 } else {

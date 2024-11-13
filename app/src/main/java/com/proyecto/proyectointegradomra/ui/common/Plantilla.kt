@@ -3,13 +3,11 @@ package com.proyecto.proyectointegradomra.ui.common
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -51,9 +49,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -70,11 +66,8 @@ import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.R
 import com.proyecto.proyectointegradomra.navigation.Screens
 import com.proyecto.proyectointegradomra.repository.DataRepository
-import com.proyecto.proyectointegradomra.ui.theme.AzulOscuro
-import com.proyecto.proyectointegradomra.ui.theme.ColorAzulProfundo
 import com.proyecto.proyectointegradomra.ui.theme.ColorContainer
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeBotones
-import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
 import com.proyecto.proyectointegradomra.ui.theme.ColorFocuseado
 import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
@@ -169,12 +162,6 @@ fun TimePickerField(
     }
 }
 
-@Preview
-@Composable
-fun PreviewTimePickerField() {
-    Contador(0, {})
-}
-
 @Composable
 fun Contador(plazas: Int, onValueChange: (Int) -> Unit) {
     Row {
@@ -192,7 +179,7 @@ fun Contador(plazas: Int, onValueChange: (Int) -> Unit) {
                 Icons.Filled.ArrowCircleDown,
                 contentDescription = "-",
                 tint = ColorDeLetras,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(25.dp)
             )
         }
         OutlinedTextField(
@@ -219,7 +206,7 @@ fun Contador(plazas: Int, onValueChange: (Int) -> Unit) {
                 Icons.Filled.ArrowCircleUp,
                 contentDescription = "+",
                 tint = ColorDeLetras,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(25.dp)
             )
         }
     }
@@ -281,23 +268,24 @@ fun DatePickerField(
 
 @Composable
 fun DialogoAlerta(
-    showAlert: Boolean, alertMessage: String, actionConfirmed: () -> Unit
+    showAlert: Boolean, alertMessage: String, actionConfirmed: () -> Unit, onDismiss: () -> Unit
 ) {
-    var showAlert1 = showAlert
-    if (showAlert1) {
-        AlertDialog(onDismissRequest = { showAlert1 = false },
+    if (showAlert) {
+        AlertDialog(onDismissRequest = { onDismiss() },
             title = { Text("Confirmación") },
             text = { Text(alertMessage) },
             confirmButton = {
                 Button(onClick = {
                     actionConfirmed()
-                    showAlert1 = false
+                    onDismiss()
                 }) {
                     Text("Confirmar")
                 }
             },
             dismissButton = {
-                Button(onClick = { showAlert1 = false }) {
+                Button(onClick = {
+                    onDismiss()
+                }) {
                     Text("Cancelar")
                 }
             })

@@ -1,6 +1,6 @@
 package com.proyecto.proyectointegradomra.data.model
 
-enum class TipoUsuario {
+enum class TipoUsuarios {
     OFERTANTE,
-    DEMANDANTE,
+    CONSUMIDOR,
 }
