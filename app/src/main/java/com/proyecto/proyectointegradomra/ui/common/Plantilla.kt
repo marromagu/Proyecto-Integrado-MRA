@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -53,6 +54,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -63,11 +65,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.R
 import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.navigation.Screens
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorContainer
@@ -78,16 +82,28 @@ import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
 import java.util.Date
 import java.util.Locale
 
+@Preview
+@Composable
+fun ClickableElevatedCardSamplePreview() {
+    val miPublicacion = Publicaciones(
+        userId = "123",
+        title = "Título de la publicación",
+        description = "Descripción de la publicación",
+        date = System.currentTimeMillis(),
+        plazas = 5,
+        tipo = TipoPublicaciones.BUSQUEDA,
+        participantes = listOf()
+    )
+    ClickableElevatedCardSample(miPublicacion)
+}
 
 @Composable
-fun ClickableElevatedCardSample(miPublicacion: Publicaciones) {
+fun ClickableElevatedCardSample(miPublicacion: Publicaciones, onItemClick: () -> Unit = {}) {
     var expanded by remember { mutableStateOf(false) }
-
     val cardSize by animateDpAsState(
         targetValue = if (expanded) 400.dp else 150.dp,
         animationSpec = tween(durationMillis = 300), label = ""
     )
-
     ElevatedCard(
         onClick = { expanded = !expanded },
         modifier = Modifier
@@ -96,9 +112,32 @@ fun ClickableElevatedCardSample(miPublicacion: Publicaciones) {
     ) {
         Box(Modifier.fillMaxSize()) {
             Column {
-                Text(
-                    text = miPublicacion.title, modifier = Modifier.padding(8.dp)
-                )
+                Row(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = miPublicacion.title, modifier = Modifier.padding(8.dp)
+                    )
+                    if (expanded) {
+                        Spacer(modifier = Modifier.weight(1f))
+                        IconButton(
+                            onClick = {
+                                onItemClick()
+                            }
+                        ) {
+                            Icon(
+                                Icons.Filled.PersonAdd,
+                                contentDescription = "",
+                                tint = ColorFocuseado,
+                                modifier = Modifier
+                                    .size(25.dp)
+                                    .align(Alignment.Bottom)
+                            )
+                        }
+                    }
+                }
                 if (expanded) {
                     Text(
                         text = miPublicacion.description,

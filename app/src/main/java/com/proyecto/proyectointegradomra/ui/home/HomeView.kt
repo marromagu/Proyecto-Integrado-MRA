@@ -57,7 +57,12 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                 LazyColumn(modifier = Modifier.padding(4.dp)) {
                     items(publicaciones.size) { index ->
                         ClickableElevatedCardSample(
-                            publicaciones[index]
+                            publicaciones[index], onItemClick = {
+                                dataRepository.addParticipantes(
+                                    miUsuario?.uid!!,
+                                    publicaciones[index].uid
+                                )
+                            }
                         )
                     }
                 }

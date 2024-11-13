@@ -1,6 +1,7 @@
 package com.proyecto.proyectointegradomra.firebase.services
 
 import android.util.Log
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.proyecto.proyectointegradomra.data.model.Publicaciones
@@ -26,19 +27,14 @@ class FirestoreService {
      * @param data Datos a almacenar en el documento.
      */
     private fun agregarDocumentoFirestore(
-        collectionPath: String,
-        documentId: String?,
-        data: Map<String, Any>
+        collectionPath: String, documentId: String?, data: Map<String, Any>
     ) {
         // Obtiene referencia a la colección y documento, luego almacena los datos.
-        miCloudFirestore
-            .collection(collectionPath)
+        miCloudFirestore.collection(collectionPath)
             .document(documentId ?: miCloudFirestore.collection(collectionPath).document().id)
-            .set(data)
-            .addOnSuccessListener {
+            .set(data).addOnSuccessListener {
                 Log.i("FirestoreService", "Documento agregado con ID: $documentId")
-            }
-            .addOnFailureListener { exception ->
+            }.addOnFailureListener { exception ->
                 // Manejo de error en caso de fallo al agregar el documento.
                 Log.e("FirestoreService", "Error al agregar documento: $exception")
             }
@@ -59,14 +55,12 @@ class FirestoreService {
 
         val documentRef = miCloudFirestore.collection(collectionPath).document(documentId)
 
-        documentRef.delete()
-            .addOnSuccessListener {
-                Log.i("FirestoreService", "Documento eliminado con ID: $documentId")
-            }
-            .addOnFailureListener { exception ->
-                // Manejo de error en caso de fallo al eliminar el documento.
-                Log.e("FirestoreService", "Error al eliminar documento: $exception")
-            }
+        documentRef.delete().addOnSuccessListener {
+            Log.i("FirestoreService", "Documento eliminado con ID: $documentId")
+        }.addOnFailureListener { exception ->
+            // Manejo de error en caso de fallo al eliminar el documento.
+            Log.e("FirestoreService", "Error al eliminar documento: $exception")
+        }
     }
 
     /**
@@ -76,14 +70,10 @@ class FirestoreService {
      */
     fun agregarDocumentoUsuarioFirestore(miUsuario: Usuario) {
         val userMapOf = mapOf(
-            "name" to miUsuario.name,
-            "email" to miUsuario.email,
-            "type" to miUsuario.type.name
+            "name" to miUsuario.name, "email" to miUsuario.email, "type" to miUsuario.type.name
         )
         this.agregarDocumentoFirestore(
-            collectionPath = "usuarios",
-            documentId = miUsuario.uid,
-            data = userMapOf
+            collectionPath = "usuarios", documentId = miUsuario.uid, data = userMapOf
         )
     }
 
@@ -126,14 +116,12 @@ class FirestoreService {
 
         val userRef = miCloudFirestore.collection("usuarios").document(uid)
 
-        userRef.update("name", newName)
-            .addOnSuccessListener {
-                Log.i("FirestoreService", "Nombre de usuario actualizado con éxito.")
-            }
-            .addOnFailureListener { exception ->
-                // Manejo de error en caso de fallo al actualizar el nombre.
-                Log.e("FirestoreService", "Error al actualizar nombre de usuario: $exception")
-            }
+        userRef.update("name", newName).addOnSuccessListener {
+            Log.i("FirestoreService", "Nombre de usuario actualizado con éxito.")
+        }.addOnFailureListener { exception ->
+            // Manejo de error en caso de fallo al actualizar el nombre.
+            Log.e("FirestoreService", "Error al actualizar nombre de usuario: $exception")
+        }
     }
 
     /**
@@ -152,34 +140,50 @@ class FirestoreService {
             "participantes" to miPublicacion.participantes
         )
         this.agregarDocumentoFirestore(
-            collectionPath = "publicaciones",
-            documentId = null,
-            data = publicacionMapOf
+            collectionPath = "publicaciones", documentId = null, data = publicacionMapOf
         )
     }
 
+    /**
+     * Obtiene una lista de publicaciones por su ID de usuario desde Firestore.
+     *
+     * @param userId ID del usuario para el cual se van a obtener las publicaciones.
+     * @return Lista de Publicaciones que pertenecen al usuario especificado.
+     */
     suspend fun obtenerPublicacionesPorUsuario(userId: String): List<Publicaciones> {
         return try {
-            val querySnapshot = miCloudFirestore.collection("publicaciones")
-                .whereEqualTo("userId", userId)
-                .get()
-                .await()
+            val querySnapshot =
+                miCloudFirestore.collection("publicaciones").whereEqualTo("userId", userId).get()
+                    .await()
             querySnapshot.documents.mapNotNull { it.toObject<Publicaciones>() }
         } catch (e: Exception) {
             emptyList()
         }
     }
 
+    /**
+     * Obtiene una lista de publicaciones por su tipo desde Firestore.
+     *
+     * @param tipo Tipo de publicaciones a obtener.
+     * @return Lista de Publicaciones que pertenecen al tipo especificado.
+     */
     suspend fun obtenerPublicaciones(tipo: TipoPublicaciones): List<Publicaciones> {
         return try {
-
-            val querySnapshot = miCloudFirestore.collection("publicaciones")
-                .whereEqualTo("tipo", tipo)
-                .get()
-                .await()
+            val querySnapshot =
+                miCloudFirestore.collection("publicaciones").whereEqualTo("tipo", tipo).get()
+                    .await()
             querySnapshot.documents.mapNotNull { it.toObject<Publicaciones>() }
         } catch (e: Exception) {
             emptyList()
+        }
+    }
+
+    fun addParticipantes(uid: String, publicacionId: String) {
+        val docRef = miCloudFirestore.collection("publicaciones").document(publicacionId)
+        docRef.update("participantes", FieldValue.arrayUnion(uid)).addOnSuccessListener {
+            Log.i("FirestoreService", "Participante agregado con éxito.")
+        }.addOnFailureListener { exception ->
+            Log.e("FirestoreService", "Error al añadir participante: $exception")
         }
     }
 }

@@ -59,4 +59,9 @@ class DataRepository(
     suspend fun obtenerPublicaciones(tipo: TipoPublicaciones): List<Publicaciones> {
         return firestoreService.obtenerPublicaciones(tipo)
     }
+
+    fun addParticipantes(uid: String, publicacionId: String) {
+        firestoreService.addParticipantes(uid, publicacionId)
+    }
+
 }
