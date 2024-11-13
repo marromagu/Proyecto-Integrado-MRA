@@ -2,12 +2,15 @@ package com.proyecto.proyectointegradomra.ui.common
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,10 +18,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.ArrowCircleDown
 import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
@@ -29,6 +32,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -59,11 +63,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.R
+import com.proyecto.proyectointegradomra.data.model.Publicaciones
 import com.proyecto.proyectointegradomra.navigation.Screens
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorContainer
@@ -71,7 +75,55 @@ import com.proyecto.proyectointegradomra.ui.theme.ColorDeBotones
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
 import com.proyecto.proyectointegradomra.ui.theme.ColorFocuseado
 import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
+import java.util.Date
 import java.util.Locale
+
+
+@Composable
+fun ClickableElevatedCardSample(miPublicacion: Publicaciones) {
+    var expanded by remember { mutableStateOf(false) }
+
+    val cardSize by animateDpAsState(
+        targetValue = if (expanded) 400.dp else 150.dp,
+        animationSpec = tween(durationMillis = 300), label = ""
+    )
+
+    ElevatedCard(
+        onClick = { expanded = !expanded },
+        modifier = Modifier
+            .size(width = 350.dp, height = cardSize)
+            .padding(8.dp)
+    ) {
+        Box(Modifier.fillMaxSize()) {
+            Column {
+                Text(
+                    text = miPublicacion.title, modifier = Modifier.padding(8.dp)
+                )
+                if (expanded) {
+                    Text(
+                        text = miPublicacion.description,
+                        modifier = Modifier.padding(16.dp, 16.dp, 8.dp, 4.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Row {
+                    val formatoFecha =
+                        java.text.SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
+                    val fechaCompleta = formatoFecha.format(Date(miPublicacion.date))
+                    Text(
+                        text = fechaCompleta, modifier = Modifier.padding(8.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "Plazas: ${miPublicacion.participantes.size}/${miPublicacion.plazas}",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun myTextFieldColors(): TextFieldColors {
@@ -244,7 +296,7 @@ fun DatePickerField(
                 TextButton(onClick = {
                     val selectedMillis = datePickerState.selectedDateMillis
                     selectedDate = selectedMillis?.let {
-                        dateFormatter.format(java.util.Date(it))
+                        dateFormatter.format(Date(it))
                     } ?: ""
 
                     // Llama a onDateSelected con la fecha seleccionada
@@ -332,8 +384,8 @@ fun BottomNavigationBar(navController: NavHostController) {
     val currentRoute = currentRoute(navController)
 
     NavigationBar {
-        NavigationBarItem(icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favoritos") },
-            label = { Text("Favoritos") },
+        NavigationBarItem(icon = { Icon(Icons.Filled.AddBox, contentDescription = "Crear") },
+            label = { Text("Crear") },
             selected = currentRoute == Screens.FavoritesScreen.ruta,
             onClick = {
                 navController.navigate(Screens.FavoritesScreen.ruta) {
