@@ -41,7 +41,7 @@ import com.proyecto.proyectointegradomra.ui.common.Logo
 @Composable
 fun FavoritesView(dataRepository: DataRepository, navTo: NavHostController) {
     var publicaciones by remember { mutableStateOf<List<Publicaciones>>(emptyList()) }
-    val miUsuario by dataRepository.usuario.observeAsState()
+    val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
 
     LaunchedEffect(miUsuario) {
         miUsuario?.uid?.let { userId ->

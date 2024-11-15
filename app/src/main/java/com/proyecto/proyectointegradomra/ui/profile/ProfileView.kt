@@ -40,7 +40,7 @@ fun ProfileView(
     dataRepository: DataRepository,
     navTo: NavHostController,
 ) {
-    val miUsuario by dataRepository.usuario.observeAsState()
+    val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
     var showDialog by remember { mutableStateOf(false) }
     var showAlert by remember { mutableStateOf(false) }
     var alertMessage by remember { mutableStateOf("") }
@@ -81,8 +81,10 @@ fun ProfileView(
                 showDialog = showDialog,
                 showDialogChanger = { showDialog = it },
                 newName = newName,
+                uid = miUsuario?.uid,
                 newNameChanger = { newName = it },
-                dataRepository = dataRepository
+                dataRepository = dataRepository,
+                onDismiss = { navTo.navigate("ProfileView") }
             )
 
             Spacer(modifier = Modifier.weight(1f))

@@ -31,7 +31,7 @@ import com.proyecto.proyectointegradomra.ui.common.ClickableElevatedCardSample
 @Composable
 fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
     var publicaciones by remember { mutableStateOf<List<Publicaciones>>(emptyList()) }
-    val miUsuario by dataRepository.usuario.observeAsState()
+    val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
 
     LaunchedEffect(miUsuario) {
         publicaciones = if (miUsuario?.type == TipoUsuarios.OFERTANTE) {
@@ -62,6 +62,7 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                                     miUsuario?.uid!!,
                                     publicaciones[index].uid
                                 )
+                                navTo.navigate("HomeView")
                             }
                         )
                     }

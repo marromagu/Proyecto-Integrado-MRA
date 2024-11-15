@@ -112,20 +112,6 @@ class AuthService : ViewModel() {
     }
 
     /**
-     * Función para actualizar el nombre del usuario en Firestore.
-     * Actualiza el nombre en la base de datos y refleja el cambio en la LiveData.
-     */
-    fun actualizarNombreUsuario(newName: String) {
-        val uid = obtenerUidUsuario() ?: return
-        val usuarioActual = _usuario.value ?: return
-
-        usuarioActual.name = newName // Actualizar el valor en la instancia actual
-        _usuario.value = usuarioActual // Reflejar el cambio en la LiveData
-
-        firestoreController.actualizarNombreUsuarioFirestore(uid, newName)
-    }
-
-    /**
      * Función para cargar los datos del usuario autenticado desde Firestore.
      * Esta función usa coroutines para realizar la carga de forma asíncrona.
      */

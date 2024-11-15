@@ -12,8 +12,6 @@ class DataRepository(
     private val firestoreService: FirestoreService
 ) : ViewModel() {
 
-    val usuario = autService.usuario
-
     // Función para cerrar sesión
     fun cerrarSesion() = autService.cerrarSesion()
 
@@ -43,7 +41,9 @@ class DataRepository(
     fun cargarUsuario() = autService.cargarUsuario()
 
     // Función para actualizar el nombre de usuario
-    fun actualizarNombreUsuario(newName: String) = autService.actualizarNombreUsuario(newName)
+    fun actualizarNombreUsuario(uid: String, newName: String) {
+        firestoreService.actualizarNombreUsuarioFirestore(uid, newName)
+    }
 
     /*-------------------------------------------------------------------------------------------*/
 
@@ -63,5 +63,4 @@ class DataRepository(
     fun addParticipantes(uid: String, publicacionId: String) {
         firestoreService.addParticipantes(uid, publicacionId)
     }
-
 }

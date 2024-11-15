@@ -170,14 +170,27 @@ class FirestoreService {
     suspend fun obtenerPublicaciones(tipo: TipoPublicaciones): List<Publicaciones> {
         return try {
             val querySnapshot =
-                miCloudFirestore.collection("publicaciones").whereEqualTo("tipo", tipo).get()
+                miCloudFirestore.collection("publicaciones")
+                    .whereEqualTo("tipo", tipo)
+                    .get()
                     .await()
-            querySnapshot.documents.mapNotNull { it.toObject<Publicaciones>() }
+            querySnapshot.documents.mapNotNull { document ->
+                val publicaciones = document.toObject<Publicaciones>()
+                publicaciones?.uid = document.id
+                publicaciones
+            }
+
         } catch (e: Exception) {
             emptyList()
         }
     }
 
+    /**
+     * Agrega un participante a una publicación en Firestore.
+     *
+     * @param uid UID del participante a agregar.
+     * @param publicacionId ID de la publicación a la que se agregará el participante.
+     */
     fun addParticipantes(uid: String, publicacionId: String) {
         val docRef = miCloudFirestore.collection("publicaciones").document(publicacionId)
         docRef.update("participantes", FieldValue.arrayUnion(uid)).addOnSuccessListener {

@@ -388,8 +388,10 @@ fun DialogoEditarNombre(
     showDialog: Boolean,
     showDialogChanger: (Boolean) -> Unit,
     newName: String,
+    uid: String?,
     newNameChanger: (String) -> Unit,
-    dataRepository: DataRepository
+    dataRepository: DataRepository,
+    onDismiss: () -> Unit
 ) {
     if (showDialog) {
         AlertDialog(onDismissRequest = { showDialogChanger(false) },
@@ -402,9 +404,10 @@ fun DialogoEditarNombre(
             confirmButton = {
                 Button(onClick = {
                     if (newName.isNotBlank()) {
-                        dataRepository.actualizarNombreUsuario(newName)
+                        dataRepository.actualizarNombreUsuario(uid ?: "", newName)
                         newNameChanger("")
                         showDialogChanger(false)
+                        onDismiss()
                     }
                 }) {
                     Text("Guardar")

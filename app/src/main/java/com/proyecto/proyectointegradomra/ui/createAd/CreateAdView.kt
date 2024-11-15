@@ -42,7 +42,7 @@ fun CreateAdView(
     val plazas by createAdController.plazas.observeAsState(0)
 
     val miAd = Publicaciones()
-    val miUsuario = dataRepository.usuario.value
+    val miUsuario = dataRepository.obtenerUsuarioActual().value
 
     Column(
         modifier = Modifier
