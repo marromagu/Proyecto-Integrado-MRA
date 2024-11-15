@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.DeleteForever
@@ -106,78 +108,85 @@ fun ProfileView(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Column para los datos del usuario
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                StandardFieldText(
-                    label = "UID",
-                    value = miUsuario?.uid ?: "Error",
-                    onValueChange = {},
-                    modifier = Modifier
-                )
-                StandardFieldText(
-                    label = "Email",
-                    value = miUsuario?.email ?: "Email no disponible",
-                    onValueChange = {},
-                    modifier = Modifier
-                )
-                StandardFieldText(
-                    label = "Tipo",
-                    value = miUsuario?.type.toString(),
-                    onValueChange = {},
-                    modifier = Modifier
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Column para las publicaciones del usuario
-                LazyRow(modifier = Modifier.padding(4.dp)) {
-                    items(publicaciones.size) { index ->
-                        ClickableElevatedCardSample(
-                            publicaciones[index], "remove", onItemClick = {
-                                dataRepository.eliminarParticipante(
-                                    miUsuario?.uid!!,
-                                    publicaciones[index].uid!!
-                                )
-                                navTo.navigate("ProfileView")
-                            }
-                        )
+                item {
+                    StandardFieldText(
+                        label = "UID",
+                        value = miUsuario?.uid ?: "Error",
+                        onValueChange = {},
+                        modifier = Modifier
+                    )
+                }
+                item {
+                    StandardFieldText(
+                        label = "Email",
+                        value = miUsuario?.email ?: "Email no disponible",
+                        onValueChange = {},
+                        modifier = Modifier
+                    )
+                }
+                item {
+                    StandardFieldText(
+                        label = "Tipo",
+                        value = miUsuario?.type.toString(),
+                        onValueChange = {},
+                        modifier = Modifier
+                    )
+                }
+                item {
+                    Spacer(modifier = Modifier.weight(1f)) // Espacio flexible
+                }
+                item {
+                    LazyRow(modifier = Modifier.padding(4.dp)) {
+                        items(publicaciones.size) { index ->
+                            ClickableElevatedCardSample(
+                                publicaciones[index], "remove", onItemClick = {
+                                    dataRepository.eliminarParticipante(
+                                        miUsuario?.uid!!,
+                                        publicaciones[index].uid!!
+                                    )
+                                    navTo.navigate("ProfileView")
+                                }
+                            )
+                        }
                     }
                 }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Botón de Cerrar Sesión con alerta
-                StandardButton(
-                    text = "Cerrar Sesión",
-                    icon = Icons.AutoMirrored.Filled.ExitToApp,
-                    onClick = {
-                        alertMessage = "¿Estás seguro de que deseas cerrar sesión?"
-                        actionConfirmed = {
-                            dataRepository.cerrarSesion()
-                            navTo.navigate("StartView")
+                item {
+                    Spacer(modifier = Modifier.weight(1f)) // Espacio flexible
+                }
+                item {
+                    StandardButton(
+                        text = "Cerrar Sesión",
+                        icon = Icons.AutoMirrored.Filled.ExitToApp,
+                        onClick = {
+                            alertMessage = "¿Estás seguro de que deseas cerrar sesión?"
+                            actionConfirmed = {
+                                dataRepository.cerrarSesion()
+                                navTo.navigate("StartView")
+                            }
+                            showAlert = true
                         }
-                        showAlert = true
-                    }
-                )
-
-                // Botón de Borrar Cuenta con alerta
-                StandardButton(
-                    text = "Borrar Cuenta",
-                    icon = Icons.Filled.DeleteForever,
-                    onClick = {
-                        alertMessage = "¿Estás seguro de que deseas borrar tu cuenta?"
-                        actionConfirmed = {
-                            dataRepository.eliminarCuenta()
-                            navTo.navigate("StartView")
+                    )
+                }
+                item {
+                    StandardButton(
+                        text = "Borrar Cuenta",
+                        icon = Icons.Filled.DeleteForever,
+                        onClick = {
+                            alertMessage = "¿Estás seguro de que deseas borrar tu cuenta?"
+                            actionConfirmed = {
+                                dataRepository.eliminarCuenta()
+                                navTo.navigate("StartView")
+                            }
+                            showAlert = true
                         }
-                        showAlert = true
-                    }
-                )
+                    )
+                }
             }
 
             // Diálogo de alerta para confirmar acciones

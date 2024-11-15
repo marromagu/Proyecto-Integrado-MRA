@@ -146,15 +146,19 @@ class FirestoreService {
         tipo: TipoPublicaciones, uid: String
     ): List<Publicaciones> {
         return try {
-            val querySnapshot =
-                firestore.collection("publicaciones").whereEqualTo("tipo", tipo).whereNotIn(
-                    "participantes", listOf(uid)
-                ).get().await()
-            Log.i("FirestoreService", "Publicaciones obtenidas: $querySnapshot")
+            val querySnapshot = firestore.collection("publicaciones")
+                .whereEqualTo("tipo", tipo)
+                .get()
+                .await()
+
             querySnapshot.documents.mapNotNull { document ->
-                val publicaciones = document.toObject<Publicaciones>()
-                publicaciones?.uid = document.id
-                publicaciones
+                val publicacion = document.toObject<Publicaciones>()
+                if (!publicacion?.participantes?.contains(uid)!!) { // Lo tengo q filtrar aqui por el indice de mierda no lo hace bien
+                    publicacion.uid = document.id
+                    publicacion
+                } else {
+                    null
+                }
             }
         } catch (e: Exception) {
             Log.e("FirestoreService", "Error al obtener publicaciones: $e")

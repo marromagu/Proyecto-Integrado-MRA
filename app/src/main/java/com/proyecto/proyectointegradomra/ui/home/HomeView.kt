@@ -65,6 +65,7 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                                     miUsuario?.uid!!,
                                     publicaciones[index].uid
                                 )
+                                navTo.navigate("HomeView")
                             }
                         )
                     }
