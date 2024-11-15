@@ -15,6 +15,7 @@ import com.proyecto.proyectointegradomra.ui.login.LogInView
 import com.proyecto.proyectointegradomra.ui.profile.ProfileView
 import com.proyecto.proyectointegradomra.ui.create.CreateView
 import com.proyecto.proyectointegradomra.ui.home.HomeView
+import com.proyecto.proyectointegradomra.ui.updateAd.UpdateAdView
 
 @Composable
 fun NavigationManager(
@@ -80,6 +81,10 @@ fun NavigationManager(
         composable(route = Screens.CreateAdScreen.ruta) {
             // Pantalla para crear una nueva publicación
             CreateAdView(navTo = navController, dataRepository = dataRepository)
+        }
+        composable(route = Screens.UpdateAdScreen.ruta) {
+            // Pantalla para actualizar una publicación
+            UpdateAdView(navTo = navController, dataRepository = dataRepository)
         }
     }
 }

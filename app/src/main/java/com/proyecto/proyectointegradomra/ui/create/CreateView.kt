@@ -70,7 +70,7 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
                             publicaciones[index],
                             "update",
                             onItemClick = {
-                                navTo.navigate("CreateAdView")
+                                navTo.navigate("UpdateAdView")
                             }
                         )
                     }

@@ -1,4 +1,4 @@
-package com.proyecto.proyectointegradomra.ui.createAd
+package com.proyecto.proyectointegradomra.ui.updateAd
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -29,17 +29,17 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun CreateAdView(
-    createAdController: CreateAdViewModel = viewModel(),
+fun UpdateAdView(
+    updateAdController: UpdateAdViewModel = viewModel(),
     navTo: NavHostController,
     dataRepository: DataRepository
 ) {
 
-    val title by createAdController.title.observeAsState("")
-    val description by createAdController.description.observeAsState("")
-    val fecha by createAdController.fecha.observeAsState("")
-    val hora by createAdController.hora.observeAsState("")
-    val plazas by createAdController.plazas.observeAsState(0)
+    val title by updateAdController.title.observeAsState("")
+    val description by updateAdController.description.observeAsState("")
+    val fecha by updateAdController.fecha.observeAsState("")
+    val hora by updateAdController.hora.observeAsState("")
+    val plazas by updateAdController.plazas.observeAsState(0)
 
     val miAd = Publicaciones()
     val miUsuario = dataRepository.obtenerUsuarioActual().value
@@ -61,14 +61,14 @@ fun CreateAdView(
                 value = title,
                 icon = Icons.Filled.AccountBalance,
                 onValueChange = {
-                    createAdController.updateTitle(it)
+                    updateAdController.updateTitle(it)
                 })
         }
 
         Spacer(modifier = Modifier.weight(0.25f))
         // Texto
         TextArea(label = "Descripción", value = description, onValueChange = {
-            createAdController.updateDescription(it)
+            updateAdController.updateDescription(it)
         })
 
         Spacer(modifier = Modifier.weight(0.25f))
@@ -77,20 +77,20 @@ fun CreateAdView(
             DatePickerField(
                 modifier = Modifier
                     .weight(1f),
-                onDateSelected = { f -> createAdController.updateFecha(f) }
+                onDateSelected = { f -> updateAdController.updateFecha(f) }
             )
             Spacer(modifier = Modifier.width(16.dp))
             TimePickerField(
                 modifier = Modifier
                     .weight(1f),
-                onDateSelected = { h -> createAdController.updateHora(h) }
+                onDateSelected = { h -> updateAdController.updateHora(h) }
             )
         }
 
         Spacer(modifier = Modifier.weight(0.5f))
         // Numero de personas
         Contador(plazas, onValueChange = {
-            createAdController.updatePlazas(it)
+            updateAdController.updatePlazas(it)
         })
 
         Spacer(modifier = Modifier.weight(1f))
@@ -103,7 +103,7 @@ fun CreateAdView(
             }
             Box(modifier = Modifier.weight(1f)) {
                 StandardButton(
-                    text = "Crear",
+                    text = "Actualizar",
                     icon = Icons.Filled.CheckCircle,
                     onClick = {
                         miAd.userId = miUsuario?.uid ?: ""
@@ -116,7 +116,7 @@ fun CreateAdView(
                         miAd.description = description
                         miAd.plazas = plazas
                         miAd.date = combinarFechaYHora(fecha, hora)
-                        dataRepository.agregarDocumentoPublicacionesFirestore(miAd)
+                        //dataRepository.agregarDocumentoPublicacionesFirestore(miAd)
                         navTo.navigate("CreateView")
                     },
                 )

@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.ArrowCircleDown
 import androidx.compose.material.icons.filled.ArrowCircleUp
+import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.GroupRemove
@@ -160,7 +161,7 @@ fun ClickableElevatedCardSample(
                                 onItemClick()
                             }) {
                                 Icon(
-                                    imageVector = Icons.Filled.Edit,
+                                    imageVector = Icons.Filled.BorderColor,
                                     contentDescription = "",
                                     tint = ColorIconoBotones,
                                     modifier = Modifier
