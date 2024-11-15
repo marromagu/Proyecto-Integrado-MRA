@@ -13,7 +13,7 @@ import com.proyecto.proyectointegradomra.ui.start.StartView
 import com.proyecto.proyectointegradomra.ui.signUp.SingUpView
 import com.proyecto.proyectointegradomra.ui.login.LogInView
 import com.proyecto.proyectointegradomra.ui.profile.ProfileView
-import com.proyecto.proyectointegradomra.ui.favorites.FavoritesView
+import com.proyecto.proyectointegradomra.ui.create.CreateView
 import com.proyecto.proyectointegradomra.ui.home.HomeView
 
 @Composable
@@ -73,9 +73,9 @@ fun NavigationManager(
             // Pantalla de perfil del usuario
             ProfileView(navTo = navController, dataRepository = dataRepository)
         }
-        composable(route = Screens.FavoritesScreen.ruta) {
-            // Pantalla de favoritos del usuario
-            FavoritesView(navTo = navController, dataRepository = dataRepository)
+        composable(route = Screens.CreateScreen.ruta) {
+            // Pantalla de Crear del usuario
+            CreateView(navTo = navController, dataRepository = dataRepository)
         }
         composable(route = Screens.CreateAdScreen.ruta) {
             // Pantalla para crear una nueva publicación

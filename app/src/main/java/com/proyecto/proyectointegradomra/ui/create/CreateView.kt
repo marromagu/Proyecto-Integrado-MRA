@@ -1,10 +1,6 @@
-package com.proyecto.proyectointegradomra.ui.favorites
+package com.proyecto.proyectointegradomra.ui.create
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
@@ -39,7 +35,7 @@ import com.proyecto.proyectointegradomra.ui.common.ClickableElevatedCardSample
 import com.proyecto.proyectointegradomra.ui.common.Logo
 
 @Composable
-fun FavoritesView(dataRepository: DataRepository, navTo: NavHostController) {
+fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
     var publicaciones by remember { mutableStateOf<List<Publicaciones>>(emptyList()) }
     val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
 
@@ -71,7 +67,11 @@ fun FavoritesView(dataRepository: DataRepository, navTo: NavHostController) {
                 ) {
                     items(publicaciones.size) { index ->
                         ClickableElevatedCardSample(
-                            publicaciones[index]
+                            publicaciones[index],
+                            "update",
+                            onItemClick = {
+                                navTo.navigate("CreateAdView")
+                            }
                         )
                     }
                 }

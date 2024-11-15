@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.ArrowCircleDown
 import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.GroupRemove
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -57,7 +58,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -79,7 +79,9 @@ import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorContainer
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeBotones
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
+import com.proyecto.proyectointegradomra.ui.theme.ColorEliminar
 import com.proyecto.proyectointegradomra.ui.theme.ColorFocuseado
+import com.proyecto.proyectointegradomra.ui.theme.ColorIconoBotones
 import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
 import java.util.Date
 import java.util.Locale
@@ -134,7 +136,7 @@ fun ClickableElevatedCardSample(
                                 Icon(
                                     imageVector = Icons.Filled.PersonAdd,
                                     contentDescription = "",
-                                    tint = ColorFocuseado,
+                                    tint = ColorIconoBotones,
                                     modifier = Modifier
                                         .size(25.dp)
                                         .align(Alignment.Bottom)
@@ -147,7 +149,20 @@ fun ClickableElevatedCardSample(
                                 Icon(
                                     imageVector = Icons.Filled.GroupRemove,
                                     contentDescription = "",
-                                    tint = Color.Red,
+                                    tint = ColorEliminar,
+                                    modifier = Modifier
+                                        .size(25.dp)
+                                        .align(Alignment.Bottom)
+                                )
+                            }
+
+                            "update" -> IconButton(onClick = {
+                                onItemClick()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Edit,
+                                    contentDescription = "",
+                                    tint = ColorIconoBotones,
                                     modifier = Modifier
                                         .size(25.dp)
                                         .align(Alignment.Bottom)
@@ -435,9 +450,9 @@ fun BottomNavigationBar(navController: NavHostController) {
     NavigationBar {
         NavigationBarItem(icon = { Icon(Icons.Filled.AddBox, contentDescription = "Crear") },
             label = { Text("Crear") },
-            selected = currentRoute == Screens.FavoritesScreen.ruta,
+            selected = currentRoute == Screens.CreateScreen.ruta,
             onClick = {
-                navController.navigate(Screens.FavoritesScreen.ruta) {
+                navController.navigate(Screens.CreateScreen.ruta) {
                     popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
                     launchSingleTop = true
                 }

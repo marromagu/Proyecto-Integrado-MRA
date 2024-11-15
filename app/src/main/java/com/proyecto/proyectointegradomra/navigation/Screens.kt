@@ -7,6 +7,6 @@ sealed class Screens(val ruta: String) {
     data object HomeScreen : Screens("HomeView")
     data object CreateAdScreen : Screens("CreateAdView")
     data object ProfileScreen : Screens("ProfileView")
-    data object FavoritesScreen : Screens("FavoritesView")
+    data object CreateScreen : Screens("CreateView")
 
 }

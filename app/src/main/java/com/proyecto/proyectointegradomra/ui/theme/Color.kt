@@ -26,6 +26,8 @@ val AzulProfundo = Color(0xFF0A1626)
 val VerdeClaro = Color(0xFF79F297)
 val Verde = Color(0xFF60BF78)
 
+val ColorEliminar = RojoFuego
+val ColorIconoBotones = VerdeClaro
 val ColorAzulProfundo = AzulProfundo
 val ColorDeFondo = AzulClaro
 val ColorDeLetras = Blanco
