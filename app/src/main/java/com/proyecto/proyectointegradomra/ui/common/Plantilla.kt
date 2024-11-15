@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.ArrowCircleDown
 import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.GroupRemove
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
