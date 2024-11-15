@@ -12,40 +12,44 @@ import com.proyecto.proyectointegradomra.data.model.Usuario
 import kotlinx.coroutines.launch
 
 /**
- * Clase AuthController: ViewModel responsable de manejar la autenticación y la sesión del usuario.
- * Extiende ViewModel para vincularse al ciclo de vida de la actividad o fragmento,
- * garantizando que se mantenga una única instancia de AuthController mientras el propietario exista.
- * Esto permite un manejo eficiente y persistente de datos de autenticación, evitando recreaciones innecesarias. *
+ * Clase AuthService: ViewModel para manejar la autenticación y sesión de usuarios.
+ * Utiliza Firebase Authentication y Firestore para las operaciones de autenticación y almacenamiento.
+ * Extiende ViewModel para gestionar eficientemente el ciclo de vida y los datos asociados.
  */
 class AuthService : ViewModel() {
 
-    // Instancia singleton de autenticación de Firebase
+    // Instancia de FirebaseAuth para manejar la autenticación
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    // Controlador Firestore para gestionar la base de datos
+    // Servicio para interactuar con Firestore
     private val firestoreController = FirestoreService()
 
-    // LiveData para el usuario autenticado actualmente
+    // LiveData para observar al usuario autenticado actualmente
     private val _userAuthCurrent = MutableLiveData<FirebaseUser?>(firebaseAuth.currentUser)
     private val userAuthCurrent: LiveData<FirebaseUser?> = _userAuthCurrent
 
-    // LiveData para los datos del usuario (información adicional a FirebaseUser)
+    // LiveData para observar los datos del usuario autenticado desde Firestore
     private val _usuario = MutableLiveData<Usuario?>()
     val usuario: LiveData<Usuario?> = _usuario
 
     /**
-     * Función para iniciar sesión en Firebase usando email y contraseña.
-     * Actualiza el estado de autenticación y carga los datos del usuario.
+     * Inicia sesión con un correo electrónico y contraseña.
+     * Si tiene éxito, actualiza el usuario autenticado y carga los datos del usuario desde Firestore.
+     * @param email Correo electrónico del usuario.
+     * @param password Contraseña del usuario.
+     * @param onSuccess Callback ejecutado si el inicio de sesión es exitoso.
+     * @param onError Callback ejecutado si ocurre un error en el inicio de sesión.
      */
     fun iniciarSesion(email: String, password: String, onSuccess: () -> Unit, onError: () -> Unit) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     _userAuthCurrent.value = firebaseAuth.currentUser
-                    cargarUsuario() // Cargar datos del usuario desde Firestore
+                    cargarUsuario() // Carga los datos del usuario desde Firestore
                     onSuccess()
                 } else {
                     // Manejo de errores de autenticación
+                    Log.e("AuthService", "Error al iniciar sesión: ${task.exception}")
                     _userAuthCurrent.value = null
                     onError()
                 }
@@ -53,8 +57,13 @@ class AuthService : ViewModel() {
     }
 
     /**
-     * Función para registrar un nuevo usuario en Firebase y guardarlo en Firestore.
-     * Crea una entrada de usuario en la base de datos Firestore.
+     * Registra un nuevo usuario en Firebase Authentication y lo guarda en Firestore.
+     * @param email Correo electrónico del usuario.
+     * @param password Contraseña del usuario.
+     * @param name Nombre del usuario.
+     * @param esOfertante Indica si el usuario es ofertante o consumidor.
+     * @param onSuccess Callback ejecutado si el registro es exitoso.
+     * @param onError Callback ejecutado si ocurre un error en el registro.
      */
     fun registrarse(
         email: String,
@@ -71,21 +80,25 @@ class AuthService : ViewModel() {
                     val uid = obtenerUidUsuario() ?: return@addOnCompleteListener
                     val tipoUsuarios =
                         if (esOfertante) TipoUsuarios.OFERTANTE else TipoUsuarios.CONSUMIDOR
-                    val nuevoUsuario =
-                        Usuario(uid = uid, name = name, email = email, type = tipoUsuarios)
+                    val nuevoUsuario = Usuario(
+                        uid = uid,
+                        name = name,
+                        email = email,
+                        type = tipoUsuarios
+                    )
                     firestoreController.agregarDocumentoUsuarioFirestore(nuevoUsuario)
                     onSuccess()
                 } else {
                     // Manejo de errores en el registro
+                    Log.e("AuthService", "Error al registrar usuario: ${task.exception}")
                     _userAuthCurrent.value = null
-                    val exception = task.exception
-                    onError(exception!!)
+                    onError(task.exception ?: Exception("Error desconocido"))
                 }
             }
     }
 
     /**
-     * Función para cerrar sesión en Firebase.
+     * Cierra la sesión del usuario actualmente autenticado.
      * Resetea el estado de autenticación y borra los datos locales del usuario.
      */
     fun cerrarSesion() {
@@ -95,8 +108,8 @@ class AuthService : ViewModel() {
     }
 
     /**
-     * Función para eliminar la cuenta del usuario autenticado.
-     * Borra el usuario de Firebase Authentication y elimina su documento en Firestore.
+     * Elimina la cuenta del usuario autenticado, tanto en Firebase Authentication como en Firestore.
+     * Maneja errores potenciales durante el proceso.
      */
     fun eliminarCuenta() {
         val uid = usuario.value?.uid ?: return
@@ -112,21 +125,26 @@ class AuthService : ViewModel() {
     }
 
     /**
-     * Función para cargar los datos del usuario autenticado desde Firestore.
-     * Esta función usa coroutines para realizar la carga de forma asíncrona.
+     * Carga los datos del usuario autenticado desde Firestore.
+     * Usa una coroutine para realizar esta operación de forma asíncrona.
      */
     fun cargarUsuario() {
         viewModelScope.launch {
             val uid = obtenerUidUsuario() ?: return@launch
             val usuarioFirestore = firestoreController.obtenerUsuarioPorUidFirestore(uid)
-            usuarioFirestore?.uid = uid
-            _usuario.value = usuarioFirestore // Actualiza el usuario en la LiveData
+            if (usuarioFirestore != null) {
+                usuarioFirestore.uid = uid
+                _usuario.value = usuarioFirestore // Actualiza los datos del usuario
+            } else {
+                Log.e("AuthService", "No se encontró el usuario con UID: $uid")
+            }
         }
     }
 
     /**
-     * Función privada para obtener el UID del usuario autenticado.
+     * Obtiene el UID del usuario autenticado actualmente.
      * Retorna null si no hay usuario autenticado.
+     * @return UID del usuario autenticado o null.
      */
     private fun obtenerUidUsuario(): String? {
         return firebaseAuth.currentUser?.uid

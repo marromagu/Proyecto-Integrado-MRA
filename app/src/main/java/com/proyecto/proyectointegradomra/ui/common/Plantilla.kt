@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.ArrowCircleDown
 import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.GroupRemove
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonAdd
@@ -56,6 +57,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -98,11 +100,14 @@ fun ClickableElevatedCardSamplePreview() {
 }
 
 @Composable
-fun ClickableElevatedCardSample(miPublicacion: Publicaciones, onItemClick: () -> Unit = {}) {
+fun ClickableElevatedCardSample(
+    miPublicacion: Publicaciones, isAdd: String = "", onItemClick: () -> Unit = {}
+) {
     var expanded by remember { mutableStateOf(false) }
     val cardSize by animateDpAsState(
         targetValue = if (expanded) 400.dp else 150.dp,
-        animationSpec = tween(durationMillis = 300), label = ""
+        animationSpec = tween(durationMillis = 300),
+        label = ""
     )
     ElevatedCard(
         onClick = { expanded = !expanded },
@@ -122,19 +127,32 @@ fun ClickableElevatedCardSample(miPublicacion: Publicaciones, onItemClick: () ->
                     )
                     if (expanded) {
                         Spacer(modifier = Modifier.weight(1f))
-                        IconButton(
-                            onClick = {
+                        when (isAdd) {
+                            "add" -> IconButton(onClick = {
                                 onItemClick()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.PersonAdd,
+                                    contentDescription = "",
+                                    tint = ColorFocuseado,
+                                    modifier = Modifier
+                                        .size(25.dp)
+                                        .align(Alignment.Bottom)
+                                )
                             }
-                        ) {
-                            Icon(
-                                Icons.Filled.PersonAdd,
-                                contentDescription = "",
-                                tint = ColorFocuseado,
-                                modifier = Modifier
-                                    .size(25.dp)
-                                    .align(Alignment.Bottom)
-                            )
+
+                            "remove" -> IconButton(onClick = {
+                                onItemClick()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.GroupRemove,
+                                    contentDescription = "",
+                                    tint = Color.Red,
+                                    modifier = Modifier
+                                        .size(25.dp)
+                                        .align(Alignment.Bottom)
+                                )
+                            }
                         }
                     }
                 }
@@ -188,8 +206,7 @@ fun myTextFieldColors(): TextFieldColors {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimePickerField(
-    modifier: Modifier = Modifier,
-    onDateSelected: (String) -> Unit
+    modifier: Modifier = Modifier, onDateSelected: (String) -> Unit
 ) {
     var selectedTime by remember { mutableStateOf("") }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -263,8 +280,7 @@ fun Contador(plazas: Int, onValueChange: (Int) -> Unit) {
                 } else {
                     onValueChange(plazas - 1)
                 }
-            },
-            modifier = Modifier.padding(8.dp)
+            }, modifier = Modifier.padding(8.dp)
         ) {
             Icon(
                 Icons.Filled.ArrowCircleDown,
@@ -283,15 +299,12 @@ fun Contador(plazas: Int, onValueChange: (Int) -> Unit) {
                 .height(60.dp)
                 .width(100.dp),
             textStyle = TextStyle(
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold
             ),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
         IconButton(
-            onClick = { onValueChange(plazas + 1) },
-            modifier = Modifier.padding(8.dp)
+            onClick = { onValueChange(plazas + 1) }, modifier = Modifier.padding(8.dp)
         ) {
             Icon(
                 Icons.Filled.ArrowCircleUp,
@@ -313,8 +326,7 @@ fun DatePickerField(
     var showDatePicker by remember { mutableStateOf(false) }
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
-    OutlinedTextField(
-        value = selectedDate,
+    OutlinedTextField(value = selectedDate,
         onValueChange = {},
         readOnly = true,
         label = { Text("Fecha") },
@@ -324,34 +336,29 @@ fun DatePickerField(
             }
         },
         colors = myTextFieldColors(),
-        modifier = modifier.clickable { showDatePicker = true }
-    )
+        modifier = modifier.clickable { showDatePicker = true })
 
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState()
-        DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    val selectedMillis = datePickerState.selectedDateMillis
-                    selectedDate = selectedMillis?.let {
-                        dateFormatter.format(Date(it))
-                    } ?: ""
+        DatePickerDialog(onDismissRequest = { showDatePicker = false }, confirmButton = {
+            TextButton(onClick = {
+                val selectedMillis = datePickerState.selectedDateMillis
+                selectedDate = selectedMillis?.let {
+                    dateFormatter.format(Date(it))
+                } ?: ""
 
-                    // Llama a onDateSelected con la fecha seleccionada
-                    onDateSelected(selectedDate)
+                // Llama a onDateSelected con la fecha seleccionada
+                onDateSelected(selectedDate)
 
-                    showDatePicker = false
-                }) {
-                    Text("OK")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancelar")
-                }
+                showDatePicker = false
+            }) {
+                Text("OK")
             }
-        ) {
+        }, dismissButton = {
+            TextButton(onClick = { showDatePicker = false }) {
+                Text("Cancelar")
+            }
+        }) {
             DatePicker(state = datePickerState)
         }
     }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.DeleteForever
@@ -26,9 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
+import com.proyecto.proyectointegradomra.data.model.TipoUsuarios
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.BottomNavigationBar
+import com.proyecto.proyectointegradomra.ui.common.ClickableElevatedCardSample
 import com.proyecto.proyectointegradomra.ui.common.DialogoAlerta
 import com.proyecto.proyectointegradomra.ui.common.DialogoEditarNombre
 import com.proyecto.proyectointegradomra.ui.common.FotoPerfil
@@ -41,6 +46,7 @@ fun ProfileView(
     navTo: NavHostController,
 ) {
     val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
+    var publicaciones by remember { mutableStateOf<List<Publicaciones>>(emptyList()) }
     var showDialog by remember { mutableStateOf(false) }
     var showAlert by remember { mutableStateOf(false) }
     var alertMessage by remember { mutableStateOf("") }
@@ -49,6 +55,17 @@ fun ProfileView(
 
     LaunchedEffect(Unit) {
         dataRepository.cargarUsuario()
+        publicaciones = if (miUsuario?.type == TipoUsuarios.OFERTANTE) {
+            dataRepository.obtenerPublicacionesParticipadas(
+                TipoPublicaciones.BUSQUEDA,
+                miUsuario?.uid!!
+            )
+        } else {
+            dataRepository.obtenerPublicacionesParticipadas(
+                TipoPublicaciones.ACTIVIDAD,
+                miUsuario?.uid!!
+            )
+        }
     }
 
     Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->
@@ -114,6 +131,23 @@ fun ProfileView(
                     onValueChange = {},
                     modifier = Modifier
                 )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                // Column para las publicaciones del usuario
+                LazyRow(modifier = Modifier.padding(4.dp)) {
+                    items(publicaciones.size) { index ->
+                        ClickableElevatedCardSample(
+                            publicaciones[index], "remove", onItemClick = {
+                                dataRepository.eliminarParticipante(
+                                    miUsuario?.uid!!,
+                                    publicaciones[index].uid!!
+                                )
+                                navTo.navigate("ProfileView")
+                            }
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.weight(1f))
 

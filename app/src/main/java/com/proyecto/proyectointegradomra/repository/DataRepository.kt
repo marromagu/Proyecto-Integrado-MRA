@@ -6,61 +6,161 @@ import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.firebase.services.AuthService
 import com.proyecto.proyectointegradomra.firebase.services.FirestoreService
 
-
+/**
+ * Repositorio centralizado que actúa como capa intermedia entre los servicios de Firebase y la lógica del ViewModel.
+ * Proporciona métodos para gestionar autenticación y operaciones de Firestore relacionadas con publicaciones y usuarios.
+ * Extiende ViewModel para integrarse con el ciclo de vida de Android.
+ *
+ * @property authService Servicio de autenticación (AuthService).
+ * @property firestoreService Servicio de Firestore (FirestoreService).
+ */
 class DataRepository(
-    private val autService: AuthService,
+    private val authService: AuthService,
     private val firestoreService: FirestoreService
 ) : ViewModel() {
 
-    // Función para cerrar sesión
-    fun cerrarSesion() = autService.cerrarSesion()
+    /* -------------------------------------------------------------------------------------------
+     * MÉTODOS RELACIONADOS CON LA AUTENTICACIÓN
+     * ---------------------------------------------------------------------------------------- */
 
-    // Función para eliminar cuenta
-    fun eliminarCuenta() = autService.eliminarCuenta()
+    /**
+     * Cierra la sesión del usuario actual.
+     */
+    fun cerrarSesion() = authService.cerrarSesion()
 
-    // Función para iniciar sesión
-    fun iniciarSesion(email: String, password: String, onSuccess: () -> Unit, onError: () -> Unit) {
-        autService.iniciarSesion(email, password, onSuccess, onError)
+    /**
+     * Elimina la cuenta del usuario actual, tanto en Firebase Authentication como en Firestore.
+     */
+    fun eliminarCuenta() = authService.eliminarCuenta()
+
+    /**
+     * Inicia sesión con un correo electrónico y contraseña.
+     *
+     * @param email Correo electrónico del usuario.
+     * @param password Contraseña del usuario.
+     * @param onSuccess Callback ejecutado si el inicio de sesión es exitoso.
+     * @param onError Callback ejecutado si ocurre un error en el inicio de sesión.
+     */
+    fun iniciarSesion(
+        email: String,
+        password: String,
+        onSuccess: () -> Unit,
+        onError: () -> Unit
+    ) {
+        authService.iniciarSesion(email, password, onSuccess, onError)
     }
 
-    // Función para registrarse
+    /**
+     * Registra un nuevo usuario en Firebase Authentication y lo guarda en Firestore.
+     *
+     * @param email Correo electrónico del usuario.
+     * @param password Contraseña del usuario.
+     * @param name Nombre del usuario.
+     * @param esOfertante Indica si el usuario es ofertante o consumidor.
+     * @param onSuccess Callback ejecutado si el registro es exitoso.
+     * @param onError Callback ejecutado si ocurre un error en el registro.
+     */
     fun registrarse(
         email: String,
         password: String,
         name: String,
         esOfertante: Boolean,
-        onSuccess: () -> Unit, onError: (Exception) -> Unit
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
     ) {
-        autService.registrarse(email, password, name, esOfertante, onSuccess, onError = onError)
+        authService.registrarse(email, password, name, esOfertante, onSuccess, onError)
     }
 
-    // Función para obtener el usuario actual
-    fun obtenerUsuarioActual() = autService.usuario
+    /**
+     * Obtiene un objeto LiveData con el usuario autenticado actual.
+     * @return LiveData<Usuario?> con los datos del usuario actual.
+     */
+    fun obtenerUsuarioActual() = authService.usuario
 
-    // Función para cargar el usuario desde Firestore para obtener sus datos
-    fun cargarUsuario() = autService.cargarUsuario()
+    /**
+     * Carga los datos del usuario autenticado desde Firestore.
+     * Útil para refrescar la información del usuario en la aplicación.
+     */
+    fun cargarUsuario() = authService.cargarUsuario()
 
-    // Función para actualizar el nombre de usuario
+    /**
+     * Actualiza el nombre del usuario en Firestore.
+     *
+     * @param uid UID del usuario.
+     * @param newName Nuevo nombre para el usuario.
+     */
     fun actualizarNombreUsuario(uid: String, newName: String) {
         firestoreService.actualizarNombreUsuarioFirestore(uid, newName)
     }
 
-    /*-------------------------------------------------------------------------------------------*/
+    /* -------------------------------------------------------------------------------------------
+     * MÉTODOS RELACIONADOS CON PUBLICACIONES
+     * ---------------------------------------------------------------------------------------- */
 
-    // Función para agregar un documento a Firestore
+    /**
+     * Agrega una nueva publicación a Firestore.
+     *
+     * @param miPublicacion Objeto Publicaciones a agregar.
+     */
     fun agregarDocumentoPublicacionesFirestore(miPublicacion: Publicaciones) {
         firestoreService.agregarDocumentoPublicacionesFirestore(miPublicacion)
     }
 
+    /**
+     * Obtiene las publicaciones creadas por un usuario específico.
+     *
+     * @param userId ID del usuario.
+     * @return Lista de publicaciones asociadas al usuario.
+     */
     suspend fun obtenerPublicacionesPorUsuario(userId: String): List<Publicaciones> {
         return firestoreService.obtenerPublicacionesPorUsuario(userId)
     }
 
-    suspend fun obtenerPublicaciones(tipo: TipoPublicaciones): List<Publicaciones> {
-        return firestoreService.obtenerPublicaciones(tipo)
+    /**
+     * Obtiene publicaciones de un tipo específico en las que el usuario no participa.
+     *
+     * @param tipo Tipo de publicaciones.
+     * @param uid UID del usuario que consulta.
+     * @return Lista de publicaciones que cumplen con el criterio.
+     */
+    suspend fun obtenerPublicacionesPorTipoSinParticipar(
+        tipo: TipoPublicaciones,
+        uid: String
+    ): List<Publicaciones> {
+        return firestoreService.obtenerPublicacionesPorTipoSinParticipar(tipo, uid)
     }
 
-    fun addParticipantes(uid: String, publicacionId: String) {
-        firestoreService.addParticipantes(uid, publicacionId)
+    /**
+     * Agrega un participante a una publicación específica.
+     *
+     * @param uid UID del participante a agregar.
+     * @param publicacionId ID de la publicación.
+     */
+    fun agregarParticipante(uid: String, publicacionId: String) {
+        firestoreService.agregarParticipante(uid, publicacionId)
+    }
+
+    /**
+     * Obtiene publicaciones de un tipo específico en las que el usuario ya participa.
+     *
+     * @param tipo Tipo de publicaciones.
+     * @param uid UID del usuario que consulta.
+     * @return Lista de publicaciones que cumplen con el criterio.
+     */
+    suspend fun obtenerPublicacionesParticipadas(
+        tipo: TipoPublicaciones,
+        uid: String
+    ): List<Publicaciones> {
+        return firestoreService.obtenerPublicacionesParticipadas(tipo, uid)
+    }
+
+    /**
+     * Elimina un participante de una publicación específica.
+     *
+     * @param uid UID del participante a eliminar.
+     * @param publicacionId ID de la publicación.
+     */
+    fun eliminarParticipante(uid: String, publicacionId: String) {
+        firestoreService.eliminarParticipante(uid, publicacionId)
     }
 }

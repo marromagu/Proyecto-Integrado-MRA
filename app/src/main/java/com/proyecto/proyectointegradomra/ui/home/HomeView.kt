@@ -33,14 +33,17 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
     var publicaciones by remember { mutableStateOf<List<Publicaciones>>(emptyList()) }
     val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
 
-    LaunchedEffect(miUsuario) {
+    LaunchedEffect(Unit) {
+        dataRepository.cargarUsuario()
         publicaciones = if (miUsuario?.type == TipoUsuarios.OFERTANTE) {
-            dataRepository.obtenerPublicaciones(
-                TipoPublicaciones.BUSQUEDA
+            dataRepository.obtenerPublicacionesPorTipoSinParticipar(
+                TipoPublicaciones.BUSQUEDA,
+                miUsuario?.uid!!
             )
         } else {
-            dataRepository.obtenerPublicaciones(
-                TipoPublicaciones.ACTIVIDAD
+            dataRepository.obtenerPublicacionesPorTipoSinParticipar(
+                TipoPublicaciones.ACTIVIDAD,
+                miUsuario?.uid!!
             )
         }
     }
@@ -57,12 +60,11 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                 LazyColumn(modifier = Modifier.padding(4.dp)) {
                     items(publicaciones.size) { index ->
                         ClickableElevatedCardSample(
-                            publicaciones[index], onItemClick = {
-                                dataRepository.addParticipantes(
+                            publicaciones[index], "add", onItemClick = {
+                                dataRepository.agregarParticipante(
                                     miUsuario?.uid!!,
                                     publicaciones[index].uid
                                 )
-                                navTo.navigate("HomeView")
                             }
                         )
                     }
