@@ -16,12 +16,12 @@ class UpdateAdViewModel(publicacion: Publicaciones) : ViewModel() {
     private val _plazas = MutableLiveData(publicacion.plazas)
     val plazas: MutableLiveData<Int> = _plazas
 
-    val dateLong: Long = publicacion.date
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
-    val timeFormat = SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+    private val dateLong: Long = publicacion.date
+    private val dateFormat = SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+    private val timeFormat = SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
 
-    val dateString = dateFormat.format(Date(dateLong))
-    val timeString = timeFormat.format(Date(dateLong))
+    private val dateString = dateFormat.format(Date(dateLong))
+    private val timeString = timeFormat.format(Date(dateLong))
 
 
     private val _fecha = MutableLiveData(dateString)
