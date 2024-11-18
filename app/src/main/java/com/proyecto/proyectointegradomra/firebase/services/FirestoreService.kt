@@ -146,18 +146,18 @@ class FirestoreService {
         tipo: TipoPublicaciones, uid: String
     ): List<Publicaciones> {
         return try {
-            val querySnapshot = firestore.collection("publicaciones")
-                .whereEqualTo("tipo", tipo)
-                .get()
-                .await()
+            val querySnapshot =
+                firestore.collection("publicaciones").whereEqualTo("tipo", tipo).get().await()
 
             querySnapshot.documents.mapNotNull { document ->
                 val publicacion = document.toObject<Publicaciones>()
-                if (!publicacion?.participantes?.contains(uid)!!) { // Lo tengo q filtrar aqui por el indice de mierda no lo hace bien
-                    publicacion.uid = document.id
-                    publicacion
-                } else {
-                    null
+                publicacion?.let {
+                    if (!it.participantes.contains(uid)) {
+                        it.uid = document.id
+                        it
+                    } else {
+                        null
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -173,19 +173,25 @@ class FirestoreService {
      * @return Una lista de objetos `Publicaciones` en las que el usuario haya participado.
      */
     suspend fun obtenerPublicacionesParticipadas(
-        tipo: TipoPublicaciones, uid: String
+        tipo: TipoPublicaciones,
+        uid: String
     ): List<Publicaciones> {
         return try {
-            val querySnapshot =
-                firestore.collection("publicaciones").whereEqualTo("tipo", tipo).whereEqualTo(
-                    "participantes", listOf(uid)
-                ).get().await()
+            val querySnapshot = firestore.collection("publicaciones")
+                .whereEqualTo("tipo", tipo)
+                .whereArrayContains("participantes", uid)
+                .get()
+                .await()
+
             querySnapshot.documents.mapNotNull { document ->
-                val publicaciones = document.toObject<Publicaciones>()
-                publicaciones?.uid = document.id
-                publicaciones
+                val publicacion = document.toObject<Publicaciones>()
+                publicacion?.let {
+                    it.uid = document.id
+                    it
+                }
             }
         } catch (e: Exception) {
+            Log.e("FirestoreService", "Error al obtener publicaciones participadas: $e")
             emptyList()
         }
     }
@@ -217,7 +223,7 @@ class FirestoreService {
                 Log.e("FirestoreService", "Error al eliminar participante: $exception")
             }
     }
-    
+
     /**
      * Elimina una publicación.
      * @param publicacionId ID de la publicación.

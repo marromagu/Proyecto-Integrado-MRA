@@ -35,7 +35,7 @@ import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.BarraDeNavegacion
 import com.proyecto.proyectointegradomra.ui.common.CardClickable
-import com.proyecto.proyectointegradomra.ui.common.DialogoAlerta
+import com.proyecto.proyectointegradomra.ui.common.DialogoAlertaBotones
 import com.proyecto.proyectointegradomra.ui.common.DialogoEditarNombre
 import com.proyecto.proyectointegradomra.ui.common.Foto
 import com.proyecto.proyectointegradomra.ui.common.BotonPorDefecto
@@ -191,7 +191,7 @@ fun ProfileView(
             }
 
             // Diálogo de alerta para confirmar acciones
-            DialogoAlerta(
+            DialogoAlertaBotones(
                 showAlert,
                 alertMessage,
                 actionConfirmed,

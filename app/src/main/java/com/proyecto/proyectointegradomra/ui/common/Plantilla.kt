@@ -424,7 +424,7 @@ fun CardClickable(
 }
 
 @Composable
-fun DialogoAlerta(
+fun DialogoAlertaBotones(
     showAlert: Boolean, alertMessage: String, actionConfirmed: () -> Unit, onDismiss: () -> Unit
 ) {
     if (showAlert) {
@@ -444,6 +444,25 @@ fun DialogoAlerta(
                     onDismiss()
                 }) {
                     Text("Cancelar")
+                }
+            })
+    }
+}
+
+@Composable
+fun DialogoAlerta(
+    showAlert: Boolean, alertMessage: String, actionConfirmed: () -> Unit, onDismiss: () -> Unit
+) {
+    if (showAlert) {
+        AlertDialog(onDismissRequest = onDismiss,
+            title = { Text("Error") },
+            text = { Text(alertMessage) },
+            confirmButton = {
+                Button(onClick = {
+                    actionConfirmed()
+                    onDismiss()
+                }) {
+                    Text("Aceptar")
                 }
             })
     }

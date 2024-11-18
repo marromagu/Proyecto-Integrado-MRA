@@ -27,11 +27,13 @@ import com.proyecto.proyectointegradomra.ui.common.Logo
 import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.data.model.TipoUsuarios
 import com.proyecto.proyectointegradomra.ui.common.CardClickable
+import com.proyecto.proyectointegradomra.ui.common.DialogoAlerta
 
 @Composable
 fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
     var publicaciones by remember { mutableStateOf<List<Publicaciones>>(emptyList()) }
     val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
+    var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         dataRepository.cargarUsuario()
@@ -64,17 +66,27 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                     items(publicaciones.size) { index ->
                         CardClickable(
                             publicaciones[index], "add", onItemClick = {
-                                dataRepository.agregarParticipante(
-                                    miUsuario?.uid!!,
-                                    publicaciones[index].uid
-                                )
-                                navTo.navigate("HomeView")
+                                if (publicaciones[index].plazas > publicaciones[index].participantes.size) {
+                                    dataRepository.agregarParticipante(
+                                        miUsuario?.uid!!,
+                                        publicaciones[index].uid
+                                    )
+                                    navTo.navigate("HomeView")
+                                } else {
+                                    showDialog = true
+                                }
                             }
                         ) {
                             navTo.navigate("UpdateAdView")
                         }
                     }
                 }
+                DialogoAlerta(
+                    showAlert = showDialog,
+                    alertMessage = "El numero de plazas disponibles ya esta completo.",
+                    actionConfirmed = { showDialog = false },
+                    onDismiss = { }
+                )
             }
         }
     }
