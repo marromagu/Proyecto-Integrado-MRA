@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.proyecto.proyectointegradomra.data.model.Publicacion
 import android.icu.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 class UpdateAdViewModel(publicacion: Publicacion) : ViewModel() {
     private val _title = MutableLiveData(publicacion.title)
@@ -17,12 +18,11 @@ class UpdateAdViewModel(publicacion: Publicacion) : ViewModel() {
     val plazas: MutableLiveData<Int> = _plazas
 
     private val dateLong: Long = publicacion.date
-    private val dateFormat = SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
-    private val timeFormat = SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+    private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     private val dateString = dateFormat.format(Date(dateLong))
     private val timeString = timeFormat.format(Date(dateLong))
-
 
     private val _fecha = MutableLiveData(dateString)
     val fecha: MutableLiveData<String> = _fecha

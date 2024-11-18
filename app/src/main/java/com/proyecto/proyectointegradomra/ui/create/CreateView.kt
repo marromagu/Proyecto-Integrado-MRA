@@ -1,5 +1,6 @@
 package com.proyecto.proyectointegradomra.ui.create
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import com.proyecto.proyectointegradomra.data.model.Publicacion
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
@@ -67,13 +69,16 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
                 ) {
                     items(publicaciones.size) { index ->
                         CardClickable(publicaciones[index], "update", onItemClick = {
-                            navTo.navigate("UpdateAdView")
+                            // Serializar el objeto Publicacion como JSON
+                            val publicacionJson = Uri.encode(Gson().toJson(publicaciones[index]))
+                            navTo.navigate("UpdateAdView/$publicacionJson")
                         }, onItemClickDelete = {
                             dataRepository.eliminarPublicacion(publicaciones[index].uid)
                             navTo.navigate("CreateView")
                         })
                     }
                 }
+
             }
 
             AnimatedVisibility(

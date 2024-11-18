@@ -7,6 +7,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.google.gson.Gson
+import com.proyecto.proyectointegradomra.data.model.Publicacion
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.createAd.CreateAdView
 import com.proyecto.proyectointegradomra.ui.start.StartView
@@ -16,6 +18,7 @@ import com.proyecto.proyectointegradomra.ui.profile.ProfileView
 import com.proyecto.proyectointegradomra.ui.create.CreateView
 import com.proyecto.proyectointegradomra.ui.home.HomeView
 import com.proyecto.proyectointegradomra.ui.updateAd.UpdateAdView
+import com.proyecto.proyectointegradomra.ui.updateAd.UpdateAdViewModel
 
 @Composable
 fun NavigationManager(
@@ -83,9 +86,14 @@ fun NavigationManager(
             // Pantalla para crear una nueva publicación
             CreateAdView(navTo = navController, dataRepository = dataRepository)
         }
-        composable(route = Screens.UpdateAdScreen.ruta) {
-            // Pantalla para actualizar una publicación
-            UpdateAdView(navTo = navController, dataRepository = dataRepository)
+        composable("UpdateAdView/{publicacionJson}") { backStackEntry ->
+            val publicacionJson = backStackEntry.arguments?.getString("publicacionJson")
+            val publicacion = Gson().fromJson(publicacionJson, Publicacion::class.java)
+            UpdateAdView(
+                updateAdController = UpdateAdViewModel(publicacion),
+                navTo = navController,
+                dataRepository = dataRepository
+            )
         }
     }
 }
