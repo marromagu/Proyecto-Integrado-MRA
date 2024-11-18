@@ -73,7 +73,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.R
-import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.Publicacion
 import com.proyecto.proyectointegradomra.navigation.Screens
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorContainer
@@ -313,7 +313,7 @@ fun CampoNumeroDePlazas(plazas: Int, onValueChange: (Int) -> Unit) {
 
 @Composable
 fun CardClickable(
-    miPublicacion: Publicaciones,
+    miPublicacion: Publicacion,
     isAdd: String = "",
     onItemClick: () -> Unit = {},
     onItemClickDelete: () -> Unit
@@ -414,7 +414,7 @@ fun CardClickable(
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = "Plazas: ${miPublicacion.participantes.size}/${miPublicacion.plazas}",
+                        text = "Plazas: ${miPublicacion.participantes.size}/${miPublicacion.size}",
                         modifier = Modifier.padding(8.dp)
                     )
                 }

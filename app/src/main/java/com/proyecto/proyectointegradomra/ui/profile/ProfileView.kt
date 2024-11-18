@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.Publicacion
 import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.data.model.TipoUsuarios
 import com.proyecto.proyectointegradomra.repository.DataRepository
@@ -47,7 +47,7 @@ fun ProfileView(
     navTo: NavHostController,
 ) {
     val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
-    var publicaciones by remember { mutableStateOf<List<Publicaciones>>(emptyList()) }
+    var publicaciones by remember { mutableStateOf<List<Publicacion>>(emptyList()) }
     var showDialog by remember { mutableStateOf(false) }
     var showAlert by remember { mutableStateOf(false) }
     var alertMessage by remember { mutableStateOf("") }

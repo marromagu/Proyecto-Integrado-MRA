@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Email
@@ -18,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -31,6 +31,7 @@ import com.proyecto.proyectointegradomra.ui.theme.VerdeClaro
 import com.proyecto.proyectointegradomra.ui.common.CampoDeTextoPorDefectoEditable
 import com.proyecto.proyectointegradomra.ui.common.BotonPorDefecto
 import com.proyecto.proyectointegradomra.ui.common.Logo
+import com.proyecto.proyectointegradomra.ui.theme.ColorEliminar
 
 @Composable
 fun SingUpView(
@@ -44,6 +45,7 @@ fun SingUpView(
     val repeatPassword by singUpController.repeatPassword.observeAsState("")
     val esOfertante by singUpController.esOfertante.observeAsState(false)
     var errorMessage by remember { mutableStateOf("") }
+    var errorMessages by remember { mutableStateOf<List<String>>(emptyList()) }
 
     LazyColumn(
         modifier = Modifier
@@ -113,24 +115,57 @@ fun SingUpView(
             }
         }
         item { Spacer(modifier = Modifier.height(24.dp)) }
+        // Mensajes de error
+        if (errorMessages.isNotEmpty()) {
+            errorMessages.forEach { mensaje ->
+                items(
+                    listOf(mensaje)
+                ) {
+                    Text(
+                        text = mensaje,
+                        color = ColorEliminar,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
+            }
+        }
         if (errorMessage.isNotEmpty()) {
             item {
-                Text(text = errorMessage, color = Color.Red)
+                Text(text = errorMessage, color = ColorEliminar)
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
+
         item {
-            BotonPorDefecto(text = "Registrarse", icon = Icons.Filled.AccountBox, onClick = {
-                if ((password != repeatPassword) || (password.isEmpty())) {
-                    errorMessage = "Las contraseñas no coinciden"
-                } else {
-                    dataRepository.registrarse(email, password, name, esOfertante, onSuccess = {
-                        navToLogIn()
-                    }, onError = {exception ->
-                        errorMessage = exception.message ?: "Error desconocido"
-                    })
-                }
-            })
+            BotonPorDefecto(
+                text = "Registrarse",
+                icon = Icons.Filled.AccountBox,
+                onClick = {
+                    val errores = mutableListOf<String>()
+                    if (name.isBlank()) errores.add("El nombre no puede estar vacío.")
+                    if (email.isBlank()) errores.add("El email no puede estar vacío.")
+                    if (password.isBlank()) errores.add("La contraseña no puede estar vacía.")
+                    if (repeatPassword.isBlank()) errores.add("La contraseña no puede estar vacía.")
+                    if ((password != repeatPassword) || (password.isEmpty())) errores.add("Las contraseñas no coinciden")
+
+                    if (errores.isNotEmpty()) {
+                        errorMessages = errores
+                    } else {
+                        dataRepository.registrarse(
+                            email,
+                            password,
+                            name,
+                            esOfertante,
+                            onSuccess = {
+                                navToLogIn()
+                            },
+                            onError = { exception ->
+                                errorMessage = exception.message ?: "Error desconocido"
+                            })
+                    }
+                })
         }
+
     }
 }
+

@@ -27,7 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.Publicacion
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.BarraDeNavegacion
@@ -36,7 +36,7 @@ import com.proyecto.proyectointegradomra.ui.common.Logo
 
 @Composable
 fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
-    var publicaciones by remember { mutableStateOf<List<Publicaciones>>(emptyList()) }
+    var publicaciones by remember { mutableStateOf<List<Publicacion>>(emptyList()) }
     val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
 
     LaunchedEffect(miUsuario) {

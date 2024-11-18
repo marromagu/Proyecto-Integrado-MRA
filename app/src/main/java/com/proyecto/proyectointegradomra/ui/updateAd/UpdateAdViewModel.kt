@@ -2,18 +2,18 @@ package com.proyecto.proyectointegradomra.ui.updateAd
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.Publicacion
 import android.icu.text.SimpleDateFormat
 import java.util.Date
 
-class UpdateAdViewModel(publicacion: Publicaciones) : ViewModel() {
+class UpdateAdViewModel(publicacion: Publicacion) : ViewModel() {
     private val _title = MutableLiveData(publicacion.title)
     val title: MutableLiveData<String> = _title
 
     private val _description = MutableLiveData(publicacion.description)
     val description: MutableLiveData<String> = _description
 
-    private val _plazas = MutableLiveData(publicacion.plazas)
+    private val _plazas = MutableLiveData(publicacion.size)
     val plazas: MutableLiveData<Int> = _plazas
 
     private val dateLong: Long = publicacion.date

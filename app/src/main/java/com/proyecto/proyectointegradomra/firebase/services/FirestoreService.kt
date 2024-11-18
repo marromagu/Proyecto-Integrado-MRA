@@ -4,7 +4,7 @@ import android.util.Log
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
-import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.Publicacion
 import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.data.model.Usuario
 import kotlinx.coroutines.tasks.await
@@ -57,13 +57,13 @@ class FirestoreService {
 
     /**
      * Agrega un nuevo usuario a Firestore.
-     * @param usuario Objeto `Usuario` con los datos del usuario a agregar.
+     * @param miUsuario Objeto `Usuario` con los datos del usuario a agregar.
      */
-    fun agregarDocumentoUsuarioFirestore(usuario: Usuario) {
-        val usuarioData = mapOf(
-            "name" to usuario.name, "email" to usuario.email, "type" to usuario.type.name
+    fun agregarDocumentoUsuarioFirestore(miUsuario: Usuario) {
+        val usuarioDataMap = mapOf(
+            "name" to miUsuario.name, "email" to miUsuario.email, "type" to miUsuario.type.name
         )
-        agregarDocumentoFirestore("usuarios", usuario.uid, usuarioData)
+        agregarDocumentoFirestore("usuarios", miUsuario.uid, usuarioDataMap)
     }
 
     /**
@@ -104,19 +104,19 @@ class FirestoreService {
 
     /**
      * Agrega una nueva publicación a Firestore.
-     * @param publicacion Objeto `Publicaciones` con los datos de la publicación.
+     * @param miPublicacion Objeto `Publicacion` con los datos de la publicación.
      */
-    fun agregarDocumentoPublicacionesFirestore(publicacion: Publicaciones) {
-        val publicacionData = mapOf(
-            "userId" to publicacion.userId,
-            "title" to publicacion.title,
-            "description" to publicacion.description,
-            "date" to publicacion.date,
-            "plazas" to publicacion.plazas,
-            "tipo" to publicacion.tipo,
-            "participantes" to publicacion.participantes
+    fun agregarDocumentoPublicacionesFirestore(miPublicacion: Publicacion) {
+        val publicacionDataMap = mapOf(
+            "userId" to miPublicacion.ownerId,
+            "title" to miPublicacion.title,
+            "description" to miPublicacion.description,
+            "date" to miPublicacion.date,
+            "size" to miPublicacion.size,
+            "type" to miPublicacion.type,
+            "participantes" to miPublicacion.participantes
         )
-        agregarDocumentoFirestore("publicaciones", null, publicacionData)
+        agregarDocumentoFirestore("publicaciones", null, publicacionDataMap)
     }
 
     /**
@@ -124,11 +124,11 @@ class FirestoreService {
      * @param userId ID del usuario.
      * @return Lista de publicaciones del usuario.
      */
-    suspend fun obtenerPublicacionesPorUsuario(userId: String): List<Publicaciones> {
+    suspend fun obtenerPublicacionesPorUsuario(userId: String): List<Publicacion> {
         return try {
             firestore.collection("publicaciones").whereEqualTo("userId", userId).get()
                 .await().documents.mapNotNull {
-                    it.toObject<Publicaciones>()?.apply { uid = it.id }
+                    it.toObject<Publicacion>()?.apply { uid = it.id }
                 }
         } catch (exception: Exception) {
             Log.e("FirestoreService", "Error al obtener publicaciones por usuario: $exception")
@@ -138,19 +138,19 @@ class FirestoreService {
 
     /**
      * Obtiene una lista de publicaciones de un tipo específico en las que el usuario no haya participado.
-     * @param tipo El tipo de publicación (por ejemplo, actividad o anuncio de búsqueda).
+     * @param type El tipo de publicación (por ejemplo, actividad o anuncio de búsqueda).
      * @param uid El identificador único del usuario.
      * @return Una lista de objetos `Publicaciones` en las que el usuario no haya participado.
      */
     suspend fun obtenerPublicacionesPorTipoSinParticipar(
-        tipo: TipoPublicaciones, uid: String
-    ): List<Publicaciones> {
+        type: TipoPublicaciones, uid: String
+    ): List<Publicacion> {
         return try {
             val querySnapshot =
-                firestore.collection("publicaciones").whereEqualTo("tipo", tipo).get().await()
+                firestore.collection("publicaciones").whereEqualTo("type", type).get().await()
 
             querySnapshot.documents.mapNotNull { document ->
-                val publicacion = document.toObject<Publicaciones>()
+                val publicacion = document.toObject<Publicacion>()
                 publicacion?.let {
                     if (!it.participantes.contains(uid)) {
                         it.uid = document.id
@@ -168,23 +168,23 @@ class FirestoreService {
 
     /**
      * Obtiene una lista de publicaciones de un tipo específico en las que el usuario ya haya participado.
-     * @param tipo El tipo de publicación (por ejemplo, actividad o anuncio de búsqueda).
+     * @param type El tipo de publicación (por ejemplo, actividad o anuncio de búsqueda).
      * @param uid El identificador único del usuario.
      * @return Una lista de objetos `Publicaciones` en las que el usuario haya participado.
      */
     suspend fun obtenerPublicacionesParticipadas(
-        tipo: TipoPublicaciones,
+        type: TipoPublicaciones,
         uid: String
-    ): List<Publicaciones> {
+    ): List<Publicacion> {
         return try {
             val querySnapshot = firestore.collection("publicaciones")
-                .whereEqualTo("tipo", tipo)
+                .whereEqualTo("type", type)
                 .whereArrayContains("participantes", uid)
                 .get()
                 .await()
 
             querySnapshot.documents.mapNotNull { document ->
-                val publicacion = document.toObject<Publicaciones>()
+                val publicacion = document.toObject<Publicacion>()
                 publicacion?.let {
                     it.uid = document.id
                     it

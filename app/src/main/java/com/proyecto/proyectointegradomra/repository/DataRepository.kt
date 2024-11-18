@@ -1,7 +1,7 @@
 package com.proyecto.proyectointegradomra.repository
 
 import androidx.lifecycle.ViewModel
-import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.Publicacion
 import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.firebase.services.AuthService
 import com.proyecto.proyectointegradomra.firebase.services.FirestoreService
@@ -102,7 +102,7 @@ class DataRepository(
      *
      * @param miPublicacion Objeto Publicaciones a agregar.
      */
-    fun agregarDocumentoPublicacionesFirestore(miPublicacion: Publicaciones) {
+    fun agregarDocumentoPublicacionesFirestore(miPublicacion: Publicacion) {
         firestoreService.agregarDocumentoPublicacionesFirestore(miPublicacion)
     }
 
@@ -112,7 +112,7 @@ class DataRepository(
      * @param userId ID del usuario.
      * @return Lista de publicaciones asociadas al usuario.
      */
-    suspend fun obtenerPublicacionesPorUsuario(userId: String): List<Publicaciones> {
+    suspend fun obtenerPublicacionesPorUsuario(userId: String): List<Publicacion> {
         return firestoreService.obtenerPublicacionesPorUsuario(userId)
     }
 
@@ -126,7 +126,7 @@ class DataRepository(
     suspend fun obtenerPublicacionesPorTipoSinParticipar(
         tipo: TipoPublicaciones,
         uid: String
-    ): List<Publicaciones> {
+    ): List<Publicacion> {
         return firestoreService.obtenerPublicacionesPorTipoSinParticipar(tipo, uid)
     }
 
@@ -150,7 +150,7 @@ class DataRepository(
     suspend fun obtenerPublicacionesParticipadas(
         tipo: TipoPublicaciones,
         uid: String
-    ): List<Publicaciones> {
+    ): List<Publicacion> {
         return firestoreService.obtenerPublicacionesParticipadas(tipo, uid)
     }
 

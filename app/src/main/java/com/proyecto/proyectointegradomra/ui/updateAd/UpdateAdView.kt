@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.Publicacion
 import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.data.model.TipoUsuarios
 import com.proyecto.proyectointegradomra.repository.DataRepository
@@ -41,7 +41,7 @@ fun UpdateAdView(
     val hora by updateAdController.hora.observeAsState("")
     val plazas by updateAdController.plazas.observeAsState(0)
 
-    val miAd = Publicaciones()
+    val miAd = Publicacion()
     val miUsuario = dataRepository.obtenerUsuarioActual().value
 
     Column(
@@ -106,15 +106,15 @@ fun UpdateAdView(
                     text = "Actualizar",
                     icon = Icons.Filled.CheckCircle,
                     onClick = {
-                        miAd.userId = miUsuario?.uid ?: ""
+                        miAd.ownerId = miUsuario?.uid ?: ""
                         if (miUsuario?.type == TipoUsuarios.CONSUMIDOR) {
-                            miAd.tipo = TipoPublicaciones.BUSQUEDA
+                            miAd.type = TipoPublicaciones.BUSQUEDA
                         } else {
-                            miAd.tipo = TipoPublicaciones.ACTIVIDAD
+                            miAd.type = TipoPublicaciones.ACTIVIDAD
                         }
                         miAd.title = title
                         miAd.description = description
-                        miAd.plazas = plazas
+                        miAd.size = plazas
                         miAd.date = combinarFechaYHora(fecha, hora)
                         //dataRepository.agregarDocumentoPublicacionesFirestore(miAd)
                         navTo.navigate("CreateView")

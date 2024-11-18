@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.proyecto.proyectointegradomra.data.model.Publicaciones
+import com.proyecto.proyectointegradomra.data.model.Publicacion
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.BarraDeNavegacion
@@ -31,7 +31,7 @@ import com.proyecto.proyectointegradomra.ui.common.DialogoAlerta
 
 @Composable
 fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
-    var publicaciones by remember { mutableStateOf<List<Publicaciones>>(emptyList()) }
+    var publicaciones by remember { mutableStateOf<List<Publicacion>>(emptyList()) }
     val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
     var showDialog by remember { mutableStateOf(false) }
 
@@ -66,7 +66,7 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                     items(publicaciones.size) { index ->
                         CardClickable(
                             publicaciones[index], "add", onItemClick = {
-                                if (publicaciones[index].plazas > publicaciones[index].participantes.size) {
+                                if (publicaciones[index].size > publicaciones[index].participantes.size) {
                                     dataRepository.agregarParticipante(
                                         miUsuario?.uid!!,
                                         publicaciones[index].uid
