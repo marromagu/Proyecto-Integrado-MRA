@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.ArrowCircleDown
 import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.GroupRemove
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -181,8 +182,7 @@ fun VentanaHora(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VentanaFecha(
-    modifier: Modifier = Modifier,
-    onDateSelected: (String) -> Unit
+    modifier: Modifier = Modifier, onDateSelected: (String) -> Unit
 ) {
     var selectedDate by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
@@ -313,7 +313,10 @@ fun CampoNumeroDePlazas(plazas: Int, onValueChange: (Int) -> Unit) {
 
 @Composable
 fun CardClickable(
-    miPublicacion: Publicaciones, isAdd: String = "", onItemClick: () -> Unit = {}
+    miPublicacion: Publicaciones,
+    isAdd: String = "",
+    onItemClick: () -> Unit = {},
+    onItemClickDelete: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     val cardSize by animateDpAsState(
@@ -366,17 +369,31 @@ fun CardClickable(
                                 )
                             }
 
-                            "update" -> IconButton(onClick = {
-                                onItemClick()
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Filled.BorderColor,
-                                    contentDescription = "",
-                                    tint = ColorIconoBotones,
-                                    modifier = Modifier
-                                        .size(25.dp)
-                                        .align(Alignment.Bottom)
-                                )
+                            "update" -> {
+                                IconButton(onClick = {
+                                    onItemClickDelete()
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.DeleteForever,
+                                        contentDescription = "",
+                                        tint = ColorEliminar,
+                                        modifier = Modifier
+                                            .size(25.dp)
+                                            .align(Alignment.Bottom)
+                                    )
+                                }
+                                IconButton(onClick = {
+                                    onItemClick()
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.BorderColor,
+                                        contentDescription = "",
+                                        tint = ColorIconoBotones,
+                                        modifier = Modifier
+                                            .size(25.dp)
+                                            .align(Alignment.Bottom)
+                                    )
+                                }
                             }
                         }
                     }
@@ -537,10 +554,7 @@ fun CampoDeTextoPorDefectoEditable(
 
 @Composable
 fun CampoDeTextoPorDefectoNoEditable(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier
+    label: String, value: String, onValueChange: (String) -> Unit, modifier: Modifier
 ) {
     OutlinedTextField(
         value = value,

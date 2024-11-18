@@ -70,7 +70,9 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                                 )
                                 navTo.navigate("HomeView")
                             }
-                        )
+                        ) {
+                            navTo.navigate("UpdateAdView")
+                        }
                     }
                 }
             }

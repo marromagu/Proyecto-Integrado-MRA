@@ -217,4 +217,12 @@ class FirestoreService {
                 Log.e("FirestoreService", "Error al eliminar participante: $exception")
             }
     }
+    
+    /**
+     * Elimina una publicación.
+     * @param publicacionId ID de la publicación.
+     */
+    fun eliminarPublicacion(publicacionId: String) {
+        eliminarDocumentoFirestore("publicaciones", publicacionId)
+    }
 }

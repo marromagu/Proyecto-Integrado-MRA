@@ -66,13 +66,12 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
                     modifier = Modifier.padding(4.dp), state = listState
                 ) {
                     items(publicaciones.size) { index ->
-                        CardClickable(
-                            publicaciones[index],
-                            "update",
-                            onItemClick = {
-                                navTo.navigate("UpdateAdView")
-                            }
-                        )
+                        CardClickable(publicaciones[index], "update", onItemClick = {
+                            navTo.navigate("UpdateAdView")
+                        }, onItemClickDelete = {
+                            dataRepository.eliminarPublicacion(publicaciones[index].uid)
+                            navTo.navigate("CreateView")
+                        })
                     }
                 }
             }

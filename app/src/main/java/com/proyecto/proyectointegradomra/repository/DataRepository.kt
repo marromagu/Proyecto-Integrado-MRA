@@ -163,4 +163,14 @@ class DataRepository(
     fun eliminarParticipante(uid: String, publicacionId: String) {
         firestoreService.eliminarParticipante(uid, publicacionId)
     }
+
+    /**
+     * Elimina una publicación específica.
+     *
+     * @param publicacionId ID de la publicación a eliminar.
+     */
+    fun eliminarPublicacion(publicacionId: String) {
+        firestoreService.eliminarPublicacion(publicacionId)
+    }
+
 }

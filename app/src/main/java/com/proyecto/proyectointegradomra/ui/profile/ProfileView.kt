@@ -151,7 +151,9 @@ fun ProfileView(
                                     )
                                     navTo.navigate("ProfileView")
                                 }
-                            )
+                            ) {
+                                navTo.navigate("UpdateAdView")
+                            }
                         }
                     }
                 }
