@@ -112,12 +112,15 @@ class AuthService : ViewModel() {
      * Maneja errores potenciales durante el proceso.
      */
     fun eliminarCuenta() {
+
         val uid = usuario.value?.uid ?: return
         userAuthCurrent.value?.delete()?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                firestoreController.eliminarDocumentoFirestore("usuarios", uid)
-                _userAuthCurrent.value = null
-                _usuario.value = null
+                viewModelScope.launch {
+                    firestoreController.eliminarUsuario(uid)
+                    _userAuthCurrent.value = null
+                    _usuario.value = null
+                }
             } else {
                 Log.e("AuthService", "Error al eliminar la cuenta: ${task.exception}")
             }

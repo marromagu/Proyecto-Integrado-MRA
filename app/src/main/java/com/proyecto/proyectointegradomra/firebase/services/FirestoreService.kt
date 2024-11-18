@@ -42,7 +42,7 @@ class FirestoreService {
      * @param collectionPath Ruta de la colección.
      * @param documentId ID del documento que se eliminará.
      */
-    fun eliminarDocumentoFirestore(collectionPath: String, documentId: String) {
+    private fun eliminarDocumentoFirestore(collectionPath: String, documentId: String) {
         if (documentId.isBlank()) {
             Log.e("FirestoreService", "El ID del documento es inválido para la eliminación.")
             return
@@ -108,7 +108,7 @@ class FirestoreService {
      */
     fun agregarDocumentoPublicacionesFirestore(miPublicacion: Publicacion) {
         val publicacionDataMap = mapOf(
-            "userId" to miPublicacion.ownerId,
+            "ownerId" to miPublicacion.ownerId,
             "title" to miPublicacion.title,
             "description" to miPublicacion.description,
             "date" to miPublicacion.date,
@@ -120,13 +120,25 @@ class FirestoreService {
     }
 
     /**
+     * Elimina un usuario de Firestore en cascada.
+     * @param uid UID del usuario.
+     */
+    suspend fun eliminarUsuario(uid: String) {
+        eliminarDocumentoFirestore("usuarios", uid)
+        val publicaciones = this.obtenerPublicacionesPorUsuario(userId = uid)
+        publicaciones.forEach { publicacion ->
+            this.eliminarPublicacion(publicacionId = publicacion.uid)
+        }
+    }
+
+    /**
      * Obtiene publicaciones por usuario.
      * @param userId ID del usuario.
      * @return Lista de publicaciones del usuario.
      */
     suspend fun obtenerPublicacionesPorUsuario(userId: String): List<Publicacion> {
         return try {
-            firestore.collection("publicaciones").whereEqualTo("userId", userId).get()
+            firestore.collection("publicaciones").whereEqualTo("ownerId", userId).get()
                 .await().documents.mapNotNull {
                     it.toObject<Publicacion>()?.apply { uid = it.id }
                 }
