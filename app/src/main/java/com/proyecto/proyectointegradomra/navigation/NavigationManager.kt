@@ -49,13 +49,14 @@ fun NavigationManager(
     // Configuración del NavHost con las rutas disponibles en la aplicación
     NavHost(navController = navController, startDestination = Screens.StartScreen.ruta) {
         composable(route = Screens.StartScreen.ruta) {
-            StartView(navToSignUp = { navController.navigate(Screens.SignUpScreen.ruta) },
+            StartView(
+                navToSignUp = { navController.navigate(Screens.SignUpScreen.ruta) },
                 navToLogIn = { navController.navigate(Screens.LogInScreen.ruta) })
         }
         composable(route = Screens.SignUpScreen.ruta) {
             // Pantalla de registro de usuario
             SingUpView(
-                navToLogIn = { navController.navigate(Screens.HomeScreen.ruta) },
+                navToLogIn = { navController.navigate(Screens.LogInScreen.ruta) },
                 dataRepository = dataRepository
             )
         }

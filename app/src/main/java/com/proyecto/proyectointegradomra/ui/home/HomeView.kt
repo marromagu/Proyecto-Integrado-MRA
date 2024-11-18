@@ -35,16 +35,19 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
 
     LaunchedEffect(Unit) {
         dataRepository.cargarUsuario()
-        publicaciones = if (miUsuario?.type == TipoUsuarios.OFERTANTE) {
-            dataRepository.obtenerPublicacionesPorTipoSinParticipar(
-                TipoPublicaciones.BUSQUEDA,
-                miUsuario?.uid!!
-            )
-        } else {
-            dataRepository.obtenerPublicacionesPorTipoSinParticipar(
-                TipoPublicaciones.ACTIVIDAD,
-                miUsuario?.uid!!
-            )
+
+        miUsuario?.let { usuario ->
+            publicaciones = if (usuario.type == TipoUsuarios.OFERTANTE) {
+                dataRepository.obtenerPublicacionesPorTipoSinParticipar(
+                    TipoPublicaciones.BUSQUEDA,
+                    usuario.uid
+                )
+            } else {
+                dataRepository.obtenerPublicacionesPorTipoSinParticipar(
+                    TipoPublicaciones.ACTIVIDAD,
+                    usuario.uid
+                )
+            }
         }
     }
 
