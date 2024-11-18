@@ -185,15 +185,11 @@ class FirestoreService {
      * @return Una lista de objetos `Publicaciones` en las que el usuario haya participado.
      */
     suspend fun obtenerPublicacionesParticipadas(
-        type: TipoPublicaciones,
-        uid: String
+        type: TipoPublicaciones, uid: String
     ): List<Publicacion> {
         return try {
-            val querySnapshot = firestore.collection("publicaciones")
-                .whereEqualTo("type", type)
-                .whereArrayContains("participantes", uid)
-                .get()
-                .await()
+            val querySnapshot = firestore.collection("publicaciones").whereEqualTo("type", type)
+                .whereArrayContains("participantes", uid).get().await()
 
             querySnapshot.documents.mapNotNull { document ->
                 val publicacion = document.toObject<Publicacion>()
@@ -216,7 +212,7 @@ class FirestoreService {
     fun agregarParticipante(uid: String, publicacionId: String) {
         firestore.collection("publicaciones").document(publicacionId)
             .update("participantes", FieldValue.arrayUnion(uid)).addOnSuccessListener {
-                Log.i("FirestoreService", "Participante agregado con éxito.")
+                Log.i("FirestoreService", "Participante agregado con exito.")
             }.addOnFailureListener { exception ->
                 Log.e("FirestoreService", "Error al agregar participante: $exception")
             }
@@ -230,7 +226,7 @@ class FirestoreService {
     fun eliminarParticipante(uid: String, publicacionId: String) {
         firestore.collection("publicaciones").document(publicacionId)
             .update("participantes", FieldValue.arrayRemove(uid)).addOnSuccessListener {
-                Log.i("FirestoreService", "Participante eliminado con éxito.")
+                Log.i("FirestoreService", "Participante eliminado con exito.")
             }.addOnFailureListener { exception ->
                 Log.e("FirestoreService", "Error al eliminar participante: $exception")
             }
@@ -242,5 +238,28 @@ class FirestoreService {
      */
     fun eliminarPublicacion(publicacionId: String) {
         eliminarDocumentoFirestore("publicaciones", publicacionId)
+    }
+
+    /**
+     * Actualiza una publicación.
+     * @param publicacion La publicación actualizada.
+     */
+    fun actualizarPublicacion(publicacion: Publicacion) {
+        if (publicacion.uid.isBlank()) {
+            Log.e("FirestoreService", "El ID de la publicacion es invalido para la actualizacion.")
+            return
+        }
+
+        val publicacionDataMap = mapOf(
+            "ownerId" to publicacion.ownerId,
+            "title" to publicacion.title,
+            "description" to publicacion.description,
+            "date" to publicacion.date,
+            "size" to publicacion.size,
+            "type" to publicacion.type,
+            "participantes" to publicacion.participantes
+        )
+
+        firestore.collection("publicaciones").document(publicacion.uid).update(publicacionDataMap)
     }
 }

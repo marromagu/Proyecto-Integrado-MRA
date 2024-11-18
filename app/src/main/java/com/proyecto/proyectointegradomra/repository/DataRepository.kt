@@ -173,4 +173,12 @@ class DataRepository(
         firestoreService.eliminarPublicacion(publicacionId)
     }
 
+    /**
+     * Actualiza los datos de una publicación en Firestore.
+     * @param publicacion Objeto Publicacion con los nuevos datos.
+     */
+    fun actualizarPublicacion(publicacion: Publicacion) {
+        firestoreService.actualizarPublicacion(publicacion)
+    }
+
 }

@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -40,6 +41,10 @@ fun UpdateAdView(
     val fecha by updateAdController.fecha.observeAsState("")
     val hora by updateAdController.hora.observeAsState("")
     val plazas by updateAdController.plazas.observeAsState(0)
+
+
+    var errorMessages by remember { mutableStateOf<List<String>>(emptyList()) }
+
 
     val miAd = Publicacion()
     val miUsuario = dataRepository.obtenerUsuarioActual().value
@@ -94,6 +99,20 @@ fun UpdateAdView(
         })
 
         Spacer(modifier = Modifier.weight(1f))
+        // Mensaje de error
+        if (errorMessages.isNotEmpty()) {
+            Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                errorMessages.forEach { mensaje ->
+                    Text(
+                        text = mensaje,
+                        color = ColorEliminar,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
+            }
+        }
+
+
         // Botones
         Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.weight(1f)) {
@@ -103,30 +122,74 @@ fun UpdateAdView(
             }
             Box(modifier = Modifier.weight(1f)) {
                 BotonPorDefecto(
-                    text = "Actualizar",
+                    text = "Crear",
                     icon = Icons.Filled.CheckCircle,
                     onClick = {
-                        miAd.ownerId = miUsuario?.uid ?: ""
-                        if (miUsuario?.type == TipoUsuarios.CONSUMIDOR) {
-                            miAd.type = TipoPublicaciones.BUSQUEDA
+                        // Lista para recopilar errores
+                        val errores = mutableListOf<String>()
+
+                        // Validar cada campo y agregar mensaje si es necesario
+                        if (title.isBlank()) errores.add("El título no puede estar vacío.")
+                        if (description.isBlank()) errores.add("La descripción no puede estar vacía.")
+                        if (fecha.isBlank()) errores.add("Debes seleccionar una fecha.")
+                        if (hora.isBlank()) errores.add("Debes seleccionar una hora.")
+                        if (plazas <= 0 && miAd.participantes.size > plazas) errores.add("Debes ingresar un número válido de plazas.")
+
+                        val fechaCombinada = combinarFechaYHora(fecha, hora)
+                        // Validar la fecha completa
+                        if (fecha.isBlank() || hora.isBlank()) {
+                            errores.add("Debes seleccionar una fecha y una hora.")
+
                         } else {
-                            miAd.type = TipoPublicaciones.ACTIVIDAD
+                            if (fechaCombinada == null) {
+                                errores.add("La fecha y hora no son válidas.")
+                            } else {
+                                if (fechaCombinada < System.currentTimeMillis()) {
+                                    errores.add("La fecha y hora no pueden ser anteriores a la actual.")
+                                }
+                            }
                         }
-                        miAd.title = title
-                        miAd.description = description
-                        miAd.size = plazas
-                        miAd.date = combinarFechaYHora(fecha, hora)
-                        //dataRepository.agregarDocumentoPublicacionesFirestore(miAd)
-                        navTo.navigate("CreateView")
-                    },
+
+                        // Si hay errores, mostrar la lista de errores
+                        if (errores.isNotEmpty()) {
+                            errorMessages = errores // Actualizar estado
+                        } else {
+                            // Crear el objeto Publicaciones y subirlo a Firestore
+                            miAd.ownerId = miUsuario?.uid ?: ""
+                            miAd.title = title
+                            miAd.description = description
+                            miAd.size = plazas
+                            if (fechaCombinada != null) {
+                                miAd.date = fechaCombinada
+                            }
+                            miAd.type = if (miUsuario?.type == TipoUsuarios.CONSUMIDOR) {
+                                TipoPublicaciones.BUSQUEDA
+                            } else {
+                                TipoPublicaciones.ACTIVIDAD
+                            }
+                            dataRepository.actualizarPublicacion(miAd)
+                            navTo.navigate("CreateView")
+                        }
+                    }
                 )
             }
         }
     }
 }
 
-fun combinarFechaYHora(fecha: String, hora: String): Long {
+fun combinarFechaYHora(fecha: String, hora: String): Long? {
     val formatoFecha = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
     val fechaCompleta = "$fecha $hora"
-    return formatoFecha.parse(fechaCompleta)?.time ?: System.currentTimeMillis()
+    return try {
+        val fechaSeleccionada = formatoFecha.parse(fechaCompleta)?.time
+        val fechaActual = System.currentTimeMillis()
+
+        if (fechaSeleccionada != null && fechaSeleccionada >= fechaActual) {
+            fechaSeleccionada
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        null
+    }
 }
