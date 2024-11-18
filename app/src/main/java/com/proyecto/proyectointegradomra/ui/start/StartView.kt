@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.Logo
-import com.proyecto.proyectointegradomra.ui.common.StandardButton
+import com.proyecto.proyectointegradomra.ui.common.BotonPorDefecto
 
 
 
@@ -27,12 +27,12 @@ fun StartView(
     ) {
         Logo()
         Spacer(modifier = Modifier.weight(1f))
-        StandardButton(
+        BotonPorDefecto(
             text = "Iniciar sesión",
             icon = Icons.Filled.AccountCircle,
             onClick = navToLogIn
         )
-        StandardButton(
+        BotonPorDefecto(
             text = "Registrarse",
             icon = Icons.Filled.AccountBox,
             onClick = navToSignUp

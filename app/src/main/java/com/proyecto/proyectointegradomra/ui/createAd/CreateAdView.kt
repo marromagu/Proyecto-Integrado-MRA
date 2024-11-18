@@ -17,13 +17,13 @@ import com.proyecto.proyectointegradomra.data.model.Publicaciones
 import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.data.model.TipoUsuarios
 import com.proyecto.proyectointegradomra.repository.DataRepository
-import com.proyecto.proyectointegradomra.ui.common.Contador
-import com.proyecto.proyectointegradomra.ui.common.CrearPublicacionIMG
-import com.proyecto.proyectointegradomra.ui.common.DatePickerField
-import com.proyecto.proyectointegradomra.ui.common.StandardButton
-import com.proyecto.proyectointegradomra.ui.common.StandardField
-import com.proyecto.proyectointegradomra.ui.common.TextArea
-import com.proyecto.proyectointegradomra.ui.common.TimePickerField
+import com.proyecto.proyectointegradomra.ui.common.CampoNumeroDePlazas
+import com.proyecto.proyectointegradomra.ui.common.PublicacionIMG
+import com.proyecto.proyectointegradomra.ui.common.VentanaFecha
+import com.proyecto.proyectointegradomra.ui.common.BotonPorDefecto
+import com.proyecto.proyectointegradomra.ui.common.CampoDeTextoPorDefectoEditable
+import com.proyecto.proyectointegradomra.ui.common.CampoDeTextoEnArea
+import com.proyecto.proyectointegradomra.ui.common.VentanaHora
 import com.proyecto.proyectointegradomra.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -52,12 +52,12 @@ fun CreateAdView(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Logo
-        CrearPublicacionIMG()
+        PublicacionIMG()
 
         Spacer(modifier = Modifier.weight(0.12f))
         // Titulo
         Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
-            StandardField(label = "Titulo",
+            CampoDeTextoPorDefectoEditable(label = "Titulo",
                 value = title,
                 icon = Icons.Filled.AccountBalance,
                 onValueChange = {
@@ -67,20 +67,20 @@ fun CreateAdView(
 
         Spacer(modifier = Modifier.weight(0.25f))
         // Texto
-        TextArea(label = "Descripción", value = description, onValueChange = {
+        CampoDeTextoEnArea(label = "Descripción", value = description, onValueChange = {
             createAdController.updateDescription(it)
         })
 
         Spacer(modifier = Modifier.weight(0.25f))
         // Fecha y hora
         Row(modifier = Modifier.fillMaxWidth()) {
-            DatePickerField(
+            VentanaFecha(
                 modifier = Modifier
                     .weight(1f),
                 onDateSelected = { f -> createAdController.updateFecha(f) }
             )
             Spacer(modifier = Modifier.width(16.dp))
-            TimePickerField(
+            VentanaHora(
                 modifier = Modifier
                     .weight(1f),
                 onDateSelected = { h -> createAdController.updateHora(h) }
@@ -89,7 +89,7 @@ fun CreateAdView(
 
         Spacer(modifier = Modifier.weight(0.5f))
         // Numero de personas
-        Contador(plazas, onValueChange = {
+        CampoNumeroDePlazas(plazas, onValueChange = {
             createAdController.updatePlazas(it)
         })
 
@@ -97,12 +97,12 @@ fun CreateAdView(
         // Botones
         Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.weight(1f)) {
-                StandardButton(text = "Cancelar", icon = Icons.Filled.Cancel, onClick = {
+                BotonPorDefecto(text = "Cancelar", icon = Icons.Filled.Cancel, onClick = {
                     navTo.navigate("CreateView")
                 })
             }
             Box(modifier = Modifier.weight(1f)) {
-                StandardButton(
+                BotonPorDefecto(
                     text = "Crear",
                     icon = Icons.Filled.CheckCircle,
                     onClick = {

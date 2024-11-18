@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
-import com.proyecto.proyectointegradomra.ui.common.StandardField
-import com.proyecto.proyectointegradomra.ui.common.StandardButton
+import com.proyecto.proyectointegradomra.ui.common.CampoDeTextoPorDefectoEditable
+import com.proyecto.proyectointegradomra.ui.common.BotonPorDefecto
 import com.proyecto.proyectointegradomra.ui.common.Logo
 
 
@@ -49,13 +49,13 @@ fun LogInView(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        StandardField(
+        CampoDeTextoPorDefectoEditable(
             label = "Correo Electrónico",
             value = email,
             icon = Icons.Filled.Email,
             onValueChange = { logInController.updateName(it) }
         )
-        StandardField(
+        CampoDeTextoPorDefectoEditable(
             label = "Contraseña",
             value = password,
             onValueChange = { logInController.updatePassword(it) },
@@ -69,7 +69,7 @@ fun LogInView(
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-        StandardButton(
+        BotonPorDefecto(
             text = "Iniciar Sesión",
             icon = Icons.Filled.AccountCircle,
             onClick = {

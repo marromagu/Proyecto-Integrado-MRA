@@ -22,11 +22,11 @@ import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.data.model.Publicaciones
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
-import com.proyecto.proyectointegradomra.ui.common.BottomNavigationBar
+import com.proyecto.proyectointegradomra.ui.common.BarraDeNavegacion
 import com.proyecto.proyectointegradomra.ui.common.Logo
 import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.data.model.TipoUsuarios
-import com.proyecto.proyectointegradomra.ui.common.ClickableElevatedCardSample
+import com.proyecto.proyectointegradomra.ui.common.CardClickable
 
 @Composable
 fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
@@ -51,7 +51,7 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
         }
     }
 
-    Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->
+    Scaffold(bottomBar = { BarraDeNavegacion(navController = navTo) }) { innerPadding ->
         Box(
             modifier = Modifier
                 .padding(innerPadding)
@@ -62,7 +62,7 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                 Logo()
                 LazyColumn(modifier = Modifier.padding(4.dp)) {
                     items(publicaciones.size) { index ->
-                        ClickableElevatedCardSample(
+                        CardClickable(
                             publicaciones[index], "add", onItemClick = {
                                 dataRepository.agregarParticipante(
                                     miUsuario?.uid!!,

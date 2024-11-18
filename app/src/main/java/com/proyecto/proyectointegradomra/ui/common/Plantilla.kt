@@ -73,7 +73,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.R
 import com.proyecto.proyectointegradomra.data.model.Publicaciones
-import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.navigation.Screens
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorContainer
@@ -88,21 +87,232 @@ import java.util.Locale
 
 @Preview
 @Composable
-fun ClickableElevatedCardSamplePreview() {
-    val miPublicacion = Publicaciones(
-        userId = "123",
-        title = "Título de la publicación",
-        description = "Descripción de la publicación",
-        date = System.currentTimeMillis(),
-        plazas = 5,
-        tipo = TipoPublicaciones.BUSQUEDA,
-        participantes = listOf()
-    )
-    ClickableElevatedCardSample(miPublicacion)
+fun Preview() {
 }
 
 @Composable
-fun ClickableElevatedCardSample(
+fun miTextFieldColors(): TextFieldColors {
+    return TextFieldDefaults.colors(
+        focusedContainerColor = ColorContainer,
+        unfocusedContainerColor = ColorContainer,
+        focusedIndicatorColor = ColorFocuseado,
+        unfocusedIndicatorColor = ColorUnfocuseado,
+        focusedTextColor = ColorDeLetras,
+        unfocusedTextColor = ColorUnfocuseado,
+        focusedLabelColor = ColorFocuseado,
+        unfocusedLabelColor = ColorUnfocuseado,
+        focusedTrailingIconColor = ColorFocuseado,
+        unfocusedTrailingIconColor = ColorUnfocuseado,
+        focusedLeadingIconColor = ColorFocuseado,
+        unfocusedLeadingIconColor = ColorUnfocuseado,
+        unfocusedPlaceholderColor = ColorUnfocuseado,
+        focusedPlaceholderColor = ColorFocuseado,
+        cursorColor = ColorFocuseado
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun VentanaHora(
+    modifier: Modifier = Modifier, onDateSelected: (String) -> Unit
+) {
+    var selectedTime by remember { mutableStateOf("") }
+    var showTimePicker by remember { mutableStateOf(false) }
+    val timeFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
+
+    OutlinedTextField(
+        value = selectedTime,
+        onValueChange = {},
+        readOnly = true,
+        label = { Text("Hora") },
+        leadingIcon = {
+            IconButton(onClick = { showTimePicker = true }) {
+                Icon(Icons.Filled.Schedule, contentDescription = "Seleccionar Hora")
+            }
+        },
+        colors = miTextFieldColors(),
+        modifier = modifier
+    )
+
+    if (showTimePicker) {
+        val timePickerState = rememberTimePickerState()
+        AlertDialog(onDismissRequest = { showTimePicker = false },
+            title = { Text("Selecciona la hora") },
+            text = {
+                Column {
+                    TimePicker(
+                        state = timePickerState, colors = TimePickerDefaults.colors(
+                            periodSelectorSelectedContainerColor = ColorContainer,
+                            timeSelectorSelectedContainerColor = ColorContainer,
+                            selectorColor = ColorDeBotones
+                        )
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val cal = Calendar.getInstance().apply {
+                            set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+                            set(Calendar.MINUTE, timePickerState.minute)
+                        }
+                        selectedTime = timeFormatter.format(cal.time)
+                        onDateSelected(selectedTime)
+                        showTimePicker = false
+                    }, colors = ButtonDefaults.textButtonColors(
+                        contentColor = ColorDeBotones
+                    )
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showTimePicker = false }, colors = ButtonDefaults.textButtonColors(
+                        contentColor = ColorDeBotones
+                    )
+                ) {
+                    Text("Cancelar")
+                }
+            })
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun VentanaFecha(
+    modifier: Modifier = Modifier,
+    onDateSelected: (String) -> Unit
+) {
+    var selectedDate by remember { mutableStateOf("") }
+    var showDatePicker by remember { mutableStateOf(false) }
+    val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+    OutlinedTextField(value = selectedDate,
+        onValueChange = {},
+        readOnly = true,
+        label = { Text("Fecha") },
+        leadingIcon = {
+            IconButton(onClick = { showDatePicker = true }) {
+                Icon(Icons.Filled.CalendarToday, contentDescription = "Seleccionar Fecha")
+            }
+        },
+        colors = miTextFieldColors(),
+        modifier = modifier.clickable { showDatePicker = true })
+
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState()
+        DatePickerDialog(onDismissRequest = { showDatePicker = false }, confirmButton = {
+            TextButton(onClick = {
+                val selectedMillis = datePickerState.selectedDateMillis
+                selectedDate = selectedMillis?.let {
+                    dateFormatter.format(Date(it))
+                } ?: ""
+
+                // Llama a onDateSelected con la fecha seleccionada
+                onDateSelected(selectedDate)
+
+                showDatePicker = false
+            }) {
+                Text("OK")
+            }
+        }, dismissButton = {
+            TextButton(onClick = { showDatePicker = false }) {
+                Text("Cancelar")
+            }
+        }) {
+            DatePicker(state = datePickerState)
+        }
+    }
+}
+
+@Composable
+fun BarraDeNavegacion(navController: NavHostController) {
+    val currentRoute = currentRouteBarraDeNavegacion(navController)
+
+    NavigationBar {
+        NavigationBarItem(icon = { Icon(Icons.Filled.AddBox, contentDescription = "Crear") },
+            label = { Text("Crear") },
+            selected = currentRoute == Screens.CreateScreen.ruta,
+            onClick = {
+                navController.navigate(Screens.CreateScreen.ruta) {
+                    popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
+                    launchSingleTop = true
+                }
+            })
+        NavigationBarItem(icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
+            label = { Text("Home") },
+            selected = currentRoute == Screens.HomeScreen.ruta,
+            onClick = {
+                navController.navigate(Screens.HomeScreen.ruta) {
+                    popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
+                    launchSingleTop = true
+                }
+            })
+        NavigationBarItem(icon = { Icon(Icons.Filled.Person, contentDescription = "Profile") },
+            label = { Text("Perfil") },
+            selected = currentRoute == Screens.ProfileScreen.ruta,
+            onClick = {
+                navController.navigate(Screens.ProfileScreen.ruta) {
+                    popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
+                    launchSingleTop = true
+                }
+            })
+    }
+}
+
+fun currentRouteBarraDeNavegacion(navController: NavHostController): String? {
+    return navController.currentBackStackEntry?.destination?.route
+}
+
+@Composable
+fun CampoNumeroDePlazas(plazas: Int, onValueChange: (Int) -> Unit) {
+    Row {
+        IconButton(
+            onClick = {
+                if (plazas <= 0) {
+                    onValueChange(0)
+                } else {
+                    onValueChange(plazas - 1)
+                }
+            }, modifier = Modifier.padding(8.dp)
+        ) {
+            Icon(
+                Icons.Filled.ArrowCircleDown,
+                contentDescription = "-",
+                tint = ColorDeLetras,
+                modifier = Modifier.size(25.dp)
+            )
+        }
+        OutlinedTextField(
+            value = plazas.toString(),
+            label = { Text("Plazas") },
+            onValueChange = { onValueChange(it.toIntOrNull() ?: 0) },
+            colors = miTextFieldColors(),
+            modifier = Modifier
+                .padding(8.dp)
+                .height(60.dp)
+                .width(100.dp),
+            textStyle = TextStyle(
+                textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold
+            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        )
+        IconButton(
+            onClick = { onValueChange(plazas + 1) }, modifier = Modifier.padding(8.dp)
+        ) {
+            Icon(
+                Icons.Filled.ArrowCircleUp,
+                contentDescription = "+",
+                tint = ColorDeLetras,
+                modifier = Modifier.size(25.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun CardClickable(
     miPublicacion: Publicaciones, isAdd: String = "", onItemClick: () -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -196,189 +406,6 @@ fun ClickableElevatedCardSample(
     }
 }
 
-
-@Composable
-fun myTextFieldColors(): TextFieldColors {
-    return TextFieldDefaults.colors(
-        focusedContainerColor = ColorContainer,
-        unfocusedContainerColor = ColorContainer,
-        focusedIndicatorColor = ColorFocuseado,
-        unfocusedIndicatorColor = ColorUnfocuseado,
-        focusedTextColor = ColorDeLetras,
-        unfocusedTextColor = ColorUnfocuseado,
-        focusedLabelColor = ColorFocuseado,
-        unfocusedLabelColor = ColorUnfocuseado,
-        focusedTrailingIconColor = ColorFocuseado,
-        unfocusedTrailingIconColor = ColorUnfocuseado,
-        focusedLeadingIconColor = ColorFocuseado,
-        unfocusedLeadingIconColor = ColorUnfocuseado,
-        unfocusedPlaceholderColor = ColorUnfocuseado,
-        focusedPlaceholderColor = ColorFocuseado,
-        cursorColor = ColorFocuseado
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TimePickerField(
-    modifier: Modifier = Modifier, onDateSelected: (String) -> Unit
-) {
-    var selectedTime by remember { mutableStateOf("") }
-    var showTimePicker by remember { mutableStateOf(false) }
-    val timeFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
-
-    OutlinedTextField(
-        value = selectedTime,
-        onValueChange = {},
-        readOnly = true,
-        label = { Text("Hora") },
-        leadingIcon = {
-            IconButton(onClick = { showTimePicker = true }) {
-                Icon(Icons.Filled.Schedule, contentDescription = "Seleccionar Hora")
-            }
-        },
-        colors = myTextFieldColors(),
-        modifier = modifier
-    )
-
-    if (showTimePicker) {
-        val timePickerState = rememberTimePickerState()
-        AlertDialog(onDismissRequest = { showTimePicker = false },
-            title = { Text("Selecciona la hora") },
-            text = {
-                Column {
-                    TimePicker(
-                        state = timePickerState, colors = TimePickerDefaults.colors(
-                            periodSelectorSelectedContainerColor = ColorContainer,
-                            timeSelectorSelectedContainerColor = ColorContainer,
-                            selectorColor = ColorDeBotones
-                        )
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val cal = Calendar.getInstance().apply {
-                            set(Calendar.HOUR_OF_DAY, timePickerState.hour)
-                            set(Calendar.MINUTE, timePickerState.minute)
-                        }
-                        selectedTime = timeFormatter.format(cal.time)
-                        onDateSelected(selectedTime)
-                        showTimePicker = false
-                    }, colors = ButtonDefaults.textButtonColors(
-                        contentColor = ColorDeBotones
-                    )
-                ) {
-                    Text("OK")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showTimePicker = false }, colors = ButtonDefaults.textButtonColors(
-                        contentColor = ColorDeBotones
-                    )
-                ) {
-                    Text("Cancelar")
-                }
-            })
-    }
-}
-
-@Composable
-fun Contador(plazas: Int, onValueChange: (Int) -> Unit) {
-    Row {
-        IconButton(
-            onClick = {
-                if (plazas <= 0) {
-                    onValueChange(0)
-                } else {
-                    onValueChange(plazas - 1)
-                }
-            }, modifier = Modifier.padding(8.dp)
-        ) {
-            Icon(
-                Icons.Filled.ArrowCircleDown,
-                contentDescription = "-",
-                tint = ColorDeLetras,
-                modifier = Modifier.size(25.dp)
-            )
-        }
-        OutlinedTextField(
-            value = plazas.toString(),
-            label = { Text("Plazas") },
-            onValueChange = { onValueChange(it.toIntOrNull() ?: 0) },
-            colors = myTextFieldColors(),
-            modifier = Modifier
-                .padding(8.dp)
-                .height(60.dp)
-                .width(100.dp),
-            textStyle = TextStyle(
-                textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold
-            ),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        )
-        IconButton(
-            onClick = { onValueChange(plazas + 1) }, modifier = Modifier.padding(8.dp)
-        ) {
-            Icon(
-                Icons.Filled.ArrowCircleUp,
-                contentDescription = "+",
-                tint = ColorDeLetras,
-                modifier = Modifier.size(25.dp)
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DatePickerField(
-    modifier: Modifier = Modifier,
-    onDateSelected: (String) -> Unit // Parámetro para devolver la fecha
-) {
-    var selectedDate by remember { mutableStateOf("") }
-    var showDatePicker by remember { mutableStateOf(false) }
-    val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-
-    OutlinedTextField(value = selectedDate,
-        onValueChange = {},
-        readOnly = true,
-        label = { Text("Fecha") },
-        leadingIcon = {
-            IconButton(onClick = { showDatePicker = true }) {
-                Icon(Icons.Filled.CalendarToday, contentDescription = "Seleccionar Fecha")
-            }
-        },
-        colors = myTextFieldColors(),
-        modifier = modifier.clickable { showDatePicker = true })
-
-    if (showDatePicker) {
-        val datePickerState = rememberDatePickerState()
-        DatePickerDialog(onDismissRequest = { showDatePicker = false }, confirmButton = {
-            TextButton(onClick = {
-                val selectedMillis = datePickerState.selectedDateMillis
-                selectedDate = selectedMillis?.let {
-                    dateFormatter.format(Date(it))
-                } ?: ""
-
-                // Llama a onDateSelected con la fecha seleccionada
-                onDateSelected(selectedDate)
-
-                showDatePicker = false
-            }) {
-                Text("OK")
-            }
-        }, dismissButton = {
-            TextButton(onClick = { showDatePicker = false }) {
-                Text("Cancelar")
-            }
-        }) {
-            DatePicker(state = datePickerState)
-        }
-    }
-}
-
 @Composable
 fun DialogoAlerta(
     showAlert: Boolean, alertMessage: String, actionConfirmed: () -> Unit, onDismiss: () -> Unit
@@ -444,47 +471,7 @@ fun DialogoEditarNombre(
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
-    val currentRoute = currentRoute(navController)
-
-    NavigationBar {
-        NavigationBarItem(icon = { Icon(Icons.Filled.AddBox, contentDescription = "Crear") },
-            label = { Text("Crear") },
-            selected = currentRoute == Screens.CreateScreen.ruta,
-            onClick = {
-                navController.navigate(Screens.CreateScreen.ruta) {
-                    popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
-                    launchSingleTop = true
-                }
-            })
-        NavigationBarItem(icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
-            label = { Text("Home") },
-            selected = currentRoute == Screens.HomeScreen.ruta,
-            onClick = {
-                navController.navigate(Screens.HomeScreen.ruta) {
-                    popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
-                    launchSingleTop = true
-                }
-            })
-        NavigationBarItem(icon = { Icon(Icons.Filled.Person, contentDescription = "Profile") },
-            label = { Text("Perfil") },
-            selected = currentRoute == Screens.ProfileScreen.ruta,
-            onClick = {
-                navController.navigate(Screens.ProfileScreen.ruta) {
-                    popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
-                    launchSingleTop = true
-                }
-            })
-    }
-}
-
-
-fun currentRoute(navController: NavHostController): String? {
-    return navController.currentBackStackEntry?.destination?.route
-}
-
-@Composable
-fun TextArea(label: String, value: String, onValueChange: (String) -> Unit) {
+fun CampoDeTextoEnArea(label: String, value: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -492,12 +479,12 @@ fun TextArea(label: String, value: String, onValueChange: (String) -> Unit) {
             .height(150.dp)
             .fillMaxWidth(),
         label = { Text(label) },
-        colors = myTextFieldColors(),
+        colors = miTextFieldColors(),
     )
 }
 
 @Composable
-fun StandardField(
+fun CampoDeTextoPorDefectoEditable(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
@@ -549,8 +536,11 @@ fun StandardField(
 }
 
 @Composable
-fun StandardFieldText(
-    label: String, value: String, onValueChange: (String) -> Unit, modifier: Modifier
+fun CampoDeTextoPorDefectoNoEditable(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier
 ) {
     OutlinedTextField(
         value = value,
@@ -568,9 +558,7 @@ fun StandardFieldText(
 }
 
 @Composable
-fun StandardButton(
-    text: String, icon: ImageVector, onClick: () -> Unit
-) {
+fun BotonPorDefecto(text: String, icon: ImageVector, onClick: () -> Unit) {
     Box(modifier = Modifier.padding(16.dp)) {
         ExtendedFloatingActionButton(modifier = Modifier.size(300.dp, 60.dp),
             containerColor = ColorDeBotones,
@@ -592,25 +580,12 @@ fun StandardButton(
 }
 
 @Composable
-fun Logo() {
-    val logoTipo = painterResource(id = R.drawable.ic_launcher_foreground)
-    Box(modifier = Modifier.padding(16.dp)) {
-        Image(
-            painter = logoTipo,
-            contentDescription = "logo",
-            modifier = Modifier.size(300.dp),
-            contentScale = ContentScale.Fit
-        )
-    }
-}
-
-@Composable
-fun FotoPerfil() {
-    val fotoPerfil = painterResource(id = R.drawable.ic_launcher_foreground)
+fun PublicacionIMG() {
+    val img = painterResource(id = R.drawable.ic_launcher_foreground)
     Box(modifier = Modifier) {
         Image(
-            painter = fotoPerfil,
-            contentDescription = "",
+            painter = img,
+            contentDescription = "Error",
             modifier = Modifier.size(150.dp),
             contentScale = ContentScale.Fit
         )
@@ -618,12 +593,25 @@ fun FotoPerfil() {
 }
 
 @Composable
-fun CrearPublicacionIMG() {
-    val fotoPerfil = painterResource(id = R.drawable.ic_launcher_foreground)
+fun Logo() {
+    val img = painterResource(id = R.drawable.ic_launcher_foreground)
+    Box(modifier = Modifier.padding(16.dp)) {
+        Image(
+            painter = img,
+            contentDescription = "Logo",
+            modifier = Modifier.size(300.dp),
+            contentScale = ContentScale.Fit
+        )
+    }
+}
+
+@Composable
+fun Foto() {
+    val img = painterResource(id = R.drawable.ic_launcher_foreground)
     Box(modifier = Modifier) {
         Image(
-            painter = fotoPerfil,
-            contentDescription = "",
+            painter = img,
+            contentDescription = "Error",
             modifier = Modifier.size(150.dp),
             contentScale = ContentScale.Fit
         )

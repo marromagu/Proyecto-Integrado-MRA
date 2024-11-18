@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.DeleteForever
@@ -34,13 +33,13 @@ import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.data.model.TipoUsuarios
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
-import com.proyecto.proyectointegradomra.ui.common.BottomNavigationBar
-import com.proyecto.proyectointegradomra.ui.common.ClickableElevatedCardSample
+import com.proyecto.proyectointegradomra.ui.common.BarraDeNavegacion
+import com.proyecto.proyectointegradomra.ui.common.CardClickable
 import com.proyecto.proyectointegradomra.ui.common.DialogoAlerta
 import com.proyecto.proyectointegradomra.ui.common.DialogoEditarNombre
-import com.proyecto.proyectointegradomra.ui.common.FotoPerfil
-import com.proyecto.proyectointegradomra.ui.common.StandardButton
-import com.proyecto.proyectointegradomra.ui.common.StandardFieldText
+import com.proyecto.proyectointegradomra.ui.common.Foto
+import com.proyecto.proyectointegradomra.ui.common.BotonPorDefecto
+import com.proyecto.proyectointegradomra.ui.common.CampoDeTextoPorDefectoNoEditable
 
 @Composable
 fun ProfileView(
@@ -70,7 +69,7 @@ fun ProfileView(
         }
     }
 
-    Scaffold(bottomBar = { BottomNavigationBar(navController = navTo) }) { innerPadding ->
+    Scaffold(bottomBar = { BarraDeNavegacion(navController = navTo) }) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -79,8 +78,8 @@ fun ProfileView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                FotoPerfil()
-                StandardFieldText(
+                Foto()
+                CampoDeTextoPorDefectoNoEditable(
                     value = miUsuario?.name ?: "Email no disponible",
                     label = "Nombre",
                     onValueChange = {},
@@ -115,7 +114,7 @@ fun ProfileView(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 item {
-                    StandardFieldText(
+                    CampoDeTextoPorDefectoNoEditable(
                         label = "UID",
                         value = miUsuario?.uid ?: "Error",
                         onValueChange = {},
@@ -123,7 +122,7 @@ fun ProfileView(
                     )
                 }
                 item {
-                    StandardFieldText(
+                    CampoDeTextoPorDefectoNoEditable(
                         label = "Email",
                         value = miUsuario?.email ?: "Email no disponible",
                         onValueChange = {},
@@ -131,7 +130,7 @@ fun ProfileView(
                     )
                 }
                 item {
-                    StandardFieldText(
+                    CampoDeTextoPorDefectoNoEditable(
                         label = "Tipo",
                         value = miUsuario?.type.toString(),
                         onValueChange = {},
@@ -144,7 +143,7 @@ fun ProfileView(
                 item {
                     LazyRow(modifier = Modifier.padding(4.dp)) {
                         items(publicaciones.size) { index ->
-                            ClickableElevatedCardSample(
+                            CardClickable(
                                 publicaciones[index], "remove", onItemClick = {
                                     dataRepository.eliminarParticipante(
                                         miUsuario?.uid!!,
@@ -160,7 +159,7 @@ fun ProfileView(
                     Spacer(modifier = Modifier.weight(1f)) // Espacio flexible
                 }
                 item {
-                    StandardButton(
+                    BotonPorDefecto(
                         text = "Cerrar Sesión",
                         icon = Icons.AutoMirrored.Filled.ExitToApp,
                         onClick = {
@@ -174,7 +173,7 @@ fun ProfileView(
                     )
                 }
                 item {
-                    StandardButton(
+                    BotonPorDefecto(
                         text = "Borrar Cuenta",
                         icon = Icons.Filled.DeleteForever,
                         onClick = {

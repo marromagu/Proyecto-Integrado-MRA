@@ -28,8 +28,8 @@ import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
 import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
 import com.proyecto.proyectointegradomra.ui.theme.VerdeClaro
-import com.proyecto.proyectointegradomra.ui.common.StandardField
-import com.proyecto.proyectointegradomra.ui.common.StandardButton
+import com.proyecto.proyectointegradomra.ui.common.CampoDeTextoPorDefectoEditable
+import com.proyecto.proyectointegradomra.ui.common.BotonPorDefecto
 import com.proyecto.proyectointegradomra.ui.common.Logo
 
 @Composable
@@ -55,13 +55,13 @@ fun SingUpView(
         item { Logo() }
         item { Spacer(modifier = Modifier.height(24.dp)) }
         item {
-            StandardField(label = "Nombre de usuario",
+            CampoDeTextoPorDefectoEditable(label = "Nombre de usuario",
                 value = name,
                 icon = Icons.Filled.AccountBox,
                 onValueChange = { singUpController.updateName(it) })
         }
         item {
-            StandardField(
+            CampoDeTextoPorDefectoEditable(
                 label = "Correo electrónico",
                 value = email,
                 icon = Icons.Filled.Email,
@@ -70,7 +70,7 @@ fun SingUpView(
             )
         }
         item {
-            StandardField(
+            CampoDeTextoPorDefectoEditable(
                 label = "Contraseña",
                 value = password,
                 onValueChange = { singUpController.updatePassword(it) },
@@ -78,7 +78,7 @@ fun SingUpView(
             )
         }
         item {
-            StandardField(
+            CampoDeTextoPorDefectoEditable(
                 label = "Repita contraseña",
                 value = repeatPassword,
                 onValueChange = { singUpController.updateRepeatPassword(it) },
@@ -120,7 +120,7 @@ fun SingUpView(
             }
         }
         item {
-            StandardButton(text = "Registrarse", icon = Icons.Filled.AccountBox, onClick = {
+            BotonPorDefecto(text = "Registrarse", icon = Icons.Filled.AccountBox, onClick = {
                 if ((password != repeatPassword) || (password.isEmpty())) {
                     errorMessage = "Las contraseñas no coinciden"
                 } else {
