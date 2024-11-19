@@ -41,12 +41,11 @@ fun UpdateAdView(
     val fecha by updateAdController.fecha.observeAsState("")
     val hora by updateAdController.hora.observeAsState("")
     val plazas by updateAdController.plazas.observeAsState(0)
-
+    val miPublicacion by updateAdController.publicacion.observeAsState(Publicacion())
 
     var errorMessages by remember { mutableStateOf<List<String>>(emptyList()) }
 
 
-    val miAd = Publicacion()
     val miUsuario = dataRepository.obtenerUsuarioActual().value
 
     Column(
@@ -82,13 +81,15 @@ fun UpdateAdView(
             VentanaFecha(
                 modifier = Modifier
                     .weight(1f),
-                onDateSelected = { f -> updateAdController.updateFecha(f) }
+                onDateSelected = { f -> updateAdController.updateFecha(f) },
+                defaultDate = fecha
             )
             Spacer(modifier = Modifier.width(16.dp))
             VentanaHora(
                 modifier = Modifier
                     .weight(1f),
-                onDateSelected = { h -> updateAdController.updateHora(h) }
+                onDateSelected = { h -> updateAdController.updateHora(h) },
+                defaultTime = hora
             )
         }
 
@@ -122,7 +123,7 @@ fun UpdateAdView(
             }
             Box(modifier = Modifier.weight(1f)) {
                 BotonPorDefecto(
-                    text = "Crear",
+                    text = "Actualizar",
                     icon = Icons.Filled.CheckCircle,
                     onClick = {
                         // Lista para recopilar errores
@@ -133,7 +134,7 @@ fun UpdateAdView(
                         if (description.isBlank()) errores.add("La descripción no puede estar vacía.")
                         if (fecha.isBlank()) errores.add("Debes seleccionar una fecha.")
                         if (hora.isBlank()) errores.add("Debes seleccionar una hora.")
-                        if (plazas <= 0 && miAd.participantes.size > plazas) errores.add("Debes ingresar un número válido de plazas.")
+                        if (plazas <= 0 && miPublicacion.participantes.size > plazas) errores.add("Debes ingresar un número válido de plazas.")
 
                         val fechaCombinada = combinarFechaYHora(fecha, hora)
                         // Validar la fecha completa
@@ -155,19 +156,20 @@ fun UpdateAdView(
                             errorMessages = errores // Actualizar estado
                         } else {
                             // Crear el objeto Publicaciones y subirlo a Firestore
-                            miAd.ownerId = miUsuario?.uid ?: ""
-                            miAd.title = title
-                            miAd.description = description
-                            miAd.size = plazas
+                            miPublicacion.ownerId = miUsuario?.uid ?: ""
+                            miPublicacion.title = title
+                            miPublicacion.description = description
+                            miPublicacion.size = plazas
                             if (fechaCombinada != null) {
-                                miAd.date = fechaCombinada
+                                miPublicacion.date = fechaCombinada
                             }
-                            miAd.type = if (miUsuario?.type == TipoUsuarios.CONSUMIDOR) {
+                            miPublicacion.type = if (miUsuario?.type == TipoUsuarios.CONSUMIDOR) {
                                 TipoPublicaciones.BUSQUEDA
                             } else {
                                 TipoPublicaciones.ACTIVIDAD
                             }
-                            dataRepository.actualizarPublicacion(miAd)
+
+                            dataRepository.actualizarPublicacion(miPublicacion)
                             navTo.navigate("CreateView")
                         }
                     }

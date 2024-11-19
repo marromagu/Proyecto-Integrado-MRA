@@ -8,6 +8,10 @@ import java.util.Date
 import java.util.Locale
 
 class UpdateAdViewModel(publicacion: Publicacion) : ViewModel() {
+
+    private val _publicacion = MutableLiveData(publicacion)
+    val publicacion: MutableLiveData<Publicacion> = _publicacion
+
     private val _title = MutableLiveData(publicacion.title)
     val title: MutableLiveData<String> = _title
 
@@ -19,7 +23,7 @@ class UpdateAdViewModel(publicacion: Publicacion) : ViewModel() {
 
     private val dateLong: Long = publicacion.date
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    private val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
     private val dateString = dateFormat.format(Date(dateLong))
     private val timeString = timeFormat.format(Date(dateLong))

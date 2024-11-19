@@ -2,6 +2,7 @@ package com.proyecto.proyectointegradomra.ui.common
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -71,6 +72,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.ParseException
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.R
 import com.proyecto.proyectointegradomra.data.model.Publicacion
@@ -115,11 +117,25 @@ fun miTextFieldColors(): TextFieldColors {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VentanaHora(
-    modifier: Modifier = Modifier, onDateSelected: (String) -> Unit
+    modifier: Modifier = Modifier, onDateSelected: (String) -> Unit, defaultTime: String? = null
 ) {
-    var selectedTime by remember { mutableStateOf("") }
     var showTimePicker by remember { mutableStateOf(false) }
     val timeFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
+    val defaultCalendar = Calendar.getInstance()
+    if (defaultTime != null) {
+        try {
+            defaultCalendar.time = timeFormatter.parse(defaultTime)!!
+        } catch (e: ParseException) {
+            Log.e("VentanaHora", "Error : ${e.message}")
+        }
+    }
+    var selectedTime by remember {
+        mutableStateOf(
+            defaultTime ?: timeFormatter.format(
+                defaultCalendar.time
+            )
+        )
+    }
 
     OutlinedTextField(
         value = selectedTime,
@@ -136,7 +152,10 @@ fun VentanaHora(
     )
 
     if (showTimePicker) {
-        val timePickerState = rememberTimePickerState()
+        val timePickerState = rememberTimePickerState(
+            initialHour = defaultCalendar.get(Calendar.HOUR_OF_DAY),
+            initialMinute = defaultCalendar.get(Calendar.MINUTE)
+        )
         AlertDialog(onDismissRequest = { showTimePicker = false },
             title = { Text("Selecciona la hora") },
             text = {
@@ -182,12 +201,23 @@ fun VentanaHora(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VentanaFecha(
-    modifier: Modifier = Modifier, onDateSelected: (String) -> Unit
+    modifier: Modifier = Modifier,
+    onDateSelected: (String) -> Unit,
+    defaultDate: String? = null
 ) {
-    var selectedDate by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-
+    val defaultCalendar = Calendar.getInstance()
+    if (defaultDate != null) {
+        defaultCalendar.time = dateFormatter.parse(defaultDate)!!
+    }
+    var selectedDate by remember {
+        mutableStateOf(
+            defaultDate ?: dateFormatter.format(
+                defaultCalendar.time
+            )
+        )
+    }
     OutlinedTextField(value = selectedDate,
         onValueChange = {},
         readOnly = true,
@@ -201,7 +231,8 @@ fun VentanaFecha(
         modifier = modifier.clickable { showDatePicker = true })
 
     if (showDatePicker) {
-        val datePickerState = rememberDatePickerState()
+        val datePickerState =
+            rememberDatePickerState(initialSelectedDateMillis = defaultCalendar.timeInMillis)
         DatePickerDialog(onDismissRequest = { showDatePicker = false }, confirmButton = {
             TextButton(onClick = {
                 val selectedMillis = datePickerState.selectedDateMillis
