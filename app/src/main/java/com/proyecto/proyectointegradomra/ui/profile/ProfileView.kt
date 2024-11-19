@@ -40,6 +40,7 @@ import com.proyecto.proyectointegradomra.ui.common.DialogoEditarNombre
 import com.proyecto.proyectointegradomra.ui.common.Foto
 import com.proyecto.proyectointegradomra.ui.common.BotonPorDefecto
 import com.proyecto.proyectointegradomra.ui.common.CampoDeTextoPorDefectoNoEditable
+import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
 
 @Composable
 fun ProfileView(
@@ -89,7 +90,7 @@ fun ProfileView(
                     Icon(
                         imageVector = Icons.Filled.Edit,
                         contentDescription = "Editar nombre",
-                        tint = Color.DarkGray
+                        tint = ColorDeLetras
                     )
                 }
             }
