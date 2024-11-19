@@ -9,5 +9,4 @@ sealed class Screens(val ruta: String) {
     data object ProfileScreen : Screens("ProfileView")
     data object CreateScreen : Screens("CreateView")
     data object UpdateAdScreen : Screens("UpdateAdView")
-
 }

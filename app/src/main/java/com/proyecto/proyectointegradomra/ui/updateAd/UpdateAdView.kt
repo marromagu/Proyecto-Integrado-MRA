@@ -134,7 +134,8 @@ fun UpdateAdView(
                         if (description.isBlank()) errores.add("La descripción no puede estar vacía.")
                         if (fecha.isBlank()) errores.add("Debes seleccionar una fecha.")
                         if (hora.isBlank()) errores.add("Debes seleccionar una hora.")
-                        if (plazas <= 0 && miPublicacion.participantes.size > plazas) errores.add("Debes ingresar un número válido de plazas.")
+                        if (plazas <= 0) errores.add("Debes ingresar un número válido de plazas.")
+                        if (miPublicacion.participantes.size > plazas) errores.add("No puedes tener menos numero de plazas que de participantes.")
 
                         val fechaCombinada = combinarFechaYHora(fecha, hora)
                         // Validar la fecha completa

@@ -262,4 +262,37 @@ class FirestoreService {
 
         firestore.collection("publicaciones").document(publicacion.uid).update(publicacionDataMap)
     }
+
+    suspend fun obtenerListaDeParticipantes(publicacionId: String): List<String> {
+        return try {
+            val documento =
+                firestore.collection("publicaciones").document(publicacionId).get().await()
+            val participantes = documento.get("participantes") as? List<String> ?: emptyList()
+            participantes
+        } catch (e: Exception) {
+            Log.e("FirestoreService", "Error al obtener la lista de participantes: ${e.message}")
+            emptyList()
+        }
+    }
+
+    suspend fun obtenerPlazas(publicacionId: String): Int {
+        return try {
+            val documento =
+                firestore.collection("publicaciones").document(publicacionId).get().await()
+            Log.d(
+                "FirestoreService",
+                "Documento: ${documento.data}"
+            ) // Imprime el contenido del documento
+            val sizeValue = documento.get("size") // Obtiene el valor del campo "size"
+            val plazas = if (sizeValue is Number) {
+                sizeValue.toLong().toInt() // Convierte a Long y luego a Int
+            } else {
+                0 // Si no es un número, devuelve 0
+            }
+            plazas
+        } catch (e: Exception) {
+            Log.e("FirestoreService", "Error al obtener las plazas: ${e.message}")
+            0
+        }
+    }
 }

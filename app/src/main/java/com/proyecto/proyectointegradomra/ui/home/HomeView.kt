@@ -69,15 +69,21 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                                 if (publicaciones[index].size > publicaciones[index].participantes.size) {
                                     dataRepository.agregarParticipante(
                                         miUsuario?.uid!!,
-                                        publicaciones[index].uid
-                                    )
-                                    navTo.navigate("HomeView")
+                                        publicaciones[index],
+                                        onSuccess = {
+                                            navTo.navigate("HomeView")
+                                                   },
+                                        onError = {
+                                            showDialog = true
+                                            navTo.navigate("HomeView")
+                                        })
+
                                 } else {
                                     showDialog = true
                                 }
                             }
                         ) {
-                            navTo.navigate("UpdateAdView")
+
                         }
                     }
                 }

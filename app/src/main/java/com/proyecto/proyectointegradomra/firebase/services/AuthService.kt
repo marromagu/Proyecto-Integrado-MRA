@@ -112,7 +112,6 @@ class AuthService : ViewModel() {
      * Maneja errores potenciales durante el proceso.
      */
     fun eliminarCuenta() {
-
         val uid = usuario.value?.uid ?: return
         userAuthCurrent.value?.delete()?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
