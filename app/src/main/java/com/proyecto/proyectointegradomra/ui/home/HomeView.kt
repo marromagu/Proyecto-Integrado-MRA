@@ -60,7 +60,10 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                 .background(ColorDeFondo)
                 .fillMaxSize()
         ) {
-            Column(modifier = Modifier.align(Alignment.TopCenter)) {
+            Column(
+                modifier = Modifier.align(Alignment.TopCenter),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Logo()
                 LazyColumn(modifier = Modifier.padding(4.dp)) {
                     items(publicaciones.size) { index ->
@@ -72,7 +75,7 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                                         publicaciones[index],
                                         onSuccess = {
                                             navTo.navigate("HomeView")
-                                                   },
+                                        },
                                         onError = {
                                             showDialog = true
                                             navTo.navigate("HomeView")

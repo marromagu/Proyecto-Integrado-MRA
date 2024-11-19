@@ -62,7 +62,10 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
                 .background(ColorDeFondo)
                 .fillMaxSize()
         ) {
-            Column(modifier = Modifier.align(Alignment.TopCenter)) {
+            Column(
+                modifier = Modifier.align(Alignment.TopCenter),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Logo()
                 LazyColumn(
                     modifier = Modifier.padding(4.dp), state = listState

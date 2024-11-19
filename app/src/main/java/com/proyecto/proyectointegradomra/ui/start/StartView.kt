@@ -25,6 +25,7 @@ fun StartView(
             .background(ColorDeFondo),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.weight(.5f))
         Logo()
         Spacer(modifier = Modifier.weight(1f))
         BotonPorDefecto(
