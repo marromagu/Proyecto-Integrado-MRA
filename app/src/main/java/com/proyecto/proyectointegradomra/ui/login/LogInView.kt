@@ -26,7 +26,7 @@ import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.CampoDeTextoPorDefectoEditable
 import com.proyecto.proyectointegradomra.ui.common.BotonPorDefecto
 import com.proyecto.proyectointegradomra.ui.common.Logo
-
+import com.proyecto.proyectointegradomra.ui.theme.RojoFuego
 
 @Composable
 fun LogInView(
@@ -34,10 +34,13 @@ fun LogInView(
     dataRepository: DataRepository,
     navToHome: () -> Unit
 ) {
+    // Observación de campos desde el ViewModel
     val email by logInController.name.observeAsState("")
     val password by logInController.password.observeAsState("")
 
+    // Estado para manejar mensajes de error
     var errorMessage by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -45,16 +48,20 @@ fun LogInView(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Logo de la aplicación
         Logo()
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Campo de entrada: Correo electrónico
         CampoDeTextoPorDefectoEditable(
             label = "Correo Electrónico",
             value = email,
             icon = Icons.Filled.Email,
             onValueChange = { logInController.updateName(it) }
         )
+
+        // Campo de entrada: Contraseña
         CampoDeTextoPorDefectoEditable(
             label = "Contraseña",
             value = password,
@@ -64,23 +71,33 @@ fun LogInView(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Mensaje de error si ocurre un fallo
         if (errorMessage.isNotEmpty()) {
-            Text(text = errorMessage, color = Color.Red)
-            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = errorMessage,
+                color = RojoFuego,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
         }
 
+        // Botón de inicio de sesión
         BotonPorDefecto(
             text = "Iniciar Sesión",
             icon = Icons.Filled.AccountCircle,
             onClick = {
+                // Validaciones básicas para campos vacíos
                 if (email.isEmpty() || password.isEmpty()) {
                     errorMessage = "Por favor, complete todos los campos"
                 } else {
-                    dataRepository.iniciarSesion(email, password, onSuccess = {
-                        navToHome()
-                    }, onError = {
-                        errorMessage = "Error al iniciar sesión"
-                    })
+                    // Intento de inicio de sesión en el repositorio
+                    dataRepository.iniciarSesion(email, password,
+                        onSuccess = {
+                            navToHome()
+                        },
+                        onError = {
+                            errorMessage = "Error al iniciar sesión"
+                        }
+                    )
                 }
             }
         )
