@@ -40,17 +40,23 @@ import com.proyecto.proyectointegradomra.ui.theme.ColorDeBotones
 
 @Composable
 fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
+    // Estado para almacenar las publicaciones del usuario
     var publicaciones by remember { mutableStateOf<List<Publicacion>>(emptyList()) }
+    // Estado para obtener los datos del usuario actual
     val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
 
-    LaunchedEffect(miUsuario) {
+    // Cargar las publicaciones del usuario
+    LaunchedEffect(Unit) {
         miUsuario?.uid?.let { userId ->
+            // Obtiene las publicaciones asociadas al usuario actual desde el repositorio
             publicaciones = dataRepository.obtenerPublicacionesPorUsuario(userId)
         }
     }
 
+    // Estado para manejar el estado del LazyColumn y la visibilidad del FAB
     val listState = rememberLazyListState()
 
+    // Mostrar el FAB solo cuando el usuario esté en la parte superior de la lista
     val showFab by remember {
         derivedStateOf {
             listState.firstVisibleItemIndex == 0
@@ -64,37 +70,44 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
                 .background(ColorDeFondo)
                 .fillMaxSize()
         ) {
+            // Contenedor principal de la vista
             Column(
                 modifier = Modifier.align(Alignment.TopCenter),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 CrearIMG()
                 LazyColumn(
-                    modifier = Modifier.padding(4.dp), state = listState
+                    modifier = Modifier.padding(4.dp),
+                    state = listState
                 ) {
+                    // Itera a través de las publicaciones y muestra cada una
                     items(publicaciones.size) { index ->
-                        CardClickable(publicaciones[index], "update", onItemClick = {
-                            // Serializar el objeto Publicacion como JSON
-                            val publicacionJson = Uri.encode(Gson().toJson(publicaciones[index]))
-                            navTo.navigate("UpdateAdView/$publicacionJson")
-                        }, onItemClickDelete = {
-                            dataRepository.eliminarPublicacion(publicaciones[index].uid)
-                            navTo.navigate("CreateView")
-                        })
+                        // Card clickable para cada publicación
+                        CardClickable(
+                            publicaciones[index], "update",
+                            onItemClick = {
+                                // Serializa la publicación a JSON y navega a la vista de actualización
+                                val publicacionJson =
+                                    Uri.encode(Gson().toJson(publicaciones[index]))
+                                navTo.navigate("UpdateAdView/$publicacionJson")
+                            },
+                            onItemClickDelete = {
+                                // Elimina la publicación y recarga la vista
+                                dataRepository.eliminarPublicacion(publicaciones[index].uid)
+                                navTo.navigate("CreateView")
+                            }
+                        )
                     }
                 }
-
             }
 
             AnimatedVisibility(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp),
-                visible = showFab,
+                visible = showFab, // Solo visible si la lista está en la parte superior
                 enter = slideInVertically(initialOffsetY = { it }),
                 exit = slideOutVertically(targetOffsetY = { it })
-//              enter = fadeIn() + scaleIn(), exit = fadeOut() + scaleOut()
-
             ) {
                 FloatingActionButton(
                     onClick = {
@@ -105,7 +118,6 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
                 ) {
                     Icon(Icons.Filled.Add, contentDescription = "Agregar publicación")
                 }
-
             }
         }
     }

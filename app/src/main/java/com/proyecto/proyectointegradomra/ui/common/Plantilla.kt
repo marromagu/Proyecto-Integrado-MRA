@@ -701,7 +701,7 @@ fun CrearIMG() {
 
 @Composable
 fun Foto() {
-    val img = painterResource(id = R.drawable.perfil_del_usuario)
+    val img = painterResource(id = R.drawable.perfil)
     Box(modifier = Modifier.padding(16.dp)) {
         Image(
             painter = img,

@@ -47,12 +47,12 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
 
     // Estructura principal de la vista
     Scaffold(
-        bottomBar = { BarraDeNavegacion(navController = navTo) } // Barra de navegación inferior
+        bottomBar = { BarraDeNavegacion(navController = navTo) }
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .background(ColorDeFondo) // Fondo de la pantalla con el color del tema
+                .background(ColorDeFondo)
                 .fillMaxSize()
         ) {
             Column(
@@ -76,22 +76,17 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                                         miUsuario?.uid!!,
                                         publicaciones[index],
                                         onSuccess = {
-                                            // Navegar de vuelta a HomeView tras éxito
                                             navTo.navigate("HomeView")
                                         },
                                         onError = {
-                                            // Mostrar diálogo de error en caso de fallo
                                             showDialog = true
                                         }
                                     )
                                 } else {
-                                    // Mostrar diálogo si no hay plazas disponibles
                                     showDialog = true
                                 }
                             }
-                        ) {
-                            // Espacio reservado para posibles personalizaciones dentro de la tarjeta
-                        }
+                        ) {}
                     }
                 }
 
@@ -99,8 +94,8 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                 DialogoAlerta(
                     showAlert = showDialog,
                     alertMessage = "El número de plazas disponibles ya está completo.",
-                    actionConfirmed = { showDialog = false }, // Cerrar diálogo al confirmar
-                    onDismiss = { } // Acción al descartar el diálogo
+                    actionConfirmed = { showDialog = false },
+                    onDismiss = { }
                 )
             }
         }
