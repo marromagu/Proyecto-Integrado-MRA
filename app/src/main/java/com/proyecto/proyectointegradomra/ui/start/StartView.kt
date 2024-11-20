@@ -12,8 +12,6 @@ import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.Logo
 import com.proyecto.proyectointegradomra.ui.common.BotonPorDefecto
 
-
-
 @Composable
 fun StartView(
     navToSignUp: () -> Unit = {},
@@ -28,16 +26,21 @@ fun StartView(
         Spacer(modifier = Modifier.weight(.5f))
         Logo()
         Spacer(modifier = Modifier.weight(1f))
+
+        // Botón para navegar a la pantalla de inicio de sesión
         BotonPorDefecto(
             text = "Iniciar sesión",
             icon = Icons.Filled.AccountCircle,
             onClick = navToLogIn
         )
+
+        // Botón para navegar a la pantalla de registro
         BotonPorDefecto(
             text = "Registrarse",
             icon = Icons.Filled.AccountBox,
             onClick = navToSignUp
         )
+
         Spacer(modifier = Modifier.weight(1f))
     }
 }

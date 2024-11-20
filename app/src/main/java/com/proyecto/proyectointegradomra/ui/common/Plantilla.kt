@@ -662,8 +662,8 @@ fun BotonPorDefecto(text: String, icon: ImageVector, onClick: () -> Unit) {
 
 @Composable
 fun PublicacionIMG() {
-    val img = painterResource(id = R.drawable.ic_launcher_foreground)
-    Box(modifier = Modifier) {
+    val img = painterResource(id = R.drawable.natural)
+    Box(modifier =  Modifier.padding(16.dp, 32.dp, 16.dp, 8.dp)) {
         Image(
             painter = img,
             contentDescription = "Error",

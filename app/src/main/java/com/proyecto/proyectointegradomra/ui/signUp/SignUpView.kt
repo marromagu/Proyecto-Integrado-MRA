@@ -1,7 +1,6 @@
 package com.proyecto.proyectointegradomra.ui.signUp
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -39,11 +38,14 @@ fun SingUpView(
     dataRepository: DataRepository,
     navToLogIn: () -> Unit
 ) {
+    // Observación de campos desde el ViewModel
     val name by singUpController.name.observeAsState("")
     val email by singUpController.email.observeAsState("")
     val password by singUpController.password.observeAsState("")
     val repeatPassword by singUpController.repeatPassword.observeAsState("")
     val esOfertante by singUpController.esOfertante.observeAsState(false)
+
+    // Estado local para errores
     var errorMessage by remember { mutableStateOf("") }
     var errorMessages by remember { mutableStateOf<List<String>>(emptyList()) }
 
@@ -54,29 +56,38 @@ fun SingUpView(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Logo de la aplicación
         item { Logo() }
         item { Spacer(modifier = Modifier.height(24.dp)) }
+
+        // Campo de entrada: Nombre de usuario
         item {
-            CampoDeTextoPorDefectoEditable(label = "Nombre de usuario",
+            CampoDeTextoPorDefectoEditable(
+                label = "Nombre de usuario",
                 value = name,
                 icon = Icons.Filled.AccountBox,
-                onValueChange = { singUpController.updateName(it) })
+                onValueChange = { singUpController.updateName(it) }
+            )
         }
+
+        // Campo de entrada: Correo electrónico
         item {
             CampoDeTextoPorDefectoEditable(
                 label = "Correo electrónico",
                 value = email,
                 icon = Icons.Filled.Email,
                 onValueChange = { singUpController.updateEmail(it) },
-                keyboardType = KeyboardType.Email
+                keyboardType = KeyboardType.Email // Configuración para tipo de entrada de email
             )
         }
+
+        // Campos de entrada: Contraseña y repetir contraseña
         item {
             CampoDeTextoPorDefectoEditable(
                 label = "Contraseña",
                 value = password,
                 onValueChange = { singUpController.updatePassword(it) },
-                isPassword = true
+                isPassword = true // Oculta el texto para mayor seguridad
             )
         }
         item {
@@ -87,43 +98,38 @@ fun SingUpView(
                 isPassword = true
             )
         }
+
+        // Checkbox para definir el rol de "Ofertante"
         item {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Checkbox(checked = esOfertante,
+                Checkbox(
+                    checked = esOfertante,
                     onCheckedChange = { singUpController.updateEsOfertante(it) },
                     modifier = Modifier.size(32.dp),
-                    enabled = true,
                     colors = CheckboxDefaults.colors(
                         checkedColor = VerdeClaro,
-                        uncheckedColor = ColorUnfocuseado,
-                        checkmarkColor = ColorDeLetras,
-                        disabledCheckedColor = ColorUnfocuseado,
-                        disabledUncheckedColor = ColorUnfocuseado,
-                        disabledIndeterminateColor = ColorUnfocuseado
-
-                    ),
-                    interactionSource = remember { MutableInteractionSource() })
+                        uncheckedColor = ColorUnfocuseado
+                    )
+                )
                 Text(
                     modifier = Modifier.padding(8.dp),
                     text = "Registrarse como Ofertante.",
-                    style = TextStyle(
-                        color = ColorDeLetras,
-                    )
+                    style = TextStyle(color = ColorDeLetras)
                 )
             }
         }
+
         item { Spacer(modifier = Modifier.height(24.dp)) }
-        // Mensajes de error
+
+        // Mostrar mensajes de error
         if (errorMessages.isNotEmpty()) {
             errorMessages.forEach { mensaje ->
-                items(
-                    listOf(mensaje)
-                ) {
+                items(listOf(mensaje)) {
                     Text(
                         text = mensaje,
-                        color = ColorEliminar,
+                        color = ColorEliminar, // Color para mensajes de error
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
                 }
@@ -136,18 +142,24 @@ fun SingUpView(
             }
         }
 
+        // Botón de registro
         item {
             BotonPorDefecto(
                 text = "Registrarse",
                 icon = Icons.Filled.AccountBox,
                 onClick = {
                     val errores = mutableListOf<String>()
+
+                    // Validaciones básicas
                     if (name.isBlank()) errores.add("El nombre no puede estar vacío.")
                     if (email.isBlank()) errores.add("El email no puede estar vacío.")
                     if (password.isBlank()) errores.add("La contraseña no puede estar vacía.")
                     if (repeatPassword.isBlank()) errores.add("La contraseña no puede estar vacía.")
-                    if ((password != repeatPassword) || (password.isEmpty())) errores.add("Las contraseñas no coinciden")
+                    if ((password != repeatPassword) || (password.isEmpty())) {
+                        errores.add("Las contraseñas no coinciden")
+                    }
 
+                    // Si hay errores, los muestra; si no, intenta registrar al usuario
                     if (errores.isNotEmpty()) {
                         errorMessages = errores
                     } else {
@@ -156,16 +168,14 @@ fun SingUpView(
                             password,
                             name,
                             esOfertante,
-                            onSuccess = {
-                                navToLogIn()
-                            },
+                            onSuccess = { navToLogIn() },
                             onError = { exception ->
                                 errorMessage = exception.message ?: "Error desconocido"
-                            })
+                            }
+                        )
                     }
-                })
+                }
+            )
         }
-
     }
 }
-
