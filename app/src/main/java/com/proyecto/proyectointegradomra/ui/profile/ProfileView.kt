@@ -1,12 +1,7 @@
 package com.proyecto.proyectointegradomra.ui.profile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
@@ -16,16 +11,10 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.data.model.Publicacion
@@ -33,13 +22,7 @@ import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
 import com.proyecto.proyectointegradomra.data.model.TipoUsuarios
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
-import com.proyecto.proyectointegradomra.ui.common.BarraDeNavegacion
-import com.proyecto.proyectointegradomra.ui.common.CardClickable
-import com.proyecto.proyectointegradomra.ui.common.DialogoAlertaBotones
-import com.proyecto.proyectointegradomra.ui.common.DialogoEditarNombre
-import com.proyecto.proyectointegradomra.ui.common.Foto
-import com.proyecto.proyectointegradomra.ui.common.BotonPorDefecto
-import com.proyecto.proyectointegradomra.ui.common.CampoDeTextoPorDefectoNoEditable
+import com.proyecto.proyectointegradomra.ui.common.*
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
 
 @Composable
@@ -47,7 +30,10 @@ fun ProfileView(
     dataRepository: DataRepository,
     navTo: NavHostController,
 ) {
+    // Obtener el usuario actual y mantener actualizada su información
     val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
+
+    // Variables de estado para publicaciones y diálogos
     var publicaciones by remember { mutableStateOf<List<Publicacion>>(emptyList()) }
     var showDialog by remember { mutableStateOf(false) }
     var showAlert by remember { mutableStateOf(false) }
@@ -55,22 +41,24 @@ fun ProfileView(
     var actionConfirmed by remember { mutableStateOf({}) }
     var newName by remember { mutableStateOf("") }
 
+    // Cargar información inicial al componer
     LaunchedEffect(Unit) {
         dataRepository.cargarUsuario()
         publicaciones = if (miUsuario?.type == TipoUsuarios.OFERTANTE) {
             dataRepository.obtenerPublicacionesParticipadas(
-                TipoPublicaciones.BUSQUEDA,
-                miUsuario?.uid!!
+                TipoPublicaciones.BUSQUEDA, miUsuario?.uid!!
             )
         } else {
             dataRepository.obtenerPublicacionesParticipadas(
-                TipoPublicaciones.ACTIVIDAD,
-                miUsuario?.uid!!
+                TipoPublicaciones.ACTIVIDAD, miUsuario?.uid!!
             )
         }
     }
 
-    Scaffold(bottomBar = { BarraDeNavegacion(navController = navTo) }) { innerPadding ->
+    // Estructura de diseño general
+    Scaffold(
+        bottomBar = { BarraDeNavegacion(navController = navTo) } // Barra de navegación inferior
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -78,13 +66,14 @@ fun ProfileView(
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Encabezado con la foto y el nombre editable
             Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Foto()
                 CampoDeTextoPorDefectoNoEditable(
-                    value = miUsuario?.name ?: "Email no disponible",
+                    value = miUsuario?.name ?: "Nombre no disponible",
                     label = "Nombre",
                     onValueChange = {},
-                    modifier = Modifier.weight(1f) // Restringe el ancho
+                    modifier = Modifier.weight(1f) // Ocupa el espacio restante
                 )
                 IconButton(onClick = { showDialog = true }) {
                     Icon(
@@ -106,14 +95,16 @@ fun ProfileView(
                 onDismiss = { navTo.navigate("ProfileView") }
             )
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f)) // Espaciador flexible
 
+            // Lista de datos de usuario
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Información estática del usuario
                 item {
                     CampoDeTextoPorDefectoNoEditable(
                         label = "UID",
@@ -133,34 +124,29 @@ fun ProfileView(
                 item {
                     CampoDeTextoPorDefectoNoEditable(
                         label = "Tipo",
-                        value = miUsuario?.type.toString(),
+                        value = miUsuario?.type.toString().lowercase(),
                         onValueChange = {},
                         modifier = Modifier
                     )
                 }
-                item {
-                    Spacer(modifier = Modifier.weight(1f)) // Espacio flexible
-                }
+
+                // Publicaciones relacionadas con el usuario
                 item {
                     LazyRow(modifier = Modifier.padding(4.dp)) {
                         items(publicaciones.size) { index ->
-                            CardClickable(
-                                publicaciones[index], "remove", onItemClick = {
-                                    dataRepository.eliminarParticipante(
-                                        miUsuario?.uid!!,
-                                        publicaciones[index].uid!!
-                                    )
-                                    navTo.navigate("ProfileView")
-                                }
-                            ) {
+                            CardClickable(publicaciones[index], "remove", onItemClick = {
+                                dataRepository.eliminarParticipante(
+                                    miUsuario?.uid!!, publicaciones[index].uid
+                                )
+                                navTo.navigate("ProfileView") // Recargar vista
+                            }) {
                                 navTo.navigate("UpdateAdView")
                             }
                         }
                     }
                 }
-                item {
-                    Spacer(modifier = Modifier.weight(1f)) // Espacio flexible
-                }
+
+                // Botones de cerrar sesión y borrar cuenta
                 item {
                     BotonPorDefecto(
                         text = "Cerrar Sesión",
@@ -191,12 +177,13 @@ fun ProfileView(
                 }
             }
 
-            // Diálogo de alerta para confirmar acciones
+            // Diálogo de confirmación para acciones críticas
             DialogoAlertaBotones(
-                showAlert,
-                alertMessage,
-                actionConfirmed,
-                onDismiss = { showAlert = false })
+                showDialog = showAlert,
+                message = alertMessage,
+                onConfirm = actionConfirmed,
+                onDismiss = { showAlert = false }
+            )
         }
     }
 }

@@ -144,7 +144,7 @@ class AuthService : ViewModel() {
     }
 
     /**
-     * Obtiene el UID del usuario autenticado actualmente.
+     * Obtiene el UID del usuario autenticado actualmente (currentUser).
      * Retorna null si no hay usuario autenticado.
      * @return UID del usuario autenticado o null.
      */

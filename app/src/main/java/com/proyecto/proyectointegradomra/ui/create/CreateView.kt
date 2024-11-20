@@ -34,7 +34,7 @@ import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.BarraDeNavegacion
 import com.proyecto.proyectointegradomra.ui.common.CardClickable
-import com.proyecto.proyectointegradomra.ui.common.Logo
+import com.proyecto.proyectointegradomra.ui.common.CrearIMG
 import com.proyecto.proyectointegradomra.ui.theme.Blanco
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeBotones
 
@@ -68,7 +68,7 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
                 modifier = Modifier.align(Alignment.TopCenter),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Logo()
+                CrearIMG()
                 LazyColumn(
                     modifier = Modifier.padding(4.dp), state = listState
                 ) {

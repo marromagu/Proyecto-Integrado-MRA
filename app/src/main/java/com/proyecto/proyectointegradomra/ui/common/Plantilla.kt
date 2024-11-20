@@ -79,7 +79,6 @@ import com.proyecto.proyectointegradomra.R
 import com.proyecto.proyectointegradomra.data.model.Publicacion
 import com.proyecto.proyectointegradomra.navigation.Screens
 import com.proyecto.proyectointegradomra.repository.DataRepository
-import com.proyecto.proyectointegradomra.ui.theme.ColorAzulProfundo
 import com.proyecto.proyectointegradomra.ui.theme.ColorContainer
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeBotones
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
@@ -471,15 +470,15 @@ fun CardClickable(
 
 @Composable
 fun DialogoAlertaBotones(
-    showAlert: Boolean, alertMessage: String, actionConfirmed: () -> Unit, onDismiss: () -> Unit
+    showDialog: Boolean, message: String, onConfirm: () -> Unit, onDismiss: () -> Unit
 ) {
-    if (showAlert) {
+    if (showDialog) {
         AlertDialog(onDismissRequest = { onDismiss() },
             title = { Text("Confirmación") },
-            text = { Text(alertMessage) },
+            text = { Text(message) },
             confirmButton = {
                 Button(onClick = {
-                    actionConfirmed()
+                    onConfirm()
                     onDismiss()
                 }) {
                     Text("Confirmar")
@@ -536,9 +535,9 @@ fun DialogoEditarNombre(
                 Button(onClick = {
                     if (newName.isNotBlank()) {
                         dataRepository.actualizarNombreUsuario(uid ?: "", newName)
+                        onDismiss()
                         newNameChanger("")
                         showDialogChanger(false)
-                        onDismiss()
                     }
                 }) {
                     Text("Guardar")
@@ -686,6 +685,20 @@ fun Logo() {
         )
     }
 }
+
+@Composable
+fun CrearIMG() {
+    val img = painterResource(id = R.drawable.mapa_del_tesoro)
+    Box(modifier = Modifier.padding(16.dp, 32.dp, 16.dp, 8.dp), Alignment.Center) {
+        Image(
+            painter = img,
+            contentDescription = "Logo",
+            modifier = Modifier.size(300.dp),
+            contentScale = ContentScale.Fit
+        )
+    }
+}
+
 
 @Composable
 fun Foto() {

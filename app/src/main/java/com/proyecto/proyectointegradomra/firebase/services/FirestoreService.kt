@@ -86,15 +86,15 @@ class FirestoreService {
     /**
      * Actualiza el nombre de un usuario en Firestore.
      * @param uid UID del usuario.
-     * @param nuevoNombre Nuevo nombre del usuario.
+     * @param newName Nuevo nombre del usuario.
      */
-    fun actualizarNombreUsuarioFirestore(uid: String, nuevoNombre: String) {
+    fun actualizarNombreUsuarioFirestore(uid: String, newName: String) {
         if (uid.isBlank()) {
             Log.e("FirestoreService", "El UID es inválido para la actualización del nombre.")
             return
         }
 
-        firestore.collection("usuarios").document(uid).update("name", nuevoNombre)
+        firestore.collection("usuarios").document(uid).update("name", newName)
             .addOnSuccessListener {
                 Log.i("FirestoreService", "Nombre del usuario actualizado con éxito.")
             }.addOnFailureListener { exception ->
