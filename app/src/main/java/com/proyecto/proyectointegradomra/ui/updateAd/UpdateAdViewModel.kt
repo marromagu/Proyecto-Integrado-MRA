@@ -23,7 +23,7 @@ class UpdateAdViewModel(publicacion: Publicacion) : ViewModel() {
 
     private val dateLong: Long = publicacion.date
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    private val timeFormat = SimpleDateFormat("HH:mm a", Locale.getDefault())
+    private val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
     private val dateString = dateFormat.format(Date(dateLong))
     private val timeString = timeFormat.format(Date(dateLong))

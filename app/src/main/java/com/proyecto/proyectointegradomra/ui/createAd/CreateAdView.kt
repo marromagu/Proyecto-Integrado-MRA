@@ -177,7 +177,7 @@ fun CreateAdView(
 }
 
 fun combinarFechaYHora(fecha: String, hora: String): Long? {
-    val formatoFecha = SimpleDateFormat("dd/MM/yyyy HH:mm a", Locale.getDefault())
+    val formatoFecha = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
     val fechaCompleta = "$fecha $hora"
     return try {
         val fechaSeleccionada = formatoFecha.parse(fechaCompleta)?.time

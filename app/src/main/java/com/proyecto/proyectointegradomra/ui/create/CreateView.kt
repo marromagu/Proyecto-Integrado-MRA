@@ -35,6 +35,8 @@ import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.BarraDeNavegacion
 import com.proyecto.proyectointegradomra.ui.common.CardClickable
 import com.proyecto.proyectointegradomra.ui.common.Logo
+import com.proyecto.proyectointegradomra.ui.theme.Blanco
+import com.proyecto.proyectointegradomra.ui.theme.ColorDeBotones
 
 @Composable
 fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
@@ -91,14 +93,19 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
                 visible = showFab,
                 enter = slideInVertically(initialOffsetY = { it }),
                 exit = slideOutVertically(targetOffsetY = { it })
-//                enter = fadeIn() + scaleIn(), exit = fadeOut() + scaleOut()
+//              enter = fadeIn() + scaleIn(), exit = fadeOut() + scaleOut()
 
             ) {
-                FloatingActionButton(onClick = {
-                    navTo.navigate("CreateAdView")
-                }) {
+                FloatingActionButton(
+                    onClick = {
+                        navTo.navigate("CreateAdView")
+                    },
+                    containerColor = Blanco,
+                    contentColor = ColorDeBotones
+                ) {
                     Icon(Icons.Filled.Add, contentDescription = "Agregar publicación")
                 }
+
             }
         }
     }

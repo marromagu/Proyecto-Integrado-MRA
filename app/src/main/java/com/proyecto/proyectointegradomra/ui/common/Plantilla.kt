@@ -44,6 +44,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -78,6 +79,7 @@ import com.proyecto.proyectointegradomra.R
 import com.proyecto.proyectointegradomra.data.model.Publicacion
 import com.proyecto.proyectointegradomra.navigation.Screens
 import com.proyecto.proyectointegradomra.repository.DataRepository
+import com.proyecto.proyectointegradomra.ui.theme.ColorAzulProfundo
 import com.proyecto.proyectointegradomra.ui.theme.ColorContainer
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeBotones
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
@@ -120,7 +122,7 @@ fun VentanaHora(
     modifier: Modifier = Modifier, onDateSelected: (String) -> Unit, defaultTime: String? = null
 ) {
     var showTimePicker by remember { mutableStateOf(false) }
-    val timeFormatter = SimpleDateFormat("HH:mm a", Locale.getDefault())
+    val timeFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
     val defaultCalendar = Calendar.getInstance()
     if (defaultTime != null) {
         try {
@@ -260,9 +262,16 @@ fun VentanaFecha(
 @Composable
 fun BarraDeNavegacion(navController: NavHostController) {
     val currentRoute = currentRouteBarraDeNavegacion(navController)
-
+    val defaultColors = NavigationBarItemDefaults.colors(
+        selectedIconColor = ColorDeBotones,
+        unselectedIconColor = ColorDeBotones,
+        selectedTextColor = ColorDeBotones,
+        unselectedTextColor = ColorDeBotones,
+        indicatorColor = ColorIconoBotones
+    )
     NavigationBar {
-        NavigationBarItem(icon = { Icon(Icons.Filled.AddBox, contentDescription = "Crear") },
+        NavigationBarItem(
+            icon = { Icon(Icons.Filled.AddBox, contentDescription = "Crear") },
             label = { Text("Crear") },
             selected = currentRoute == Screens.CreateScreen.ruta,
             onClick = {
@@ -270,8 +279,10 @@ fun BarraDeNavegacion(navController: NavHostController) {
                     popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
                     launchSingleTop = true
                 }
-            })
-        NavigationBarItem(icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
+            }, colors = defaultColors
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
             label = { Text("Home") },
             selected = currentRoute == Screens.HomeScreen.ruta,
             onClick = {
@@ -279,8 +290,10 @@ fun BarraDeNavegacion(navController: NavHostController) {
                     popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
                     launchSingleTop = true
                 }
-            })
-        NavigationBarItem(icon = { Icon(Icons.Filled.Person, contentDescription = "Profile") },
+            }, colors = defaultColors
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Filled.Person, contentDescription = "Profile") },
             label = { Text("Perfil") },
             selected = currentRoute == Screens.ProfileScreen.ruta,
             onClick = {
@@ -288,7 +301,8 @@ fun BarraDeNavegacion(navController: NavHostController) {
                     popUpTo(Screens.HomeScreen.ruta) { inclusive = true }
                     launchSingleTop = true
                 }
-            })
+            }, colors = defaultColors
+        )
     }
 }
 
@@ -439,7 +453,7 @@ fun CardClickable(
                 Spacer(modifier = Modifier.weight(1f))
                 Row {
                     val formatoFecha =
-                        java.text.SimpleDateFormat("dd/MM/yyyy HH:mm a", Locale.getDefault())
+                        java.text.SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
                     val fechaCompleta = formatoFecha.format(Date(miPublicacion.date))
                     Text(
                         text = fechaCompleta, modifier = Modifier.padding(8.dp)
@@ -675,12 +689,12 @@ fun Logo() {
 
 @Composable
 fun Foto() {
-    val img = painterResource(id = R.drawable.ic_launcher_foreground)
-    Box(modifier = Modifier) {
+    val img = painterResource(id = R.drawable.perfil_del_usuario)
+    Box(modifier = Modifier.padding(16.dp)) {
         Image(
             painter = img,
             contentDescription = "Error",
-            modifier = Modifier.size(150.dp),
+            modifier = Modifier.size(100.dp),
             contentScale = ContentScale.Fit
         )
     }
