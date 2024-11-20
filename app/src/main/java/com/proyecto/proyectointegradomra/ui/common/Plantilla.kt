@@ -358,7 +358,7 @@ fun CampoNumeroDePlazas(plazas: Int, onValueChange: (Int) -> Unit) {
 @Composable
 fun CardClickable(
     miPublicacion: Publicacion,
-    isAdd: String = "",
+    action: String = "",
     onItemClick: () -> Unit = {},
     onItemClickDelete: () -> Unit
 ) {
@@ -387,7 +387,7 @@ fun CardClickable(
                     )
                     if (expanded) {
                         Spacer(modifier = Modifier.weight(1f))
-                        when (isAdd) {
+                        when (action) {
                             "add" -> IconButton(onClick = {
                                 onItemClick()
                             }) {
@@ -698,7 +698,6 @@ fun CrearIMG() {
         )
     }
 }
-
 
 @Composable
 fun Foto() {
