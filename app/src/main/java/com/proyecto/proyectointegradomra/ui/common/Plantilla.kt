@@ -623,12 +623,16 @@ fun CampoDeTextoEnArea(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
-    maxLength: Int = 250
+    maxLength: Int = 250,
+    maxLineBreaks: Int = 3
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = { newValue ->
-            if (newValue.length <= maxLength) {
+            val currentLength = newValue.codePointCount(0, newValue.length)
+            val lineBreaks = newValue.count { it == '\n' } // Contar saltos de línea
+
+            if (currentLength <= maxLength && lineBreaks <= maxLineBreaks) {
                 onValueChange(newValue)
             }
         },
