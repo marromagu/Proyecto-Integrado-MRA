@@ -125,9 +125,15 @@ class FirestoreService {
      */
     suspend fun eliminarUsuario(uid: String) {
         eliminarDocumentoFirestore("usuarios", uid)
+
         val publicaciones = this.obtenerPublicacionesPorUsuario(userId = uid)
         publicaciones.forEach { publicacion ->
             this.eliminarPublicacion(publicacionId = publicacion.uid)
+        }
+
+        val publicacionesParticipadas = this.obtenerPublicacionesParticipadas(uid = uid)
+        publicacionesParticipadas.forEach { publicacion ->
+            this.eliminarParticipante(uid = uid, publicacionId = publicacion.uid)
         }
     }
 
@@ -180,15 +186,14 @@ class FirestoreService {
 
     /**
      * Obtiene una lista de publicaciones de un tipo específico en las que el usuario ya haya participado.
-     * @param type El tipo de publicación (por ejemplo, actividad o anuncio de búsqueda).
      * @param uid El identificador único del usuario.
      * @return Una lista de objetos `Publicaciones` en las que el usuario haya participado.
      */
     suspend fun obtenerPublicacionesParticipadas(
-        type: TipoPublicaciones, uid: String
+        uid: String
     ): List<Publicacion> {
         return try {
-            val querySnapshot = firestore.collection("publicaciones").whereEqualTo("type", type)
+            val querySnapshot = firestore.collection("publicaciones")
                 .whereArrayContains("participantes", uid).get().await()
 
             querySnapshot.documents.mapNotNull { document ->
@@ -263,6 +268,11 @@ class FirestoreService {
         firestore.collection("publicaciones").document(publicacion.uid).update(publicacionDataMap)
     }
 
+    /**
+     * Obtiene la lista de participantes de una publicación.
+     * @param publicacionId ID de la publicación.
+     * @return Lista de UID de participantes.
+     */
     suspend fun obtenerListaDeParticipantes(publicacionId: String): List<String> {
         return try {
             val documento =
@@ -275,6 +285,11 @@ class FirestoreService {
         }
     }
 
+    /**
+     * Obtiene el número de plazas de una publicación.
+     * @param publicacionId ID de la publicación.
+     * @return Número de plazas.
+     */
     suspend fun obtenerPlazas(publicacionId: String): Int {
         return try {
             val documento =

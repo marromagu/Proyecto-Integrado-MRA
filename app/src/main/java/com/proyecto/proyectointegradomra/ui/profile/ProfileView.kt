@@ -44,15 +44,8 @@ fun ProfileView(
     // Cargar información inicial al componer
     LaunchedEffect(Unit) {
         dataRepository.cargarUsuario()
-        publicaciones = if (miUsuario?.type == TipoUsuarios.OFERTANTE) {
-            dataRepository.obtenerPublicacionesParticipadas(
-                TipoPublicaciones.BUSQUEDA, miUsuario?.uid!!
-            )
-        } else {
-            dataRepository.obtenerPublicacionesParticipadas(
-                TipoPublicaciones.ACTIVIDAD, miUsuario?.uid!!
-            )
-        }
+        publicaciones =
+            dataRepository.obtenerPublicacionesParticipadas(miUsuario?.uid!!)
     }
 
     // Estructura de diseño general

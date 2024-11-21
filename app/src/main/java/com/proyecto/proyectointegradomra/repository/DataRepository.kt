@@ -139,7 +139,12 @@ class DataRepository(
      * @param uid UID del participante a agregar.
      * @param miPublicacion Objeto Publicacion al que se agregará el participante.
      */
-    fun agregarParticipante(uid: String, miPublicacion: Publicacion, onSuccess: () -> Unit, onError: () -> Unit) {
+    fun agregarParticipante(
+        uid: String,
+        miPublicacion: Publicacion,
+        onSuccess: () -> Unit,
+        onError: () -> Unit
+    ) {
         viewModelScope.launch {
             val listaDeParticipantes =
                 firestoreService.obtenerListaDeParticipantes(miPublicacion.uid)
@@ -162,15 +167,11 @@ class DataRepository(
     /**
      * Obtiene publicaciones de un tipo específico en las que el usuario ya participa.
      *
-     * @param tipo Tipo de publicaciones.
      * @param uid UID del usuario que consulta.
      * @return Lista de publicaciones que cumplen con el criterio.
      */
-    suspend fun obtenerPublicacionesParticipadas(
-        tipo: TipoPublicaciones,
-        uid: String
-    ): List<Publicacion> {
-        return firestoreService.obtenerPublicacionesParticipadas(tipo, uid)
+    suspend fun obtenerPublicacionesParticipadas(uid: String): List<Publicacion> {
+        return firestoreService.obtenerPublicacionesParticipadas(uid)
     }
 
     /**
