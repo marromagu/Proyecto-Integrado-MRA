@@ -62,12 +62,10 @@ fun SingUpView(
 
         // Campo de entrada: Nombre de usuario
         item {
-            CampoDeTextoPorDefectoEditable(
-                label = "Nombre de usuario",
+            CampoDeTextoPorDefectoEditable(label = "Nombre de usuario",
                 value = name,
                 icon = Icons.Filled.AccountBox,
-                onValueChange = { singUpController.updateName(it) }
-            )
+                onValueChange = { singUpController.updateName(it) })
         }
 
         // Campo de entrada: Correo electrónico
@@ -77,7 +75,7 @@ fun SingUpView(
                 value = email,
                 icon = Icons.Filled.Email,
                 onValueChange = { singUpController.updateEmail(it) },
-                keyboardType = KeyboardType.Email // Configuración para tipo de entrada de email
+                keyboardType = KeyboardType.Email
             )
         }
 
@@ -87,7 +85,7 @@ fun SingUpView(
                 label = "Contraseña",
                 value = password,
                 onValueChange = { singUpController.updatePassword(it) },
-                isPassword = true // Oculta el texto para mayor seguridad
+                isPassword = true
             )
         }
         item {
@@ -109,8 +107,7 @@ fun SingUpView(
                     onCheckedChange = { singUpController.updateEsOfertante(it) },
                     modifier = Modifier.size(32.dp),
                     colors = CheckboxDefaults.colors(
-                        checkedColor = VerdeClaro,
-                        uncheckedColor = ColorUnfocuseado
+                        checkedColor = VerdeClaro, uncheckedColor = ColorUnfocuseado
                     )
                 )
                 Text(
@@ -129,7 +126,7 @@ fun SingUpView(
                 items(listOf(mensaje)) {
                     Text(
                         text = mensaje,
-                        color = ColorEliminar, // Color para mensajes de error
+                        color = ColorEliminar,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
                 }
@@ -144,38 +141,31 @@ fun SingUpView(
 
         // Botón de registro
         item {
-            BotonPorDefecto(
-                text = "Registrarse",
-                icon = Icons.Filled.AccountBox,
-                onClick = {
-                    val errores = mutableListOf<String>()
+            BotonPorDefecto(text = "Registrarse", icon = Icons.Filled.AccountBox, onClick = {
+                val errores = mutableListOf<String>()
 
-                    // Validaciones básicas
-                    if (name.isBlank()) errores.add("El nombre no puede estar vacío.")
-                    if (email.isBlank()) errores.add("El email no puede estar vacío.")
-                    if (password.isBlank()) errores.add("La contraseña no puede estar vacía.")
-                    if (repeatPassword.isBlank()) errores.add("La contraseña no puede estar vacía.")
-                    if ((password != repeatPassword) || (password.isEmpty())) {
-                        errores.add("Las contraseñas no coinciden")
-                    }
-
-                    // Si hay errores, los muestra; si no, intenta registrar al usuario
-                    if (errores.isNotEmpty()) {
-                        errorMessages = errores
-                    } else {
-                        dataRepository.registrarse(
-                            email,
-                            password,
-                            name,
-                            esOfertante,
-                            onSuccess = { navToLogIn() },
-                            onError = { exception ->
-                                errorMessage = exception.message ?: "Error desconocido"
-                            }
-                        )
-                    }
+                // Validaciones básicas
+                if (name.isBlank()) errores.add("El nombre no puede estar vacío.")
+                if (email.isBlank()) errores.add("El email no puede estar vacío.")
+                if (password.isBlank()) errores.add("La contraseña no puede estar vacía.")
+                if (repeatPassword.isBlank()) errores.add("La contraseña no puede estar vacía.")
+                if ((password != repeatPassword) || (password.isEmpty())) {
+                    errores.add("Las contraseñas no coinciden")
                 }
-            )
+
+                if (errores.isNotEmpty()) {
+                    errorMessages = errores
+                } else {
+                    dataRepository.registrarse(email,
+                        password,
+                        name,
+                        esOfertante,
+                        onSuccess = { navToLogIn() },
+                        onError = { exception ->
+                            errorMessage = exception.message ?: "Error desconocido"
+                        })
+                }
+            })
         }
     }
 }

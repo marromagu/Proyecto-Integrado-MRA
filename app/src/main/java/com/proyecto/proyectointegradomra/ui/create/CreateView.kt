@@ -77,26 +77,20 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
             ) {
                 CrearIMG()
                 LazyColumn(
-                    modifier = Modifier.padding(4.dp),
-                    state = listState
+                    modifier = Modifier.padding(4.dp), state = listState
                 ) {
                     // Itera a través de las publicaciones y muestra cada una
                     items(publicaciones.size) { index ->
                         // Card clickable para cada publicación
-                        CardClickable(
-                            publicaciones[index], "update",
-                            onItemClick = {
-                                // Serializa la publicación a JSON y navega a la vista de actualización
-                                val publicacionJson =
-                                    Uri.encode(Gson().toJson(publicaciones[index]))
-                                navTo.navigate("UpdateAdView/$publicacionJson")
-                            },
-                            onItemClickDelete = {
-                                // Elimina la publicación y recarga la vista
-                                dataRepository.eliminarPublicacion(publicaciones[index].uid)
-                                navTo.navigate("CreateView")
-                            }
-                        )
+                        CardClickable(publicaciones[index], "update", onItemClick = {
+                            // Serializa la publicación a JSON y navega a la vista de actualización
+                            val publicacionJson = Uri.encode(Gson().toJson(publicaciones[index]))
+                            navTo.navigate("UpdateAdView/$publicacionJson")
+                        }, onItemClickDelete = {
+                            // Elimina la publicación y recarga la vista
+                            dataRepository.eliminarPublicacion(publicaciones[index].uid)
+                            navTo.navigate("CreateView")
+                        })
                     }
                 }
             }
@@ -112,9 +106,7 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
                 FloatingActionButton(
                     onClick = {
                         navTo.navigate("CreateAdView")
-                    },
-                    containerColor = Blanco,
-                    contentColor = ColorDeBotones
+                    }, containerColor = Blanco, contentColor = ColorDeBotones
                 ) {
                     Icon(Icons.Filled.Add, contentDescription = "Agregar publicación")
                 }

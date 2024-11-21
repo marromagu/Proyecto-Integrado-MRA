@@ -7,53 +7,11 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddBox
-import androidx.compose.material.icons.filled.ArrowCircleDown
-import androidx.compose.material.icons.filled.ArrowCircleUp
-import androidx.compose.material.icons.filled.BorderColor
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.GroupRemove
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PersonAdd
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerDefaults
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,16 +34,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.ParseException
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.R
-import com.proyecto.proyectointegradomra.data.model.Publicacion
+import com.proyecto.proyectointegradomra.data.model.*
 import com.proyecto.proyectointegradomra.navigation.Screens
 import com.proyecto.proyectointegradomra.repository.DataRepository
-import com.proyecto.proyectointegradomra.ui.theme.ColorContainer
-import com.proyecto.proyectointegradomra.ui.theme.ColorDeBotones
-import com.proyecto.proyectointegradomra.ui.theme.ColorDeLetras
-import com.proyecto.proyectointegradomra.ui.theme.ColorEliminar
-import com.proyecto.proyectointegradomra.ui.theme.ColorFocuseado
-import com.proyecto.proyectointegradomra.ui.theme.ColorIconoBotones
-import com.proyecto.proyectointegradomra.ui.theme.ColorUnfocuseado
+import com.proyecto.proyectointegradomra.ui.theme.*
 import java.util.Date
 import java.util.Locale
 
@@ -94,6 +46,75 @@ import java.util.Locale
 fun Preview() {
 }
 
+// Función para validar los campos de entrada
+fun validarCampos(
+    title: String,
+    description: String,
+    fecha: String,
+    hora: String,
+    plazas: Int,
+    participantes: Int
+): List<String> {
+    val errores = mutableListOf<String>()
+
+    if (title.isBlank()) errores.add("El título no puede estar vacío.")
+    if (description.isBlank()) errores.add("La descripción no puede estar vacía.")
+    if (fecha.isBlank()) errores.add("Debes seleccionar una fecha.")
+    if (hora.isBlank()) errores.add("Debes seleccionar una hora.")
+    if (plazas <= 0) errores.add("Debes ingresar un número válido de plazas.")
+    if (participantes > plazas) errores.add("No puedes tener menos plazas que participantes.")
+
+    val fechaCombinada = combinarFechaYHora(fecha, hora)
+    if (fechaCombinada == null) {
+        errores.add("La fecha y hora no son válidas o son anteriores a la actual.")
+    }
+
+    return errores
+}
+
+// Función para actualizar la publicación
+fun actualizarPublicacion(
+    miPublicacion: Publicacion,
+    miUsuario: Usuario?,
+    title: String,
+    description: String,
+    plazas: Int,
+    fecha: String,
+    hora: String,
+    dataRepository: DataRepository,
+    navTo: NavHostController
+) {
+    val fechaCombinada = combinarFechaYHora(fecha, hora) ?: return
+
+    miPublicacion.apply {
+        ownerId = miUsuario?.uid ?: ""
+        this.title = title
+        this.description = description
+        this.size = plazas
+        this.date = fechaCombinada
+        this.type = if (miUsuario?.type == TipoUsuarios.CONSUMIDOR) {
+            TipoPublicaciones.BUSQUEDA
+        } else {
+            TipoPublicaciones.ACTIVIDAD
+        }
+    }
+
+    dataRepository.actualizarPublicacion(miPublicacion)
+    navTo.navigate("CreateView")
+}
+
+// Función para combinar fecha y hora en un formato de tiempo en milisegundos
+fun combinarFechaYHora(fecha: String, hora: String): Long? {
+    val formatoFecha = java.text.SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
+    val fechaCompleta = "$fecha $hora"
+    return try {
+        formatoFecha.parse(fechaCompleta)?.time
+    } catch (e: Exception) {
+        null
+    }
+}
+
+// Define los colores personalizados para los campos de texto
 @Composable
 fun miTextFieldColors(): TextFieldColors {
     return TextFieldDefaults.colors(
@@ -115,29 +136,36 @@ fun miTextFieldColors(): TextFieldColors {
     )
 }
 
+// Componente para seleccionar una hora con un TimePicker y mostrarla en un campo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VentanaHora(
-    modifier: Modifier = Modifier, onDateSelected: (String) -> Unit, defaultTime: String? = null
+    modifier: Modifier = Modifier,
+    onDateSelected: (String) -> Unit,
+    defaultTime: String? = null
 ) {
+    // Estado para controlar la visibilidad del TimePicker
     var showTimePicker by remember { mutableStateOf(false) }
     val timeFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
     val defaultCalendar = Calendar.getInstance()
-    if (defaultTime != null) {
+
+    // Parsear hora predeterminada si está disponible
+    defaultTime?.let {
         try {
-            defaultCalendar.time = timeFormatter.parse(defaultTime)!!
+            defaultCalendar.time = timeFormatter.parse(it)!!
         } catch (e: ParseException) {
-            Log.e("VentanaHora", "Error : ${e.message}")
+            Log.e("VentanaHora", "Error al analizar la hora: ${e.message}")
         }
     }
+
+    // Estado para almacenar la hora seleccionada
     var selectedTime by remember {
         mutableStateOf(
-            defaultTime ?: timeFormatter.format(
-                defaultCalendar.time
-            )
+            defaultTime ?: timeFormatter.format(defaultCalendar.time)
         )
     }
 
+    // Campo de texto de solo lectura que muestra la hora seleccionada
     OutlinedTextField(
         value = selectedTime,
         onValueChange = {},
@@ -152,12 +180,14 @@ fun VentanaHora(
         modifier = modifier
     )
 
+    // Mostrar el TimePicker en un cuadro de diálogo
     if (showTimePicker) {
         val timePickerState = rememberTimePickerState(
             initialHour = defaultCalendar.get(Calendar.HOUR_OF_DAY),
             initialMinute = defaultCalendar.get(Calendar.MINUTE)
         )
-        AlertDialog(onDismissRequest = { showTimePicker = false },
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
             title = { Text("Selecciona la hora") },
             text = {
                 Column {
@@ -180,25 +210,25 @@ fun VentanaHora(
                         selectedTime = timeFormatter.format(cal.time)
                         onDateSelected(selectedTime)
                         showTimePicker = false
-                    }, colors = ButtonDefaults.textButtonColors(
-                        contentColor = ColorDeBotones
-                    )
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = ColorDeBotones)
                 ) {
                     Text("OK")
                 }
             },
             dismissButton = {
                 TextButton(
-                    onClick = { showTimePicker = false }, colors = ButtonDefaults.textButtonColors(
-                        contentColor = ColorDeBotones
-                    )
+                    onClick = { showTimePicker = false },
+                    colors = ButtonDefaults.textButtonColors(contentColor = ColorDeBotones)
                 ) {
                     Text("Cancelar")
                 }
-            })
+            }
+        )
     }
 }
 
+// Componente para seleccionar una fecha con un DatePicker
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VentanaFecha(
@@ -206,20 +236,26 @@ fun VentanaFecha(
     onDateSelected: (String) -> Unit,
     defaultDate: String? = null
 ) {
+    // Estado para controlar la visibilidad del DatePicker
     var showDatePicker by remember { mutableStateOf(false) }
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     val defaultCalendar = Calendar.getInstance()
-    if (defaultDate != null) {
-        defaultCalendar.time = dateFormatter.parse(defaultDate)!!
+
+    // Parsear fecha predeterminada si está disponible
+    defaultDate?.let {
+        defaultCalendar.time = dateFormatter.parse(it)!!
     }
+
+    // Estado para almacenar la fecha seleccionada
     var selectedDate by remember {
         mutableStateOf(
-            defaultDate ?: dateFormatter.format(
-                defaultCalendar.time
-            )
+            defaultDate ?: dateFormatter.format(defaultCalendar.time)
         )
     }
-    OutlinedTextField(value = selectedDate,
+
+    // Campo de texto de solo lectura que muestra la fecha seleccionada
+    OutlinedTextField(
+        value = selectedDate,
         onValueChange = {},
         readOnly = true,
         label = { Text("Fecha") },
@@ -229,30 +265,33 @@ fun VentanaFecha(
             }
         },
         colors = miTextFieldColors(),
-        modifier = modifier.clickable { showDatePicker = true })
+        modifier = modifier.clickable { showDatePicker = true }
+    )
 
+    // Mostrar el DatePicker en un cuadro de diálogo
     if (showDatePicker) {
         val datePickerState =
             rememberDatePickerState(initialSelectedDateMillis = defaultCalendar.timeInMillis)
-        DatePickerDialog(onDismissRequest = { showDatePicker = false }, confirmButton = {
-            TextButton(onClick = {
-                val selectedMillis = datePickerState.selectedDateMillis
-                selectedDate = selectedMillis?.let {
-                    dateFormatter.format(Date(it))
-                } ?: ""
-
-                // Llama a onDateSelected con la fecha seleccionada
-                onDateSelected(selectedDate)
-
-                showDatePicker = false
-            }) {
-                Text("OK")
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    val selectedMillis = datePickerState.selectedDateMillis
+                    selectedDate = selectedMillis?.let {
+                        dateFormatter.format(Date(it))
+                    } ?: ""
+                    onDateSelected(selectedDate)
+                    showDatePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Cancelar")
+                }
             }
-        }, dismissButton = {
-            TextButton(onClick = { showDatePicker = false }) {
-                Text("Cancelar")
-            }
-        }) {
+        ) {
             DatePicker(state = datePickerState)
         }
     }
@@ -310,14 +349,14 @@ fun currentRouteBarraDeNavegacion(navController: NavHostController): String? {
 }
 
 @Composable
-fun CampoNumeroDePlazas(plazas: Int, onValueChange: (Int) -> Unit) {
+fun CampoNumeroDePlazas(value: Int, onValueChange: (Int) -> Unit) {
     Row {
         IconButton(
             onClick = {
-                if (plazas <= 0) {
+                if (value <= 0) {
                     onValueChange(0)
                 } else {
-                    onValueChange(plazas - 1)
+                    onValueChange(value - 1)
                 }
             }, modifier = Modifier.padding(8.dp)
         ) {
@@ -329,7 +368,7 @@ fun CampoNumeroDePlazas(plazas: Int, onValueChange: (Int) -> Unit) {
             )
         }
         OutlinedTextField(
-            value = plazas.toString(),
+            value = value.toString(),
             label = { Text("Plazas") },
             onValueChange = { onValueChange(it.toIntOrNull() ?: 0) },
             colors = miTextFieldColors(),
@@ -343,7 +382,7 @@ fun CampoNumeroDePlazas(plazas: Int, onValueChange: (Int) -> Unit) {
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
         IconButton(
-            onClick = { onValueChange(plazas + 1) }, modifier = Modifier.padding(8.dp)
+            onClick = { onValueChange(value + 1) }, modifier = Modifier.padding(8.dp)
         ) {
             Icon(
                 Icons.Filled.ArrowCircleUp,
@@ -663,7 +702,7 @@ fun BotonPorDefecto(text: String, icon: ImageVector, onClick: () -> Unit) {
 @Composable
 fun PublicacionIMG() {
     val img = painterResource(id = R.drawable.natural)
-    Box(modifier =  Modifier.padding(16.dp, 32.dp, 16.dp, 8.dp)) {
+    Box(modifier = Modifier.padding(16.dp, 32.dp, 16.dp, 8.dp)) {
         Image(
             painter = img,
             contentDescription = "Error",

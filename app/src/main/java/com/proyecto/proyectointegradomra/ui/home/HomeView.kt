@@ -27,28 +27,23 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
     // Cargar datos iniciales al componer
     LaunchedEffect(Unit) {
         dataRepository.cargarUsuario() // Cargar información del usuario actual
-
         miUsuario?.let { usuario ->
             publicaciones = if (usuario.type == TipoUsuarios.OFERTANTE) {
                 // Obtener publicaciones tipo "Búsqueda" si el usuario es ofertante
                 dataRepository.obtenerPublicacionesPorTipoSinParticipar(
-                    TipoPublicaciones.BUSQUEDA,
-                    usuario.uid
+                    TipoPublicaciones.BUSQUEDA, usuario.uid
                 )
             } else {
                 // Obtener publicaciones tipo "Actividad" si el usuario es consumidor
                 dataRepository.obtenerPublicacionesPorTipoSinParticipar(
-                    TipoPublicaciones.ACTIVIDAD,
-                    usuario.uid
+                    TipoPublicaciones.ACTIVIDAD, usuario.uid
                 )
             }
         }
     }
 
     // Estructura principal de la vista
-    Scaffold(
-        bottomBar = { BarraDeNavegacion(navController = navTo) }
-    ) { innerPadding ->
+    Scaffold(bottomBar = { BarraDeNavegacion(navController = navTo) }) { innerPadding ->
         Box(
             modifier = Modifier
                 .padding(innerPadding)
@@ -72,31 +67,26 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                             onItemClick = {
                                 // Verificar disponibilidad de plazas antes de agregar al participante
                                 if (publicaciones[index].size > publicaciones[index].participantes.size) {
-                                    dataRepository.agregarParticipante(
-                                        miUsuario?.uid!!,
+                                    dataRepository.agregarParticipante(miUsuario?.uid!!,
                                         publicaciones[index],
                                         onSuccess = {
                                             navTo.navigate("HomeView")
                                         },
                                         onError = {
                                             showDialog = true
-                                        }
-                                    )
+                                        })
                                 } else {
                                     showDialog = true
                                 }
-                            }
-                        ) {}
+                            }) {}
                     }
                 }
 
                 // Diálogo de alerta para notificar errores o limitaciones
-                DialogoAlerta(
-                    showAlert = showDialog,
+                DialogoAlerta(showAlert = showDialog,
                     alertMessage = "El número de plazas disponibles ya está completo.",
                     actionConfirmed = { showDialog = false },
-                    onDismiss = { }
-                )
+                    onDismiss = { })
             }
         }
     }
