@@ -391,7 +391,13 @@ fun CampoNumeroDePlazas(value: Int, onValueChange: (Int) -> Unit) {
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
         IconButton(
-            onClick = { onValueChange(value + 1) }, modifier = Modifier.padding(8.dp)
+            onClick = {
+                if (value < 999) {
+                    onValueChange(value + 1)
+                } else {
+                    onValueChange(999)
+                }
+            }, modifier = Modifier.padding(8.dp)
         ) {
             Icon(
                 Icons.Filled.ArrowCircleUp,
@@ -432,7 +438,9 @@ fun CardClickable(
                 ) {
                     Text(
                         text = miPublicacion.title,
-                        modifier = Modifier.padding(8.dp),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .width(200.dp),
                         style = TextStyle(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
@@ -641,7 +649,7 @@ fun CampoDeTextoPorDefectoEditable(
     isPassword: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
     icon: ImageVector? = null,
-    maxLength: Int? = 100
+    maxLength: Int? = 35
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
