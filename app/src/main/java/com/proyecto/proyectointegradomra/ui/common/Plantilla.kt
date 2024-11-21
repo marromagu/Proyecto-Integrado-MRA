@@ -105,10 +105,16 @@ fun actualizarPublicacion(
 
 // Función para combinar fecha y hora en un formato de tiempo en milisegundos
 fun combinarFechaYHora(fecha: String, hora: String): Long? {
-    val formatoFecha = java.text.SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
+    val formatoFecha = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
     val fechaCompleta = "$fecha $hora"
     return try {
-        formatoFecha.parse(fechaCompleta)?.time
+        val fechaSeleccionada = formatoFecha.parse(fechaCompleta)?.time
+        val fechaActual = System.currentTimeMillis()
+        if (fechaSeleccionada != null && fechaSeleccionada >= fechaActual) {
+            fechaSeleccionada
+        } else {
+            null
+        }
     } catch (e: Exception) {
         null
     }
