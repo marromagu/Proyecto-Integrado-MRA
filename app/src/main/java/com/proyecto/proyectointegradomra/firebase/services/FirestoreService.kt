@@ -277,7 +277,12 @@ class FirestoreService {
         return try {
             val documento =
                 firestore.collection("publicaciones").document(publicacionId).get().await()
-            val participantes = documento.get("participantes") as? List<String> ?: emptyList()
+
+            // Obtén el campo "participantes" y conviértelo de forma segura a una lista de strings
+            val participantes = (documento.get("participantes") as? List<*>)?.mapNotNull {
+                it as? String
+            } ?: emptyList()
+
             participantes
         } catch (e: Exception) {
             Log.e("FirestoreService", "Error al obtener la lista de participantes: ${e.message}")
