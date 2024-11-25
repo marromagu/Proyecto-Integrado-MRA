@@ -15,9 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.data.model.Publicacion
-import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
-import com.proyecto.proyectointegradomra.data.model.TipoUsuarios
-import com.proyecto.proyectointegradomra.data.model.Usuario
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.common.CampoNumeroDePlazas
 import com.proyecto.proyectointegradomra.ui.common.PublicacionIMG
@@ -29,8 +26,6 @@ import com.proyecto.proyectointegradomra.ui.common.VentanaHora
 import com.proyecto.proyectointegradomra.ui.common.actualizarPublicacion
 import com.proyecto.proyectointegradomra.ui.common.validarCampos
 import com.proyecto.proyectointegradomra.ui.theme.*
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @Composable
 fun UpdateAdView(
@@ -48,7 +43,7 @@ fun UpdateAdView(
     var errorMessages by remember { mutableStateOf<List<String>>(emptyList()) }
 
     // Usuario actual obtenido del repositorio de datos
-    val miUsuario = dataRepository.obtenerUsuarioActual().value
+    val miUsuario = dataRepository.obtenerUsuarioActualAuth().value
 
     Column(
         modifier = Modifier

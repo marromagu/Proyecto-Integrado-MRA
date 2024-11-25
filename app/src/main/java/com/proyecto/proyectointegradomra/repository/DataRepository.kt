@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.proyecto.proyectointegradomra.data.model.Publicacion
 import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
+import com.proyecto.proyectointegradomra.data.model.Usuario
 import com.proyecto.proyectointegradomra.firebase.services.AuthService
 import com.proyecto.proyectointegradomra.firebase.services.FirestoreService
 import kotlinx.coroutines.launch
@@ -78,13 +79,34 @@ class DataRepository(
      * Obtiene un objeto LiveData con el usuario autenticado actual.
      * @return LiveData<Usuario?> con los datos del usuario actual.
      */
-    fun obtenerUsuarioActual() = authService.usuario
+    fun obtenerUsuarioActualAuth() = authService.usuario
 
     /**
      * Carga los datos del usuario autenticado desde Firestore.
      * Útil para refrescar la información del usuario en la aplicación.
      */
     fun cargarUsuario() = authService.cargarUsuario()
+
+
+    /* -------------------------------------------------------------------------------------------
+     * MÉTODOS RELACIONADOS CON EL USUARIO
+     * ---------------------------------------------------------------------------------------- */
+
+    /**
+     * Obtiene un usuario por su UID desde Firestore.
+     *
+     * @param uid UID del usuario.
+     * @return Objeto `Usuario` o `null` si no se encuentra.
+     */
+    suspend fun obtenerUsuarioPorUid(uid: String): Usuario? {
+        return try {
+            firestoreService.obtenerUsuarioPorUidFirestore(uid)
+        } catch (e: Exception) {
+            Log.e("AuthService", "Error al obtener usuario por UID: ${e.message}")
+            null
+        }
+    }
+
 
     /**
      * Actualiza el nombre del usuario en Firestore.

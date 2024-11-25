@@ -21,7 +21,7 @@ import com.proyecto.proyectointegradomra.data.model.TipoUsuarios
 fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
     // Variables de estado para gestionar publicaciones y el diálogo de alerta
     var publicaciones by remember { mutableStateOf<List<Publicacion>>(emptyList()) }
-    val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
+    val miUsuario by dataRepository.obtenerUsuarioActualAuth().observeAsState()
     var showDialog by remember { mutableStateOf(false) }
 
     // Cargar datos iniciales al componer
@@ -61,6 +61,12 @@ fun HomeView(dataRepository: DataRepository, navTo: NavHostController) {
                 LazyColumn(modifier = Modifier.padding(4.dp)) {
                     items(publicaciones.size) { index ->
                         // Tarjeta clicable para cada publicación
+//                        viewModelScope.launch {
+//                            val usuario =
+//                                dataRepository.obtenerUsuarioPorUid(publicaciones[index].ownerId)
+//                        }
+
+                        publicaciones[index].uid
                         CardClickable(
                             miPublicacion = publicaciones[index],
                             action = "add",

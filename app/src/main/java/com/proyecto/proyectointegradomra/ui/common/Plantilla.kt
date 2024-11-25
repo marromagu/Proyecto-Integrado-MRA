@@ -511,6 +511,11 @@ fun CardClickable(
                         text = miPublicacion.description,
                         modifier = Modifier.padding(16.dp, 16.dp, 8.dp, 4.dp)
                     )
+                    Text(
+
+                        text = miPublicacion.ownerId,
+                        modifier = Modifier.padding(8.dp)
+                    )
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Row {

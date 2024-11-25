@@ -38,7 +38,7 @@ fun CreateAdView(
     var errorMessages by remember { mutableStateOf<List<String>>(emptyList()) }
 
     // Usuario actual y objeto para la nueva publicación
-    val miUsuario = dataRepository.obtenerUsuarioActual().value
+    val miUsuario = dataRepository.obtenerUsuarioActualAuth().value
     val miAd = Publicacion()
 
     // Layout principal

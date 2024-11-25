@@ -29,7 +29,7 @@ fun ProfileView(
     navTo: NavHostController,
 ) {
     // Obtener el usuario actual y mantener actualizada su información
-    val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
+    val miUsuario by dataRepository.obtenerUsuarioActualAuth().observeAsState()
 
     // Variables de estado para publicaciones y diálogos
     var publicaciones by remember { mutableStateOf<List<Publicacion>>(emptyList()) }

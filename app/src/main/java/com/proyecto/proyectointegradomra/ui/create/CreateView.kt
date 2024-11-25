@@ -43,7 +43,7 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
     // Estado para almacenar las publicaciones del usuario
     var publicaciones by remember { mutableStateOf<List<Publicacion>>(emptyList()) }
     // Estado para obtener los datos del usuario actual
-    val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
+    val miUsuario by dataRepository.obtenerUsuarioActualAuth().observeAsState()
 
     // Cargar las publicaciones del usuario
     LaunchedEffect(Unit) {

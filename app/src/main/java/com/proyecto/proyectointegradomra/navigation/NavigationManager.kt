@@ -25,7 +25,7 @@ fun NavigationManager(
     navController: NavHostController, dataRepository: DataRepository
 ) {
     // Observa los cambios en el usuario actual para reaccionar dinámicamente ante la autenticación
-    val usuario by dataRepository.obtenerUsuarioActual().observeAsState(null)
+    val usuario by dataRepository.obtenerUsuarioActualAuth().observeAsState(null)
 
     // Cargar los datos del usuario desde Firestore al iniciar la composición (Corrutina)
     LaunchedEffect(Unit) {
