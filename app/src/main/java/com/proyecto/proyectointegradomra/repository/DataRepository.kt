@@ -1,10 +1,14 @@
 package com.proyecto.proyectointegradomra.repository
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.proyecto.proyectointegradomra.data.model.Publicacion
 import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
+import com.proyecto.proyectointegradomra.data.model.Usuario
 import com.proyecto.proyectointegradomra.firebase.services.AuthService
 import com.proyecto.proyectointegradomra.firebase.services.FirestoreService
+import kotlinx.coroutines.launch
 
 /**
  * Repositorio centralizado que actúa como capa intermedia entre los servicios de Firebase y la lógica del ViewModel.
@@ -75,13 +79,32 @@ class DataRepository(
      * Obtiene un objeto LiveData con el usuario autenticado actual.
      * @return LiveData<Usuario?> con los datos del usuario actual.
      */
-    fun obtenerUsuarioActual() = authService.usuario
+    fun obtenerUsuarioActualAuth() = authService.usuario
 
     /**
      * Carga los datos del usuario autenticado desde Firestore.
      * Útil para refrescar la información del usuario en la aplicación.
      */
     fun cargarUsuario() = authService.cargarUsuario()
+
+
+    /* -------------------------------------------------------------------------------------------
+     * MÉTODOS RELACIONADOS CON EL USUARIO
+     * ---------------------------------------------------------------------------------------- */
+
+    /**
+     * Obtiene un usuario por su UID desde Firestore.
+     *
+     * @param uid UID del usuario.
+     * @param callback Callback que se ejecutará con el nombre del usuario.
+     */
+    fun obtenerUsuarioPorUid(uid: String, callback: (String?) -> Unit) {
+        viewModelScope.launch {
+            val usuario = firestoreService.obtenerUsuarioPorUidFirestore(uid)
+            callback(usuario?.name)
+        }
+    }
+
 
     /**
      * Actualiza el nombre del usuario en Firestore.
@@ -131,27 +154,44 @@ class DataRepository(
     }
 
     /**
-     * Agrega un participante a una publicación específica.
+     * Agrega un participante a una publicación específica validando que haya plazas disponibles.
      *
      * @param uid UID del participante a agregar.
-     * @param publicacionId ID de la publicación.
+     * @param miPublicacion Objeto Publicacion al que se agregará el participante.
      */
-    fun agregarParticipante(uid: String, publicacionId: String) {
-        firestoreService.agregarParticipante(uid, publicacionId)
+    fun agregarParticipante(
+        uid: String,
+        miPublicacion: Publicacion,
+        onSuccess: () -> Unit,
+        onError: () -> Unit
+    ) {
+        viewModelScope.launch {
+            val listaDeParticipantes =
+                firestoreService.obtenerListaDeParticipantes(miPublicacion.uid)
+            val plazas = firestoreService.obtenerPlazas(miPublicacion.uid)
+            if (plazas <= listaDeParticipantes.size) {
+                Log.i("DataRepository", "No hay plazas disponibles")
+                onError()
+                return@launch
+            } else {
+                firestoreService.agregarParticipante(
+                    uid,
+                    miPublicacion.uid
+                )
+                onSuccess()
+            }
+        }
+
     }
 
     /**
      * Obtiene publicaciones de un tipo específico en las que el usuario ya participa.
      *
-     * @param tipo Tipo de publicaciones.
      * @param uid UID del usuario que consulta.
      * @return Lista de publicaciones que cumplen con el criterio.
      */
-    suspend fun obtenerPublicacionesParticipadas(
-        tipo: TipoPublicaciones,
-        uid: String
-    ): List<Publicacion> {
-        return firestoreService.obtenerPublicacionesParticipadas(tipo, uid)
+    suspend fun obtenerPublicacionesParticipadas(uid: String): List<Publicacion> {
+        return firestoreService.obtenerPublicacionesParticipadas(uid)
     }
 
     /**
@@ -175,6 +215,7 @@ class DataRepository(
 
     /**
      * Actualiza los datos de una publicación en Firestore.
+     *
      * @param publicacion Objeto Publicacion con los nuevos datos.
      */
     fun actualizarPublicacion(publicacion: Publicacion) {

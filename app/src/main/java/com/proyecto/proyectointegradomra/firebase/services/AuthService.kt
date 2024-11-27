@@ -110,9 +110,10 @@ class AuthService : ViewModel() {
     /**
      * Elimina la cuenta del usuario autenticado, tanto en Firebase Authentication como en Firestore.
      * Maneja errores potenciales durante el proceso.
+     * NOTA: Puede que de error al eliminar cuenta al perder la autenticación,
+     * solo me ha pasado una vez y no se porq no reconoció la autenticación con la sesion abierta y funcional.
      */
     fun eliminarCuenta() {
-
         val uid = usuario.value?.uid ?: return
         userAuthCurrent.value?.delete()?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -122,7 +123,10 @@ class AuthService : ViewModel() {
                     _usuario.value = null
                 }
             } else {
-                Log.e("AuthService", "Error al eliminar la cuenta: ${task.exception}")
+                Log.e(
+                    "AuthService",
+                    "Error al eliminar la cuenta (userAuthCurrent): ${task.exception}"
+                )
             }
         }
     }
@@ -145,7 +149,7 @@ class AuthService : ViewModel() {
     }
 
     /**
-     * Obtiene el UID del usuario autenticado actualmente.
+     * Obtiene el UID del usuario autenticado actualmente (currentUser).
      * Retorna null si no hay usuario autenticado.
      * @return UID del usuario autenticado o null.
      */

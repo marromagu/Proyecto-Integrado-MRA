@@ -34,21 +34,31 @@ import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.theme.ColorDeFondo
 import com.proyecto.proyectointegradomra.ui.common.BarraDeNavegacion
 import com.proyecto.proyectointegradomra.ui.common.CardClickable
-import com.proyecto.proyectointegradomra.ui.common.Logo
+import com.proyecto.proyectointegradomra.ui.common.CrearIMG
+import com.proyecto.proyectointegradomra.ui.theme.Blanco
+import com.proyecto.proyectointegradomra.ui.theme.ColorDeBotones
 
 @Composable
 fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
+    // Estado para almacenar las publicaciones del usuario
     var publicaciones by remember { mutableStateOf<List<Publicacion>>(emptyList()) }
-    val miUsuario by dataRepository.obtenerUsuarioActual().observeAsState()
+    // Estado para obtener los datos del usuario actual
+    val miUsuario by dataRepository.obtenerUsuarioActualAuth().observeAsState()
 
-    LaunchedEffect(miUsuario) {
+    var expandedCardIndex by remember { mutableStateOf<Int?>(null) }
+    
+    // Cargar las publicaciones del usuario
+    LaunchedEffect(Unit) {
         miUsuario?.uid?.let { userId ->
+            // Obtiene las publicaciones asociadas al usuario actual desde el repositorio
             publicaciones = dataRepository.obtenerPublicacionesPorUsuario(userId)
         }
     }
 
+    // Estado para manejar el estado del LazyColumn y la visibilidad del FAB
     val listState = rememberLazyListState()
 
+    // Mostrar el FAB solo cuando el usuario esté en la parte superior de la lista
     val showFab by remember {
         derivedStateOf {
             listState.firstVisibleItemIndex == 0
@@ -62,38 +72,55 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
                 .background(ColorDeFondo)
                 .fillMaxSize()
         ) {
-            Column(modifier = Modifier.align(Alignment.TopCenter)) {
-                Logo()
+            // Contenedor principal de la vista
+            Column(
+                modifier = Modifier.align(Alignment.TopCenter),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CrearIMG()
                 LazyColumn(
                     modifier = Modifier.padding(4.dp), state = listState
                 ) {
+                    // Itera a través de las publicaciones y muestra cada una
                     items(publicaciones.size) { index ->
-                        CardClickable(publicaciones[index], "update", onItemClick = {
-                            // Serializar el objeto Publicacion como JSON
-                            val publicacionJson = Uri.encode(Gson().toJson(publicaciones[index]))
-                            navTo.navigate("UpdateAdView/$publicacionJson")
-                        }, onItemClickDelete = {
-                            dataRepository.eliminarPublicacion(publicaciones[index].uid)
-                            navTo.navigate("CreateView")
-                        })
+                        // Card clickable para cada publicación
+                        CardClickable(
+                            miPublicacion = publicaciones[index],
+                            action = "update",
+                            onItemClick = {
+                                // Serializa la publicación a JSON y navega a la vista de actualización
+                                val publicacionJson =
+                                    Uri.encode(Gson().toJson(publicaciones[index]))
+                                navTo.navigate("UpdateAdView/$publicacionJson")
+                            },
+                            index = index,
+                            isExpanded = expandedCardIndex == index,
+                            onExpandChange = { newIndex ->
+                                expandedCardIndex =
+                                    if (newIndex == expandedCardIndex) null else newIndex
+                            },
+                            onItemClickDelete = {
+                                // Elimina la publicación y recarga la vista
+                                dataRepository.eliminarPublicacion(publicaciones[index].uid)
+                                navTo.navigate("CreateView")
+                            })
                     }
                 }
-
             }
 
             AnimatedVisibility(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp),
-                visible = showFab,
+                visible = showFab, // Solo visible si la lista está en la parte superior
                 enter = slideInVertically(initialOffsetY = { it }),
                 exit = slideOutVertically(targetOffsetY = { it })
-//                enter = fadeIn() + scaleIn(), exit = fadeOut() + scaleOut()
-
             ) {
-                FloatingActionButton(onClick = {
-                    navTo.navigate("CreateAdView")
-                }) {
+                FloatingActionButton(
+                    onClick = {
+                        navTo.navigate("CreateAdView")
+                    }, containerColor = Blanco, contentColor = ColorDeBotones
+                ) {
                     Icon(Icons.Filled.Add, contentDescription = "Agregar publicación")
                 }
             }

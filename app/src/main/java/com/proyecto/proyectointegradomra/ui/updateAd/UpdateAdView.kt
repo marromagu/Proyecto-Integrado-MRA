@@ -15,8 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.proyecto.proyectointegradomra.data.model.Publicacion
-import com.proyecto.proyectointegradomra.data.model.TipoPublicaciones
-import com.proyecto.proyectointegradomra.data.model.TipoUsuarios
 import com.proyecto.proyectointegradomra.repository.DataRepository
 import com.proyecto.proyectointegradomra.ui.common.CampoNumeroDePlazas
 import com.proyecto.proyectointegradomra.ui.common.PublicacionIMG
@@ -25,9 +23,9 @@ import com.proyecto.proyectointegradomra.ui.common.BotonPorDefecto
 import com.proyecto.proyectointegradomra.ui.common.CampoDeTextoPorDefectoEditable
 import com.proyecto.proyectointegradomra.ui.common.CampoDeTextoEnArea
 import com.proyecto.proyectointegradomra.ui.common.VentanaHora
+import com.proyecto.proyectointegradomra.ui.common.actualizarPublicacion
+import com.proyecto.proyectointegradomra.ui.common.validarCampos
 import com.proyecto.proyectointegradomra.ui.theme.*
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @Composable
 fun UpdateAdView(
@@ -35,19 +33,17 @@ fun UpdateAdView(
     navTo: NavHostController,
     dataRepository: DataRepository
 ) {
-
+    // Observables que representan el estado de cada campo
     val title by updateAdController.title.observeAsState("")
     val description by updateAdController.description.observeAsState("")
     val fecha by updateAdController.fecha.observeAsState("")
     val hora by updateAdController.hora.observeAsState("")
     val plazas by updateAdController.plazas.observeAsState(0)
-
-
+    val miPublicacion by updateAdController.publicacion.observeAsState(Publicacion())
     var errorMessages by remember { mutableStateOf<List<String>>(emptyList()) }
 
-
-    val miAd = Publicacion()
-    val miUsuario = dataRepository.obtenerUsuarioActual().value
+    // Usuario actual obtenido del repositorio de datos
+    val miUsuario = dataRepository.obtenerUsuarioActualAuth().value
 
     Column(
         modifier = Modifier
@@ -56,50 +52,57 @@ fun UpdateAdView(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Logo
+        // Imagen destacada de la publicación
         PublicacionIMG()
 
         Spacer(modifier = Modifier.weight(0.12f))
-        // Titulo
-        Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
-            CampoDeTextoPorDefectoEditable(label = "Titulo",
+
+        // Campo para editar el título
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            CampoDeTextoPorDefectoEditable(
+                label = "Título",
                 value = title,
                 icon = Icons.Filled.AccountBalance,
-                onValueChange = {
-                    updateAdController.updateTitle(it)
-                })
+                onValueChange = updateAdController::updateTitle
+            )
         }
 
         Spacer(modifier = Modifier.weight(0.25f))
-        // Texto
-        CampoDeTextoEnArea(label = "Descripción", value = description, onValueChange = {
-            updateAdController.updateDescription(it)
-        })
+
+        // Campo para editar la descripción
+        CampoDeTextoEnArea(
+            label = "Descripción",
+            value = description,
+            onValueChange = updateAdController::updateDescription
+        )
 
         Spacer(modifier = Modifier.weight(0.25f))
-        // Fecha y hora
+
+        // Selección de fecha y hora
         Row(modifier = Modifier.fillMaxWidth()) {
             VentanaFecha(
-                modifier = Modifier
-                    .weight(1f),
-                onDateSelected = { f -> updateAdController.updateFecha(f) }
+                modifier = Modifier.weight(1f),
+                onDateSelected = updateAdController::updateFecha,
+                defaultDate = fecha
             )
             Spacer(modifier = Modifier.width(16.dp))
             VentanaHora(
-                modifier = Modifier
-                    .weight(1f),
-                onDateSelected = { h -> updateAdController.updateHora(h) }
+                modifier = Modifier.weight(1f),
+                onDateSelected = updateAdController::updateHora,
+                defaultTime = hora
             )
         }
 
         Spacer(modifier = Modifier.weight(0.5f))
-        // Numero de personas
-        CampoNumeroDePlazas(plazas, onValueChange = {
-            updateAdController.updatePlazas(it)
-        })
+
+        // Campo para número de plazas
+        CampoNumeroDePlazas(
+            value = plazas, onValueChange = updateAdController::updatePlazas
+        )
 
         Spacer(modifier = Modifier.weight(1f))
-        // Mensaje de error
+
+        // Mensajes de error
         if (errorMessages.isNotEmpty()) {
             Column(modifier = Modifier.padding(vertical = 8.dp)) {
                 errorMessages.forEach { mensaje ->
@@ -112,84 +115,44 @@ fun UpdateAdView(
             }
         }
 
-
-        // Botones
+        // Botones de acción
         Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            // Botón para cancelar y volver
             Box(modifier = Modifier.weight(1f)) {
-                BotonPorDefecto(text = "Cancelar", icon = Icons.Filled.Cancel, onClick = {
-                    navTo.navigate("CreateView")
+                BotonPorDefecto(text = "Cancelar",
+                    icon = Icons.Filled.Cancel,
+                    onClick = { navTo.navigate("CreateView") })
+            }
+
+            // Botón para actualizar la publicación
+            Box(modifier = Modifier.weight(1f)) {
+                BotonPorDefecto(text = "Actualizar", icon = Icons.Filled.CheckCircle, onClick = {
+                    val errores = validarCampos(
+                        title = title,
+                        description = description,
+                        fecha = fecha,
+                        hora = hora,
+                        plazas = plazas,
+                        participantes = miPublicacion.participantes.size
+                    )
+
+                    if (errores.isNotEmpty()) {
+                        errorMessages = errores
+                    } else {
+                        actualizarPublicacion(
+                            miPublicacion = miPublicacion,
+                            miUsuario = miUsuario,
+                            title = title,
+                            description = description,
+                            plazas = plazas,
+                            fecha = fecha,
+                            hora = hora,
+                            dataRepository = dataRepository,
+                            navTo = navTo
+                        )
+                    }
                 })
             }
-            Box(modifier = Modifier.weight(1f)) {
-                BotonPorDefecto(
-                    text = "Crear",
-                    icon = Icons.Filled.CheckCircle,
-                    onClick = {
-                        // Lista para recopilar errores
-                        val errores = mutableListOf<String>()
-
-                        // Validar cada campo y agregar mensaje si es necesario
-                        if (title.isBlank()) errores.add("El título no puede estar vacío.")
-                        if (description.isBlank()) errores.add("La descripción no puede estar vacía.")
-                        if (fecha.isBlank()) errores.add("Debes seleccionar una fecha.")
-                        if (hora.isBlank()) errores.add("Debes seleccionar una hora.")
-                        if (plazas <= 0 && miAd.participantes.size > plazas) errores.add("Debes ingresar un número válido de plazas.")
-
-                        val fechaCombinada = combinarFechaYHora(fecha, hora)
-                        // Validar la fecha completa
-                        if (fecha.isBlank() || hora.isBlank()) {
-                            errores.add("Debes seleccionar una fecha y una hora.")
-
-                        } else {
-                            if (fechaCombinada == null) {
-                                errores.add("La fecha y hora no son válidas.")
-                            } else {
-                                if (fechaCombinada < System.currentTimeMillis()) {
-                                    errores.add("La fecha y hora no pueden ser anteriores a la actual.")
-                                }
-                            }
-                        }
-
-                        // Si hay errores, mostrar la lista de errores
-                        if (errores.isNotEmpty()) {
-                            errorMessages = errores // Actualizar estado
-                        } else {
-                            // Crear el objeto Publicaciones y subirlo a Firestore
-                            miAd.ownerId = miUsuario?.uid ?: ""
-                            miAd.title = title
-                            miAd.description = description
-                            miAd.size = plazas
-                            if (fechaCombinada != null) {
-                                miAd.date = fechaCombinada
-                            }
-                            miAd.type = if (miUsuario?.type == TipoUsuarios.CONSUMIDOR) {
-                                TipoPublicaciones.BUSQUEDA
-                            } else {
-                                TipoPublicaciones.ACTIVIDAD
-                            }
-                            dataRepository.actualizarPublicacion(miAd)
-                            navTo.navigate("CreateView")
-                        }
-                    }
-                )
-            }
         }
-    }
-}
-
-fun combinarFechaYHora(fecha: String, hora: String): Long? {
-    val formatoFecha = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
-    val fechaCompleta = "$fecha $hora"
-    return try {
-        val fechaSeleccionada = formatoFecha.parse(fechaCompleta)?.time
-        val fechaActual = System.currentTimeMillis()
-
-        if (fechaSeleccionada != null && fechaSeleccionada >= fechaActual) {
-            fechaSeleccionada
-        } else {
-            null
-        }
-    } catch (e: Exception) {
-        null
     }
 }

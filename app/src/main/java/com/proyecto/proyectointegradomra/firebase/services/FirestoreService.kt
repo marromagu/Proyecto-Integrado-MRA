@@ -86,15 +86,15 @@ class FirestoreService {
     /**
      * Actualiza el nombre de un usuario en Firestore.
      * @param uid UID del usuario.
-     * @param nuevoNombre Nuevo nombre del usuario.
+     * @param newName Nuevo nombre del usuario.
      */
-    fun actualizarNombreUsuarioFirestore(uid: String, nuevoNombre: String) {
+    fun actualizarNombreUsuarioFirestore(uid: String, newName: String) {
         if (uid.isBlank()) {
             Log.e("FirestoreService", "El UID es inválido para la actualización del nombre.")
             return
         }
 
-        firestore.collection("usuarios").document(uid).update("name", nuevoNombre)
+        firestore.collection("usuarios").document(uid).update("name", newName)
             .addOnSuccessListener {
                 Log.i("FirestoreService", "Nombre del usuario actualizado con éxito.")
             }.addOnFailureListener { exception ->
@@ -125,9 +125,15 @@ class FirestoreService {
      */
     suspend fun eliminarUsuario(uid: String) {
         eliminarDocumentoFirestore("usuarios", uid)
+
         val publicaciones = this.obtenerPublicacionesPorUsuario(userId = uid)
         publicaciones.forEach { publicacion ->
             this.eliminarPublicacion(publicacionId = publicacion.uid)
+        }
+
+        val publicacionesParticipadas = this.obtenerPublicacionesParticipadas(uid = uid)
+        publicacionesParticipadas.forEach { publicacion ->
+            this.eliminarParticipante(uid = uid, publicacionId = publicacion.uid)
         }
     }
 
@@ -180,15 +186,14 @@ class FirestoreService {
 
     /**
      * Obtiene una lista de publicaciones de un tipo específico en las que el usuario ya haya participado.
-     * @param type El tipo de publicación (por ejemplo, actividad o anuncio de búsqueda).
      * @param uid El identificador único del usuario.
      * @return Una lista de objetos `Publicaciones` en las que el usuario haya participado.
      */
     suspend fun obtenerPublicacionesParticipadas(
-        type: TipoPublicaciones, uid: String
+        uid: String
     ): List<Publicacion> {
         return try {
-            val querySnapshot = firestore.collection("publicaciones").whereEqualTo("type", type)
+            val querySnapshot = firestore.collection("publicaciones")
                 .whereArrayContains("participantes", uid).get().await()
 
             querySnapshot.documents.mapNotNull { document ->
@@ -261,5 +266,53 @@ class FirestoreService {
         )
 
         firestore.collection("publicaciones").document(publicacion.uid).update(publicacionDataMap)
+    }
+
+    /**
+     * Obtiene la lista de participantes de una publicación.
+     * @param publicacionId ID de la publicación.
+     * @return Lista de UID de participantes.
+     */
+    suspend fun obtenerListaDeParticipantes(publicacionId: String): List<String> {
+        return try {
+            val documento =
+                firestore.collection("publicaciones").document(publicacionId).get().await()
+
+            // Obtén el campo "participantes" y conviértelo de forma segura a una lista de strings
+            val participantes = (documento.get("participantes") as? List<*>)?.mapNotNull {
+                it as? String
+            } ?: emptyList()
+
+            participantes
+        } catch (e: Exception) {
+            Log.e("FirestoreService", "Error al obtener la lista de participantes: ${e.message}")
+            emptyList()
+        }
+    }
+
+    /**
+     * Obtiene el número de plazas de una publicación.
+     * @param publicacionId ID de la publicación.
+     * @return Número de plazas.
+     */
+    suspend fun obtenerPlazas(publicacionId: String): Int {
+        return try {
+            val documento =
+                firestore.collection("publicaciones").document(publicacionId).get().await()
+            Log.d(
+                "FirestoreService",
+                "Documento: ${documento.data}"
+            )
+            val sizeValue = documento.get("size")
+            val plazas = if (sizeValue is Number) {
+                sizeValue.toLong().toInt()
+            } else {
+                0
+            }
+            plazas
+        } catch (e: Exception) {
+            Log.e("FirestoreService", "Error al obtener las plazas: ${e.message}")
+            0
+        }
     }
 }

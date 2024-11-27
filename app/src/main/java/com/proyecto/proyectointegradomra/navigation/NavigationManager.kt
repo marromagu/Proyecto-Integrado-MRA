@@ -25,14 +25,14 @@ fun NavigationManager(
     navController: NavHostController, dataRepository: DataRepository
 ) {
     // Observa los cambios en el usuario actual para reaccionar dinámicamente ante la autenticación
-    val usuario by dataRepository.obtenerUsuarioActual().observeAsState(null)
+    val usuario by dataRepository.obtenerUsuarioActualAuth().observeAsState(null)
 
-    // Cargar los datos del usuario desde Firestore al iniciar la composición
+    // Cargar los datos del usuario desde Firestore al iniciar la composición (Corrutina)
     LaunchedEffect(Unit) {
         dataRepository.cargarUsuario()
     }
 
-    // Control de navegación en función del tipo de usuario autenticado
+    // Control de navegación en función del tipo de usuario autenticado (Corrutina)
     LaunchedEffect(usuario) {
         usuario?.let {
             navController.navigate(Screens.HomeScreen.ruta) {
@@ -52,6 +52,7 @@ fun NavigationManager(
     // Configuración del NavHost con las rutas disponibles en la aplicación
     NavHost(navController = navController, startDestination = Screens.StartScreen.ruta) {
         composable(route = Screens.StartScreen.ruta) {
+            // Pantalla de inicio
             StartView(
                 navToSignUp = { navController.navigate(Screens.SignUpScreen.ruta) },
                 navToLogIn = { navController.navigate(Screens.LogInScreen.ruta) })
@@ -59,7 +60,7 @@ fun NavigationManager(
         composable(route = Screens.SignUpScreen.ruta) {
             // Pantalla de registro de usuario
             SingUpView(
-                navToLogIn = { navController.navigate(Screens.LogInScreen.ruta) },
+                navToLogIn = { navController.navigate(Screens.HomeScreen.ruta) },
                 dataRepository = dataRepository
             )
         }
@@ -86,7 +87,9 @@ fun NavigationManager(
             // Pantalla para crear una nueva publicación
             CreateAdView(navTo = navController, dataRepository = dataRepository)
         }
-        composable("UpdateAdView/{publicacionJson}") { backStackEntry ->
+        composable("UpdateAdView/{publicacionJson}") {
+            // Pantalla para actualizar una publicación existente, se recibe el objeto Publicacion como JSON
+                backStackEntry ->
             val publicacionJson = backStackEntry.arguments?.getString("publicacionJson")
             val publicacion = Gson().fromJson(publicacionJson, Publicacion::class.java)
             UpdateAdView(

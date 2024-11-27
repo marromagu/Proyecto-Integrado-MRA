@@ -1,5 +1,7 @@
 package com.proyecto.proyectointegradomra.data.model
 
+import java.util.Date
+
 data class Publicacion(
     var uid: String = "",
     var ownerId: String = "",
