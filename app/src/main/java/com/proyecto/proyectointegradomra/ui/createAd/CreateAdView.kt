@@ -132,7 +132,7 @@ fun CreateAdView(
                             this.title = title
                             this.description = description
                             this.size = plazas
-                            this.date = combinarFechaYHora(fecha, hora) ?: 0L
+                            this.date = combinarFechaYHoraYValidacion(fecha, hora) ?: 0L
                             this.type = if (miUsuario?.type == TipoUsuarios.CONSUMIDOR) {
                                 TipoPublicaciones.BUSQUEDA
                             } else {

@@ -45,6 +45,8 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
     // Estado para obtener los datos del usuario actual
     val miUsuario by dataRepository.obtenerUsuarioActualAuth().observeAsState()
 
+    var expandedCardIndex by remember { mutableStateOf<Int?>(null) }
+    
     // Cargar las publicaciones del usuario
     LaunchedEffect(Unit) {
         miUsuario?.uid?.let { userId ->
@@ -82,15 +84,26 @@ fun CreateView(dataRepository: DataRepository, navTo: NavHostController) {
                     // Itera a través de las publicaciones y muestra cada una
                     items(publicaciones.size) { index ->
                         // Card clickable para cada publicación
-                        CardClickable(publicaciones[index], "update", onItemClick = {
-                            // Serializa la publicación a JSON y navega a la vista de actualización
-                            val publicacionJson = Uri.encode(Gson().toJson(publicaciones[index]))
-                            navTo.navigate("UpdateAdView/$publicacionJson")
-                        }, onItemClickDelete = {
-                            // Elimina la publicación y recarga la vista
-                            dataRepository.eliminarPublicacion(publicaciones[index].uid)
-                            navTo.navigate("CreateView")
-                        })
+                        CardClickable(
+                            miPublicacion = publicaciones[index],
+                            action = "update",
+                            onItemClick = {
+                                // Serializa la publicación a JSON y navega a la vista de actualización
+                                val publicacionJson =
+                                    Uri.encode(Gson().toJson(publicaciones[index]))
+                                navTo.navigate("UpdateAdView/$publicacionJson")
+                            },
+                            index = index,
+                            isExpanded = expandedCardIndex == index,
+                            onExpandChange = { newIndex ->
+                                expandedCardIndex =
+                                    if (newIndex == expandedCardIndex) null else newIndex
+                            },
+                            onItemClickDelete = {
+                                // Elimina la publicación y recarga la vista
+                                dataRepository.eliminarPublicacion(publicaciones[index].uid)
+                                navTo.navigate("CreateView")
+                            })
                     }
                 }
             }

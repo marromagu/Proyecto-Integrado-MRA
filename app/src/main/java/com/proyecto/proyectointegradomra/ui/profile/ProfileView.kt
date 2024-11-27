@@ -12,7 +12,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -38,6 +40,8 @@ fun ProfileView(
     var alertMessage by remember { mutableStateOf("") }
     var actionConfirmed by remember { mutableStateOf({}) }
     var newName by remember { mutableStateOf("") }
+    var nombrePublicacion by remember { mutableStateOf("") }
+    var expandedCardIndex by remember { mutableStateOf<Int?>(null) }
 
     // Cargar información inicial al componer
     LaunchedEffect(Unit) {
@@ -86,8 +90,6 @@ fun ProfileView(
                 onDismiss = { navTo.navigate("ProfileView") }
             )
 
-            Spacer(modifier = Modifier.weight(1f)) // Espaciador flexible
-
             // Lista de datos de usuario
             LazyColumn(
                 modifier = Modifier
@@ -96,14 +98,14 @@ fun ProfileView(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Información estática del usuario
-                item {
-                    CampoDeTextoPorDefectoNoEditable(
-                        label = "UID",
-                        value = miUsuario?.uid ?: "Error",
-                        onValueChange = {},
-                        modifier = Modifier
-                    )
-                }
+                /*                item {
+                                    CampoDeTextoPorDefectoNoEditable(
+                                        label = "UID",
+                                        value = miUsuario?.uid ?: "Error",
+                                        onValueChange = {},
+                                        modifier = Modifier
+                                    )
+                                }*/
                 item {
                     CampoDeTextoPorDefectoNoEditable(
                         label = "Email",
@@ -125,20 +127,35 @@ fun ProfileView(
                 item {
                     LazyRow(modifier = Modifier.padding(4.dp)) {
                         items(publicaciones.size) { index ->
-                            CardClickable(publicaciones[index], "remove", onItemClick = {
-                                dataRepository.eliminarParticipante(
-                                    miUsuario?.uid!!, publicaciones[index].uid
-                                )
-                                navTo.navigate("ProfileView") // Recargar vista
-                            }) {
-                                navTo.navigate("UpdateAdView")
-                            }
+                            CardClickable(
+                                miPublicacion = publicaciones[index],
+                                action = "remove",
+                                onItemClick = {
+                                    dataRepository.eliminarParticipante(
+                                        miUsuario?.uid!!, publicaciones[index].uid
+                                    )
+                                    navTo.navigate("ProfileView") // Recargar vista
+                                },
+                                onItemNombre = {
+                                    dataRepository.obtenerUsuarioPorUid(publicaciones[index].ownerId) { nombre ->
+                                        nombrePublicacion = nombre ?: "No disponible."
+                                    }
+                                },
+                                nombre = nombrePublicacion,
+                                index = index,
+                                isExpanded = expandedCardIndex == index,
+                                onExpandChange = { newIndex ->
+                                    expandedCardIndex =
+                                        if (newIndex == expandedCardIndex) null else newIndex
+                                }
+                            ) {}
                         }
                     }
                 }
 
                 // Botones de cerrar sesión y borrar cuenta
                 item {
+
                     BotonPorDefecto(
                         text = "Cerrar Sesión",
                         icon = Icons.AutoMirrored.Filled.ExitToApp,

@@ -302,12 +302,12 @@ class FirestoreService {
             Log.d(
                 "FirestoreService",
                 "Documento: ${documento.data}"
-            ) // Imprime el contenido del documento
-            val sizeValue = documento.get("size") // Obtiene el valor del campo "size"
+            )
+            val sizeValue = documento.get("size")
             val plazas = if (sizeValue is Number) {
-                sizeValue.toLong().toInt() // Convierte a Long y luego a Int
+                sizeValue.toLong().toInt()
             } else {
-                0 // Si no es un número, devuelve 0
+                0
             }
             plazas
         } catch (e: Exception) {

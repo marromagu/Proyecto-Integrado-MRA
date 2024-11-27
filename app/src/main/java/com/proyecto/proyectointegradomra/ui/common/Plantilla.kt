@@ -67,7 +67,7 @@ fun validarCampos(
     if (plazas <= 0) errores.add("Debes ingresar un número válido de plazas.")
     if (participantes > plazas) errores.add("No puedes tener menos plazas que participantes.")
 
-    val fechaCombinada = combinarFechaYHora(fecha, hora)
+    val fechaCombinada = combinarFechaYHoraYValidacion(fecha, hora)
     if (fechaCombinada == null) {
         errores.add("La fecha y hora no son válidas o son anteriores a la actual.")
     }
@@ -87,7 +87,7 @@ fun actualizarPublicacion(
     dataRepository: DataRepository,
     navTo: NavHostController
 ) {
-    val fechaCombinada = combinarFechaYHora(fecha, hora) ?: return
+    val fechaCombinada = combinarFechaYHoraYValidacion(fecha, hora) ?: return
 
     miPublicacion.apply {
         ownerId = miUsuario?.uid ?: ""
@@ -107,12 +107,13 @@ fun actualizarPublicacion(
 }
 
 // Función para combinar fecha y hora en un formato de tiempo en milisegundos
-fun combinarFechaYHora(fecha: String, hora: String): Long? {
+fun combinarFechaYHoraYValidacion(fecha: String, hora: String): Long? {
     val formatoFecha = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
     val fechaCompleta = "$fecha $hora"
     return try {
         val fechaSeleccionada = formatoFecha.parse(fechaCompleta)?.time
         val fechaActual = System.currentTimeMillis()
+        // Verificar si la fecha seleccionada es posterior a la fecha actual
         if (fechaSeleccionada != null && fechaSeleccionada >= fechaActual) {
             fechaSeleccionada
         } else {
@@ -414,16 +415,20 @@ fun CardClickable(
     miPublicacion: Publicacion,
     action: String = "",
     onItemClick: () -> Unit = {},
-    onItemClickDelete: () -> Unit
+    onItemNombre: () -> Unit = {},
+    nombre: String? = "",
+    index: Int,
+    isExpanded: Boolean,
+    onExpandChange: (Int) -> Unit,
+    onItemClickDelete: () -> Unit,
 ) {
-    var expanded by remember { mutableStateOf(false) }
     val cardSize by animateDpAsState(
-        targetValue = if (expanded) 400.dp else 150.dp,
+        targetValue = if (isExpanded) 400.dp else 150.dp,
         animationSpec = tween(durationMillis = 300),
         label = ""
     )
     ElevatedCard(
-        onClick = { expanded = !expanded },
+        onClick = { onExpandChange(index) },
         modifier = Modifier
             .size(width = 350.dp, height = cardSize)
             .padding(8.dp),
@@ -448,7 +453,7 @@ fun CardClickable(
                             fontFamily = FontFamily.SansSerif
                         )
                     )
-                    if (expanded) {
+                    if (isExpanded) {
                         Spacer(modifier = Modifier.weight(1f))
                         when (action) {
                             "add" -> IconButton(onClick = {
@@ -506,14 +511,14 @@ fun CardClickable(
                         }
                     }
                 }
-                if (expanded) {
+                if (isExpanded) {
+                    onItemNombre()
                     Text(
                         text = miPublicacion.description,
                         modifier = Modifier.padding(16.dp, 16.dp, 8.dp, 4.dp)
                     )
                     Text(
-
-                        text = miPublicacion.ownerId,
+                        text = ("Creado por: $nombre") ?: "",
                         modifier = Modifier.padding(8.dp)
                     )
                 }
@@ -568,7 +573,7 @@ fun DialogoAlerta(
 ) {
     if (showAlert) {
         AlertDialog(onDismissRequest = onDismiss,
-            title = { Text("Error") },
+            title = { Text("Lo sentimos :(") },
             text = { Text(alertMessage) },
             confirmButton = {
                 Button(onClick = {

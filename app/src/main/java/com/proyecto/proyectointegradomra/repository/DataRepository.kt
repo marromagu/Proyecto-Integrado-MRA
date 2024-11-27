@@ -96,14 +96,12 @@ class DataRepository(
      * Obtiene un usuario por su UID desde Firestore.
      *
      * @param uid UID del usuario.
-     * @return Objeto `Usuario` o `null` si no se encuentra.
+     * @param callback Callback que se ejecutará con el nombre del usuario.
      */
-    suspend fun obtenerUsuarioPorUid(uid: String): Usuario? {
-        return try {
-            firestoreService.obtenerUsuarioPorUidFirestore(uid)
-        } catch (e: Exception) {
-            Log.e("AuthService", "Error al obtener usuario por UID: ${e.message}")
-            null
+    fun obtenerUsuarioPorUid(uid: String, callback: (String?) -> Unit) {
+        viewModelScope.launch {
+            val usuario = firestoreService.obtenerUsuarioPorUidFirestore(uid)
+            callback(usuario?.name)
         }
     }
 
